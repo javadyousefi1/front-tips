@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prioritized Task Scheduling API - Complete Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🎯 Prioritized Task Scheduling API</h1>
+        <p class="subtitle">Learn how to manage task priorities in JavaScript</p>
+    </header>
+
+    <main>
+        <!-- Introduction Section -->
+        <section class="info-card">
+            <h2>What is this API?</h2>
+            <p>The <strong>Prioritized Task Scheduling API</strong> (scheduler.postTask()) allows you to schedule tasks with different priority levels:</p>
+            <ul>
+                <li><span class="priority-badge user-blocking">user-blocking</span> - Highest priority (critical UI updates)</li>
+                <li><span class="priority-badge user-visible">user-visible</span> - Default priority (most user interactions)</li>
+                <li><span class="priority-badge background">background</span> - Lowest priority (analytics, prefetching)</li>
+            </ul>
+        </section>
+
+        <!-- Demo 1: Basic Priority Demonstration -->
+        <section class="demo-card">
+            <h2>📚 Demo 1: Basic Priority (Simple)</h2>
+            <p>Click the button to see how different priority tasks execute:</p>
+            <button id="basicDemo" class="btn">Run Basic Demo</button>
+            <div id="basicOutput" class="output"></div>
+        </section>
+
+        <!-- Demo 2: UI Updates Priority -->
+        <section class="demo-card">
+            <h2>🎨 Demo 2: UI Updates Priority (Intermediate)</h2>
+            <p>Simulate critical UI updates vs background rendering:</p>
+            <button id="uiDemo" class="btn">Run UI Demo</button>
+            <div class="demo-container">
+                <div class="ui-box" id="criticalUI">
+                    <h3>Critical UI Element</h3>
+                    <p id="criticalCounter">Counter: 0</p>
+                </div>
+                <div class="ui-box" id="backgroundUI">
+                    <h3>Background Updates</h3>
+                    <p id="backgroundCounter">Processing: 0</p>
+                </div>
+            </div>
+            <div id="uiOutput" class="output"></div>
+        </section>
+
+        <!-- Demo 3: Data Processing -->
+        <section class="demo-card">
+            <h2>⚡ Demo 3: Data Processing (Intermediate)</h2>
+            <p>Process large datasets without blocking the UI:</p>
+            <button id="dataDemo" class="btn">Process 10,000 Items</button>
+            <div class="progress-container">
+                <div id="progressBar" class="progress-bar"></div>
+                <p id="progressText">Ready to process...</p>
+            </div>
+            <div id="dataOutput" class="output"></div>
+        </section>
+
+        <!-- Demo 4: Task Abortion -->
+        <section class="demo-card">
+            <h2>🛑 Demo 4: Task Abortion & Control (Advanced)</h2>
+            <p>Learn to cancel tasks using TaskController:</p>
+            <button id="startAbortDemo" class="btn">Start Long Task</button>
+            <button id="abortTask" class="btn btn-danger">Abort Task</button>
+            <div id="abortOutput" class="output"></div>
+        </section>
+
+        <!-- Demo 5: Real-World Scenario -->
+        <section class="demo-card">
+            <h2>🌐 Demo 5: Real-World App Simulation (Advanced)</h2>
+            <p>Simulate a real application with mixed workload:</p>
+            <button id="realWorldDemo" class="btn">Simulate App Load</button>
+            <div class="real-world-container">
+                <div class="metric-box">
+                    <h4>User Interactions</h4>
+                    <p id="userMetric">0 handled</p>
+                </div>
+                <div class="metric-box">
+                    <h4>API Calls</h4>
+                    <p id="apiMetric">0 completed</p>
+                </div>
+                <div class="metric-box">
+                    <h4>Analytics</h4>
+                    <p id="analyticsMetric">0 sent</p>
+                </div>
+                <div class="metric-box">
+                    <h4>Cache Warmup</h4>
+                    <p id="cacheMetric">0% complete</p>
+                </div>
+            </div>
+            <div id="realWorldOutput" class="output"></div>
+        </section>
+
+        <!-- Demo 6: Priority Comparison -->
+        <section class="demo-card">
+            <h2>🔬 Demo 6: Priority Comparison (Advanced)</h2>
+            <p>Compare execution order with and without priorities:</p>
+            <button id="comparisonDemo" class="btn">Run Comparison</button>
+            <div class="comparison-container">
+                <div class="comparison-box">
+                    <h3>Without Priorities (setTimeout)</h3>
+                    <div id="withoutPriority" class="timeline"></div>
+                </div>
+                <div class="comparison-box">
+                    <h3>With Priorities (scheduler.postTask)</h3>
+                    <div id="withPriority" class="timeline"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Browser Support Check -->
+        <section class="info-card">
+            <h2>🔍 Browser Support</h2>
+            <p id="supportInfo">Checking...</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Created for learning Prioritized Task Scheduling API</p>
+        <p>Open the browser console to see detailed logs!</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
