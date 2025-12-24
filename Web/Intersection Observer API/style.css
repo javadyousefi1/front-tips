@@ -1,0 +1,593 @@
+/* ========================================
+   Intersection Observer API - Styles
+   ======================================== */
+
+/* ========================================
+   Reset & Base Styles
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #1e293b;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+/* ========================================
+   Header
+   ======================================== */
+
+.main-header {
+    background: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.main-header h1 {
+    font-size: 2.5rem;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.main-header p {
+    color: #64748b;
+    font-size: 1.1rem;
+}
+
+/* ========================================
+   Navigation
+   ======================================== */
+
+.demo-nav {
+    background: #1e293b;
+    padding: 1rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    position: sticky;
+    top: 120px;
+    z-index: 99;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.demo-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.demo-nav a:hover {
+    background: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   Demo Sections
+   ======================================== */
+
+.demo-section {
+    background: white;
+    margin: 2rem auto;
+    padding: 3rem 2rem;
+    max-width: 1200px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.demo-section h2 {
+    color: #667eea;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.demo-section > p {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.demo-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   Spacers
+   ======================================== */
+
+.spacer {
+    height: 400px;
+}
+
+.spacer-small {
+    height: 200px;
+}
+
+/* ========================================
+   Demo 1: Basic Detection
+   ======================================== */
+
+.observe-box {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 3rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 3px solid transparent;
+}
+
+.observe-box h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.observe-box .status {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    background: white;
+    display: inline-block;
+}
+
+.observe-box.visible {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #10b981;
+    transform: scale(1.05);
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+}
+
+.observe-box.visible h3 {
+    color: white;
+}
+
+/* ========================================
+   Demo 2: Lazy Loading
+   ======================================== */
+
+.lazy-image {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    display: block;
+    transition: all 0.5s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.lazy-image.loading {
+    opacity: 0.6;
+    filter: blur(5px);
+}
+
+.lazy-image.loaded {
+    opacity: 1;
+    filter: blur(0);
+    animation: imageLoad 0.6s ease;
+}
+
+@keyframes imageLoad {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.lazy-image.error {
+    border: 3px solid #ef4444;
+}
+
+.image-label {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: #64748b;
+}
+
+/* ========================================
+   Demo 3: Scroll Animations
+   ======================================== */
+
+.animate-box {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 3rem;
+    border-radius: 12px;
+    text-align: center;
+    color: white;
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-box h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Fade In Up */
+.fade-in-up {
+    transform: translateY(50px);
+}
+
+.fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Fade In Left */
+.fade-in-left {
+    transform: translateX(-50px);
+}
+
+.fade-in-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Fade In Right */
+.fade-in-right {
+    transform: translateX(50px);
+}
+
+.fade-in-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Zoom In */
+.zoom-in {
+    transform: scale(0.8);
+}
+
+.zoom-in.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ========================================
+   Demo 4: Infinite Scroll
+   ======================================== */
+
+.infinite-scroll-container {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.infinite-items {
+    display: grid;
+    gap: 1rem;
+}
+
+.infinite-item {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: itemAppear 0.5s ease;
+}
+
+@keyframes itemAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.infinite-item h4 {
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.infinite-item p {
+    color: #475569;
+}
+
+.scroll-sentinel {
+    padding: 2rem;
+    text-align: center;
+}
+
+.loader {
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+    display: none;
+}
+
+.scroll-sentinel.loading .loader {
+    display: block;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   Demo 5: Video Auto-Play
+   ======================================== */
+
+.auto-play-video {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: block;
+}
+
+.video-status {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.video-status span {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    background: white;
+    display: inline-block;
+}
+
+/* ========================================
+   Demo 6: Threshold Visualization
+   ======================================== */
+
+.threshold-box {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    padding: 3rem;
+    border-radius: 12px;
+    text-align: center;
+    min-height: 300px;
+}
+
+.threshold-box h3 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 2rem;
+}
+
+.threshold-info {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.threshold-info p {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.threshold-info strong {
+    color: #667eea;
+    font-size: 1.5rem;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #e5e7eb;
+    border-radius: 15px;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #667eea;
+    transition: width 0.1s ease, background 0.3s ease;
+    border-radius: 15px;
+}
+
+.threshold-status {
+    font-weight: bold;
+    font-size: 1.3rem;
+    color: #1e293b;
+}
+
+/* ========================================
+   Stats Panel
+   ======================================== */
+
+.stats-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    min-width: 250px;
+    z-index: 1000;
+}
+
+.stats-panel h3 {
+    color: #667eea;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+}
+
+.stat-label {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    font-weight: bold;
+    color: #667eea;
+    font-size: 1.1rem;
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+
+.main-footer {
+    background: #1e293b;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 4rem;
+}
+
+.main-footer p {
+    margin: 0.5rem 0;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media (max-width: 768px) {
+    .main-header h1 {
+        font-size: 2rem;
+    }
+
+    .main-header p {
+        font-size: 1rem;
+    }
+
+    .demo-nav {
+        top: 100px;
+        padding: 0.5rem;
+    }
+
+    .demo-nav a {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .demo-section {
+        margin: 1rem;
+        padding: 2rem 1rem;
+    }
+
+    .demo-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .observe-box,
+    .animate-box,
+    .threshold-box {
+        padding: 2rem;
+    }
+
+    .stats-panel {
+        bottom: 10px;
+        right: 10px;
+        min-width: 200px;
+        padding: 1rem;
+    }
+
+    .stats-panel h3 {
+        font-size: 1rem;
+    }
+
+    .stat-label,
+    .stat-value {
+        font-size: 0.85rem;
+    }
+
+    .spacer {
+        height: 200px;
+    }
+
+    .spacer-small {
+        height: 100px;
+    }
+}
+
+/* ========================================
+   Accessibility
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus styles for keyboard navigation */
+a:focus,
+button:focus {
+    outline: 3px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+    .demo-nav,
+    .stats-panel {
+        display: none;
+    }
+
+    .demo-section {
+        page-break-inside: avoid;
+    }
+}
+
+/* ========================================
+   Scrollbar Styling (Webkit browsers)
+   ======================================== */
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}

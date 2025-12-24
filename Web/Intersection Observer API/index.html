@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intersection Observer API - Interactive Examples</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="main-header">
+        <h1>👁️ Intersection Observer API</h1>
+        <p>Interactive examples showcasing the power of the Intersection Observer API</p>
+    </header>
+
+    <nav class="demo-nav">
+        <a href="#demo1">Basic Detection</a>
+        <a href="#demo2">Lazy Loading</a>
+        <a href="#demo3">Scroll Animations</a>
+        <a href="#demo4">Infinite Scroll</a>
+        <a href="#demo5">Video Auto-Play</a>
+        <a href="#demo6">Threshold Demo</a>
+    </nav>
+
+    <!-- Demo 1: Basic Visibility Detection -->
+    <section id="demo1" class="demo-section">
+        <h2>Demo 1: Basic Visibility Detection</h2>
+        <p>Scroll down to see the boxes change when they enter/exit the viewport</p>
+
+        <div class="spacer"></div>
+
+        <div class="demo-container">
+            <div class="observe-box" data-name="Box 1">
+                <h3>Box 1</h3>
+                <p class="status">Waiting...</p>
+            </div>
+        </div>
+
+        <div class="spacer-small"></div>
+
+        <div class="demo-container">
+            <div class="observe-box" data-name="Box 2">
+                <h3>Box 2</h3>
+                <p class="status">Waiting...</p>
+            </div>
+        </div>
+
+        <div class="spacer-small"></div>
+
+        <div class="demo-container">
+            <div class="observe-box" data-name="Box 3">
+                <h3>Box 3</h3>
+                <p class="status">Waiting...</p>
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+    </section>
+
+    <!-- Demo 2: Lazy Loading Images -->
+    <section id="demo2" class="demo-section">
+        <h2>Demo 2: Lazy Loading Images</h2>
+        <p>Images load only when they enter the viewport (scroll down to trigger loading)</p>
+
+        <div class="spacer"></div>
+
+        <div class="demo-container">
+            <img
+                class="lazy-image"
+                data-src="https://picsum.photos/600/400?random=1"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23ddd' width='600' height='400'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='Arial' font-size='24'%3ELoading...%3C/text%3E%3C/svg%3E"
+                alt="Lazy loaded image 1">
+            <p class="image-label">Image 1</p>
+        </div>
+
+        <div class="spacer-small"></div>
+
+        <div class="demo-container">
+            <img
+                class="lazy-image"
+                data-src="https://picsum.photos/600/400?random=2"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23ddd' width='600' height='400'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='Arial' font-size='24'%3ELoading...%3C/text%3E%3C/svg%3E"
+                alt="Lazy loaded image 2">
+            <p class="image-label">Image 2</p>
+        </div>
+
+        <div class="spacer-small"></div>
+
+        <div class="demo-container">
+            <img
+                class="lazy-image"
+                data-src="https://picsum.photos/600/400?random=3"
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'%3E%3Crect fill='%23ddd' width='600' height='400'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='Arial' font-size='24'%3ELoading...%3C/text%3E%3C/svg%3E"
+                alt="Lazy loaded image 3">
+            <p class="image-label">Image 3</p>
+        </div>
+
+        <div class="spacer"></div>
+    </section>
+
+    <!-- Demo 3: Scroll Animations -->
+    <section id="demo3" class="demo-section">
+        <h2>Demo 3: Scroll-Based Animations</h2>
+        <p>Elements animate smoothly when they enter the viewport</p>
+
+        <div class="spacer"></div>
+
+        <div class="demo-container">
+            <div class="animate-box fade-in-up" data-animation="Fade In Up">
+                <h3>Fade In Up</h3>
+                <p>Slides up and fades in</p>
+            </div>
+        </div>
+
+        <div class="spacer-small"></div>
+
+        <div class="demo-container">
+            <div class="animate-box fade-in-left" data-animation="Fade In Left">
+                <h3>Fade In Left</h3>
+                <p>Slides from left and fades in</p>
+            </div>
+        </div>
+
+        <div class="spacer-small"></div>
+
+        <div class="demo-container">
+            <div class="animate-box fade-in-right" data-animation="Fade In Right">
+                <h3>Fade In Right</h3>
+                <p>Slides from right and fades in</p>
+            </div>
+        </div>
+
+        <div class="spacer-small"></div>
+
+        <div class="demo-container">
+            <div class="animate-box zoom-in" data-animation="Zoom In">
+                <h3>Zoom In</h3>
+                <p>Scales up and fades in</p>
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+    </section>
+
+    <!-- Demo 4: Infinite Scroll -->
+    <section id="demo4" class="demo-section">
+        <h2>Demo 4: Infinite Scroll</h2>
+        <p>More content loads automatically as you scroll down</p>
+
+        <div class="infinite-scroll-container">
+            <div class="infinite-items">
+                <!-- Items will be added dynamically -->
+            </div>
+            <div class="scroll-sentinel">
+                <div class="loader"></div>
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+    </section>
+
+    <!-- Demo 5: Video Auto-Play -->
+    <section id="demo5" class="demo-section">
+        <h2>Demo 5: Video Auto-Play on Visibility</h2>
+        <p>Videos automatically play when visible and pause when not</p>
+
+        <div class="spacer"></div>
+
+        <div class="demo-container">
+            <video
+                class="auto-play-video"
+                muted
+                loop
+                poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 360'%3E%3Crect fill='%23000' width='640' height='360'/%3E%3Cpolygon fill='%23fff' points='250,120 450,240 250,360'/%3E%3C/svg%3E">
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p class="video-status">Status: <span id="video-status-1">Paused</span></p>
+        </div>
+
+        <div class="spacer"></div>
+    </section>
+
+    <!-- Demo 6: Threshold Visualization -->
+    <section id="demo6" class="demo-section">
+        <h2>Demo 6: Threshold Visualization</h2>
+        <p>Watch how intersection ratio changes as the box enters/exits the viewport</p>
+
+        <div class="spacer"></div>
+
+        <div class="demo-container">
+            <div class="threshold-box">
+                <h3>Threshold Box</h3>
+                <div class="threshold-info">
+                    <p>Intersection Ratio: <strong id="ratio-value">0%</strong></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <p class="threshold-status" id="threshold-status">Not visible</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+    </section>
+
+    <!-- Stats Panel -->
+    <div class="stats-panel">
+        <h3>Observer Stats</h3>
+        <div class="stat-item">
+            <span class="stat-label">Observers Active:</span>
+            <span class="stat-value" id="active-observers">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Elements Observed:</span>
+            <span class="stat-value" id="observed-elements">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Lazy Images Loaded:</span>
+            <span class="stat-value" id="images-loaded">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Animations Triggered:</span>
+            <span class="stat-value" id="animations-triggered">0</span>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <p>Intersection Observer API Examples</p>
+        <p>Open the console to see detailed logs</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
