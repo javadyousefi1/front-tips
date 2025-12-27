@@ -1,0 +1,15 @@
+{
+  "message": "This is a test resource for caching strategy demos",
+  "timestamp": "2025-01-01T00:00:00Z",
+  "data": {
+    "cached": true,
+    "strategy": "dynamic",
+    "version": "1.0"
+  },
+  "tips": [
+    "Try different caching strategies to see how they behave",
+    "Go offline to test cache fallback",
+    "Check the Network tab in DevTools to see request sources",
+    "Use the Application tab to inspect Service Worker and caches"
+  ]
+}
