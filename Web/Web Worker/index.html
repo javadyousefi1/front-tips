@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Worker - Prime Number Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Web Worker Demo</h1>
+            <p>Calculate prime numbers without blocking the UI</p>
+        </header>
+
+        <main>
+            <section class="controls">
+                <h2>Prime Number Calculator</h2>
+                <div class="input-group">
+                    <label for="rangeInput">Calculate primes up to:</label>
+                    <input type="number" id="rangeInput" value="100000" min="1000" max="10000000">
+                </div>
+                <div class="button-group">
+                    <button id="startWorker" class="btn btn-primary">Start with Worker</button>
+                    <button id="startNoWorker" class="btn btn-secondary">Start without Worker</button>
+                    <button id="stopWorker" class="btn btn-danger">Stop Worker</button>
+                </div>
+            </section>
+
+            <section class="ui-test">
+                <h3>UI Responsiveness Test</h3>
+                <p>Try interacting with this while calculations are running:</p>
+                <div class="animation-box" id="animationBox">
+                    Animated Box
+                </div>
+                <input type="range" id="testSlider" min="0" max="100" value="50">
+                <div class="slider-value">Slider Value: <span id="sliderValue">50</span></div>
+            </section>
+
+            <section class="results">
+                <h3>Results</h3>
+                <div class="status" id="status">Ready to calculate...</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="progress-text" id="progressText">0%</div>
+                </div>
+                <div class="output" id="output"></div>
+            </section>
+        </main>
+
+        <aside class="info">
+            <h3>What's Happening?</h3>
+            <ul>
+                <li><strong>With Worker:</strong> Calculation runs in background thread. UI stays responsive.</li>
+                <li><strong>Without Worker:</strong> Calculation blocks the main thread. UI freezes.</li>
+                <li><strong>Test it:</strong> Try moving the slider or hovering over the animated box during calculation!</li>
+            </ul>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
