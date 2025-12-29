@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CustomEvent API - Complete Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CustomEvent API</h1>
+            <p>Learn how to create and dispatch custom events</p>
+        </header>
+
+        <main>
+            <!-- Demo 1: Basic Custom Event -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>1. Basic Custom Event</h2>
+                    <span class="badge">Fundamentals</span>
+                </div>
+                <p class="description">Create and dispatch a simple custom event with data</p>
+
+                <div class="controls">
+                    <input type="text" id="messageInput" placeholder="Enter a message...">
+                    <button id="dispatchBasic" class="btn btn-primary">Dispatch Event</button>
+                </div>
+
+                <div class="output" id="basicOutput">Waiting for event...</div>
+            </section>
+
+            <!-- Demo 2: Component Communication -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>2. Component Communication</h2>
+                    <span class="badge">Practical</span>
+                </div>
+                <p class="description">Use custom events to communicate between components</p>
+
+                <div class="component-demo">
+                    <div class="component" id="componentA">
+                        <h3>Component A (Child)</h3>
+                        <button id="componentABtn" class="btn btn-primary">Send Message to Parent</button>
+                        <p class="component-status">Ready to send</p>
+                    </div>
+
+                    <div class="component" id="componentB">
+                        <h3>Component B (Parent)</h3>
+                        <p class="component-status" id="parentStatus">Waiting for messages...</p>
+                        <div class="message-list" id="messageList"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Demo 3: Event Bubbling -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>3. Event Bubbling & Capturing</h2>
+                    <span class="badge">Advanced</span>
+                </div>
+                <p class="description">Understand how custom events bubble through the DOM</p>
+
+                <div class="bubbling-demo">
+                    <div class="level level-1" id="level1">
+                        Level 1 (Grandparent)
+                        <div class="level level-2" id="level2">
+                            Level 2 (Parent)
+                            <div class="level level-3" id="level3">
+                                Level 3 (Child)
+                                <button id="bubbleBtn" class="btn btn-primary">Trigger Event Here</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <label>
+                        <input type="checkbox" id="bubblesCheckbox" checked>
+                        Enable Bubbling
+                    </label>
+                </div>
+
+                <div class="output" id="bubblingOutput">Click the button to see event propagation...</div>
+            </section>
+
+            <!-- Demo 4: Event Bus Pattern -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>4. Event Bus (Pub/Sub)</h2>
+                    <span class="badge">Pattern</span>
+                </div>
+                <p class="description">Implement publish-subscribe pattern with custom events</p>
+
+                <div class="pubsub-demo">
+                    <div class="publisher">
+                        <h3>Publisher</h3>
+                        <input type="text" id="topicInput" placeholder="Enter topic...">
+                        <input type="text" id="dataInput" placeholder="Enter data...">
+                        <button id="publishBtn" class="btn btn-primary">Publish Event</button>
+                    </div>
+
+                    <div class="subscribers">
+                        <h3>Subscribers</h3>
+                        <div class="subscriber" id="subscriber1">
+                            <strong>Subscriber 1</strong>
+                            <p class="sub-status">Listening for events...</p>
+                        </div>
+                        <div class="subscriber" id="subscriber2">
+                            <strong>Subscriber 2</strong>
+                            <p class="sub-status">Listening for events...</p>
+                        </div>
+                        <div class="subscriber" id="subscriber3">
+                            <strong>Subscriber 3</strong>
+                            <p class="sub-status">Listening for events...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Demo 5: Form Validation -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>5. Custom Validation Events</h2>
+                    <span class="badge">Real-world</span>
+                </div>
+                <p class="description">Create custom events for form validation</p>
+
+                <form id="validationForm" class="validation-form">
+                    <div class="form-group">
+                        <label for="usernameInput">Username (min 3 chars):</label>
+                        <input type="text" id="usernameInput" class="form-input">
+                        <span class="error-message" id="usernameError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emailInput">Email:</label>
+                        <input type="email" id="emailInput" class="form-input">
+                        <span class="error-message" id="emailError"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="passwordInput">Password (min 8 chars):</label>
+                        <input type="password" id="passwordInput" class="form-input">
+                        <span class="error-message" id="passwordError"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Validate Form</button>
+                </form>
+
+                <div class="output" id="validationOutput">Fill the form and submit...</div>
+            </section>
+
+            <!-- Demo 6: Shopping Cart -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>6. Shopping Cart Events</h2>
+                    <span class="badge">Complete Example</span>
+                </div>
+                <p class="description">Full shopping cart implementation with custom events</p>
+
+                <div class="cart-demo">
+                    <div class="products">
+                        <h3>Products</h3>
+                        <div class="product-list" id="productList">
+                            <div class="product-item" data-id="1" data-name="Laptop" data-price="999">
+                                <span>Laptop - $999</span>
+                                <button class="btn btn-small add-to-cart">Add to Cart</button>
+                            </div>
+                            <div class="product-item" data-id="2" data-name="Mouse" data-price="29">
+                                <span>Mouse - $29</span>
+                                <button class="btn btn-small add-to-cart">Add to Cart</button>
+                            </div>
+                            <div class="product-item" data-id="3" data-name="Keyboard" data-price="79">
+                                <span>Keyboard - $79</span>
+                                <button class="btn btn-small add-to-cart">Add to Cart</button>
+                            </div>
+                            <div class="product-item" data-id="4" data-name="Monitor" data-price="299">
+                                <span>Monitor - $299</span>
+                                <button class="btn btn-small add-to-cart">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cart">
+                        <h3>Shopping Cart <span class="cart-badge" id="cartBadge">0</span></h3>
+                        <div class="cart-items" id="cartItems">
+                            <p class="empty-cart">Cart is empty</p>
+                        </div>
+                        <div class="cart-total">
+                            Total: $<span id="cartTotal">0</span>
+                        </div>
+                        <button id="clearCart" class="btn btn-danger">Clear Cart</button>
+                    </div>
+                </div>
+
+                <div class="output" id="cartOutput">Add products to see events...</div>
+            </section>
+        </main>
+
+        <aside class="info">
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>CustomEvent()</strong> creates custom events with data</li>
+                <li><strong>detail</strong> property contains custom data</li>
+                <li><strong>bubbles</strong> controls event propagation</li>
+                <li><strong>cancelable</strong> allows preventDefault()</li>
+                <li><strong>dispatchEvent()</strong> fires the event</li>
+                <li>Events enable decoupled component communication</li>
+                <li>Perfect for implementing pub/sub patterns</li>
+            </ul>
+
+            <h3>Event Options</h3>
+            <ul>
+                <li><code>detail</code> - Custom data object</li>
+                <li><code>bubbles</code> - Event bubbles up (default: false)</li>
+                <li><code>cancelable</code> - Can be cancelled (default: false)</li>
+                <li><code>composed</code> - Crosses shadow DOM (default: false)</li>
+            </ul>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
