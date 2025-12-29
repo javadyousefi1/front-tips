@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BroadcastChannel API - Complete Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>BroadcastChannel API</h1>
+            <p>Cross-tab communication made simple</p>
+            <div class="tab-info">
+                <span class="tab-id">Tab ID: <strong id="currentTabId">Loading...</strong></span>
+                <span class="tab-counter">Open Tabs: <strong id="tabCount">1</strong></span>
+            </div>
+        </header>
+
+        <div class="instruction-banner">
+            <strong>💡 How to Test:</strong> Open this page in multiple tabs/windows to see cross-tab communication in action!
+        </div>
+
+        <main>
+            <!-- Demo 1: Basic Messaging -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>1. Basic Cross-Tab Messaging</h2>
+                    <span class="badge">Fundamentals</span>
+                </div>
+                <p class="description">Send simple messages to all other open tabs</p>
+
+                <div class="controls">
+                    <input type="text" id="messageInput" placeholder="Enter a message...">
+                    <button id="sendMessage" class="btn btn-primary">Broadcast Message</button>
+                </div>
+
+                <div class="output" id="messageOutput">
+                    <div class="message-log" id="messageLog">
+                        <p class="empty-state">No messages yet. Send a message or open in another tab!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Demo 2: State Synchronization -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>2. State Synchronization</h2>
+                    <span class="badge">Practical</span>
+                </div>
+                <p class="description">Keep state synchronized across all tabs</p>
+
+                <div class="state-demo">
+                    <div class="state-controls">
+                        <label>Counter Value: <strong id="counterValue">0</strong></label>
+                        <div class="btn-group">
+                            <button id="incrementBtn" class="btn btn-primary">+1</button>
+                            <button id="decrementBtn" class="btn btn-danger">-1</button>
+                            <button id="resetBtn" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="state-controls">
+                        <label>Text Value:</label>
+                        <input type="text" id="textValue" placeholder="Type something...">
+                    </div>
+
+                    <div class="state-controls">
+                        <label>Theme:</label>
+                        <select id="themeSelect">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="blue">Blue</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="output" id="stateOutput">All changes sync instantly across tabs!</div>
+            </section>
+
+            <!-- Demo 3: Authentication Sync -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>3. User Authentication Sync</h2>
+                    <span class="badge">Real-world</span>
+                </div>
+                <p class="description">Login/logout synced across all tabs</p>
+
+                <div class="auth-demo">
+                    <div class="auth-status" id="authStatus">
+                        <span class="status-indicator offline"></span>
+                        <span>Not logged in</span>
+                    </div>
+
+                    <div id="loginForm" class="auth-form">
+                        <input type="text" id="usernameInput" placeholder="Username">
+                        <button id="loginBtn" class="btn btn-primary">Login</button>
+                    </div>
+
+                    <div id="logoutForm" class="auth-form" style="display: none;">
+                        <p>Welcome, <strong id="currentUser"></strong>!</p>
+                        <button id="logoutBtn" class="btn btn-danger">Logout</button>
+                    </div>
+                </div>
+
+                <div class="output" id="authOutput">Login in one tab affects all tabs</div>
+            </section>
+
+            <!-- Demo 4: Shopping Cart -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>4. Shopping Cart Sync</h2>
+                    <span class="badge">E-commerce</span>
+                </div>
+                <p class="description">Shopping cart synchronized across tabs</p>
+
+                <div class="cart-demo">
+                    <div class="products">
+                        <h3>Products</h3>
+                        <div class="product-item">
+                            <span>Laptop - $999</span>
+                            <button class="btn btn-small add-product" data-name="Laptop" data-price="999">Add</button>
+                        </div>
+                        <div class="product-item">
+                            <span>Mouse - $29</span>
+                            <button class="btn btn-small add-product" data-name="Mouse" data-price="29">Add</button>
+                        </div>
+                        <div class="product-item">
+                            <span>Keyboard - $79</span>
+                            <button class="btn btn-small add-product" data-name="Keyboard" data-price="79">Add</button>
+                        </div>
+                    </div>
+
+                    <div class="cart-display">
+                        <h3>Cart <span class="cart-badge" id="cartBadge">0</span></h3>
+                        <div id="cartItems" class="cart-items">
+                            <p class="empty-state">Cart is empty</p>
+                        </div>
+                        <div class="cart-total">Total: $<span id="cartTotal">0</span></div>
+                        <button id="clearCartBtn" class="btn btn-danger">Clear Cart</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Demo 5: Tab Presence -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>5. Tab Presence Detection</h2>
+                    <span class="badge">Advanced</span>
+                </div>
+                <p class="description">Track all open tabs and their status</p>
+
+                <div class="presence-demo">
+                    <div class="active-tabs" id="activeTabs">
+                        <h3>Active Tabs</h3>
+                        <div id="tabList" class="tab-list">
+                            <div class="tab-item current">
+                                <span class="tab-icon">📑</span>
+                                <span class="tab-name">This Tab</span>
+                                <span class="tab-badge">Current</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="presence-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalTabs">1</div>
+                            <div class="stat-label">Total Tabs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="activeSince">0s</div>
+                            <div class="stat-label">Active Since</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="output" id="presenceOutput">Open more tabs to see them appear here!</div>
+            </section>
+
+            <!-- Demo 6: Notification Sync -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>6. Cross-Tab Notifications</h2>
+                    <span class="badge">Interactive</span>
+                </div>
+                <p class="description">Send notifications that appear in all tabs</p>
+
+                <div class="notification-demo">
+                    <div class="notification-controls">
+                        <select id="notificationType">
+                            <option value="info">Info</option>
+                            <option value="success">Success</option>
+                            <option value="warning">Warning</option>
+                            <option value="error">Error</option>
+                        </select>
+                        <input type="text" id="notificationText" placeholder="Notification message...">
+                        <button id="sendNotification" class="btn btn-primary">Send Notification</button>
+                    </div>
+
+                    <div id="notificationContainer" class="notification-container"></div>
+                </div>
+
+                <div class="output" id="notificationOutput">Notifications appear in all tabs simultaneously</div>
+            </section>
+        </main>
+
+        <aside class="info">
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>BroadcastChannel(name)</strong> - Creates a channel</li>
+                <li><strong>postMessage(data)</strong> - Broadcasts to all tabs</li>
+                <li><strong>onmessage</strong> - Receives messages</li>
+                <li><strong>close()</strong> - Closes the channel</li>
+                <li>Works across tabs, windows, iframes (same origin)</li>
+                <li>Automatically distributes messages to all listeners</li>
+                <li>Simple pub/sub pattern without a server</li>
+            </ul>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>🔐 Authentication sync (login/logout)</li>
+                <li>🛒 Shopping cart synchronization</li>
+                <li>🎨 Theme changes across tabs</li>
+                <li>📊 Real-time data updates</li>
+                <li>💾 State management sync</li>
+                <li>🔔 Cross-tab notifications</li>
+                <li>👥 Multi-tab presence detection</li>
+            </ul>
+        </aside>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
