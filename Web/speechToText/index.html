@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Speech API - Speech Recognition Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Web Speech API</h1>
+            <p>Convert speech to text in real-time with the Speech Recognition API</p>
+        </header>
+
+        <main>
+            <!-- Demo 1: Basic Speech Recognition -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>1. Basic Speech Recognition</h2>
+                    <span class="badge">Fundamentals</span>
+                </div>
+                <p class="description">Simple voice-to-text conversion with start/stop controls</p>
+
+                <div class="demo-area">
+                    <div class="microphone-icon" id="mic1">
+                        <svg width="50" height="50" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                    </div>
+                    <div class="transcript-box" id="transcript1">Click the microphone to start speaking...</div>
+                </div>
+
+                <div class="controls">
+                    <button id="startBasic" class="btn btn-primary">Start Listening</button>
+                    <button id="stopBasic" class="btn btn-danger">Stop</button>
+                    <button id="clearBasic" class="btn btn-secondary">Clear</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const recognition = new webkitSpeechRecognition();
+recognition.continuous = false;
+recognition.lang = 'en-US';
+
+recognition.onresult = (event) => {
+  const transcript = event.results[0][0].transcript;
+  console.log('You said:', transcript);
+};
+
+recognition.start();</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 2: Continuous Recognition -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>2. Continuous Recognition</h2>
+                    <span class="badge">Real-time</span>
+                </div>
+                <p class="description">Continuous speech recognition with interim results</p>
+
+                <div class="demo-area">
+                    <div class="live-indicator" id="liveIndicator">
+                        <span class="pulse"></span>
+                        <span class="status-text">Not listening</span>
+                    </div>
+                    <div class="transcript-box large" id="transcript2">
+                        <div class="final-text" id="finalText2"></div>
+                        <div class="interim-text" id="interimText2"></div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="startContinuous" class="btn btn-primary">Start Continuous</button>
+                    <button id="stopContinuous" class="btn btn-danger">Stop</button>
+                    <button id="clearContinuous" class="btn btn-secondary">Clear</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>recognition.continuous = true;
+recognition.interimResults = true;
+
+recognition.onresult = (event) => {
+  let finalTranscript = '';
+  let interimTranscript = '';
+
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    const transcript = event.results[i][0].transcript;
+    if (event.results[i].isFinal) {
+      finalTranscript += transcript;
+    } else {
+      interimTranscript += transcript;
+    }
+  }
+};</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 3: Language Selection -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>3. Multi-Language Support</h2>
+                    <span class="badge">Languages</span>
+                </div>
+                <p class="description">Recognize speech in different languages</p>
+
+                <div class="demo-area">
+                    <div class="language-selector">
+                        <label for="languageSelect">Select Language:</label>
+                        <select id="languageSelect" class="language-dropdown">
+                            <option value="en-US">English (US)</option>
+                            <option value="en-GB">English (UK)</option>
+                            <option value="es-ES">Spanish (Spain)</option>
+                            <option value="fr-FR">French</option>
+                            <option value="de-DE">German</option>
+                            <option value="it-IT">Italian</option>
+                            <option value="ja-JP">Japanese</option>
+                            <option value="ko-KR">Korean</option>
+                            <option value="zh-CN">Chinese (Simplified)</option>
+                            <option value="ar-SA">Arabic</option>
+                        </select>
+                    </div>
+                    <div class="transcript-box" id="transcript3">Select a language and start speaking...</div>
+                </div>
+
+                <div class="controls">
+                    <button id="startLanguage" class="btn btn-primary">Start Listening</button>
+                    <button id="stopLanguage" class="btn btn-danger">Stop</button>
+                    <button id="clearLanguage" class="btn btn-secondary">Clear</button>
+                    <span class="info-text">Current: <strong id="currentLang">English (US)</strong></span>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const recognition = new webkitSpeechRecognition();
+
+// Change language dynamically
+recognition.lang = 'es-ES'; // Spanish
+recognition.lang = 'fr-FR'; // French
+recognition.lang = 'ja-JP'; // Japanese
+
+recognition.start();</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 4: Voice Commands -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>4. Voice Commands</h2>
+                    <span class="badge">Interactive</span>
+                </div>
+                <p class="description">Control the interface using voice commands</p>
+
+                <div class="demo-area">
+                    <div class="command-box" id="commandBox">
+                        <div class="command-display">
+                            <h3>Say a command:</h3>
+                            <ul class="command-list">
+                                <li>"change color to red/blue/green"</li>
+                                <li>"make it bigger/smaller"</li>
+                                <li>"rotate left/right"</li>
+                                <li>"reset"</li>
+                            </ul>
+                        </div>
+                        <div class="controlled-element" id="controlledElement">Voice Control Me!</div>
+                    </div>
+                    <div class="command-output" id="commandOutput">Waiting for commands...</div>
+                </div>
+
+                <div class="controls">
+                    <button id="startCommands" class="btn btn-primary">Activate Voice Control</button>
+                    <button id="stopCommands" class="btn btn-danger">Deactivate</button>
+                    <button id="resetCommands" class="btn btn-secondary">Reset</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>recognition.onresult = (event) => {
+  const command = event.results[0][0].transcript.toLowerCase();
+
+  if (command.includes('red')) {
+    element.style.backgroundColor = 'red';
+  } else if (command.includes('bigger')) {
+    element.style.transform = 'scale(1.5)';
+  } else if (command.includes('rotate')) {
+    element.style.transform = 'rotate(45deg)';
+  }
+};</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 5: Voice Notes -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>5. Voice Notes App</h2>
+                    <span class="badge">Practical</span>
+                </div>
+                <p class="description">Take notes using your voice with save/export functionality</p>
+
+                <div class="demo-area">
+                    <div class="notes-container">
+                        <div class="notes-header">
+                            <input type="text" id="noteTitle" class="note-title-input" placeholder="Note Title">
+                            <div class="word-count">Words: <span id="wordCount">0</span></div>
+                        </div>
+                        <textarea id="noteContent" class="note-content" placeholder="Start speaking to add content..."></textarea>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="startNotes" class="btn btn-primary">Start Dictation</button>
+                    <button id="pauseNotes" class="btn btn-warning">Pause</button>
+                    <button id="saveNote" class="btn btn-secondary">Save Note</button>
+                    <button id="clearNote" class="btn btn-danger">Clear</button>
+                    <button id="exportNote" class="btn btn-secondary">Export as TXT</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>let noteContent = '';
+recognition.continuous = true;
+
+recognition.onresult = (event) => {
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    if (event.results[i].isFinal) {
+      noteContent += event.results[i][0].transcript + ' ';
+      textarea.value = noteContent;
+    }
+  }
+};</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 6: Confidence & Alternatives -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>6. Confidence Scores & Alternatives</h2>
+                    <span class="badge">Advanced</span>
+                </div>
+                <p class="description">View confidence scores and alternative transcriptions</p>
+
+                <div class="demo-area">
+                    <div class="analysis-container">
+                        <div class="main-transcript" id="mainTranscript6">Speak to see results...</div>
+                        <div class="confidence-meter">
+                            <label>Confidence:</label>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" id="confidenceFill"></div>
+                            </div>
+                            <span class="confidence-value" id="confidenceValue">0%</span>
+                        </div>
+                        <div class="alternatives-box">
+                            <h4>Alternative Transcriptions:</h4>
+                            <ul id="alternativesList"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="startAnalysis" class="btn btn-primary">Start Analysis</button>
+                    <button id="stopAnalysis" class="btn btn-danger">Stop</button>
+                    <button id="clearAnalysis" class="btn btn-secondary">Clear</button>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="maxAlternatives">
+                        Show all alternatives (max 5)
+                    </label>
+                </div>
+
+                <div class="code-preview">
+<pre><code>recognition.maxAlternatives = 5;
+
+recognition.onresult = (event) => {
+  const result = event.results[0];
+
+  // Get best result
+  const transcript = result[0].transcript;
+  const confidence = result[0].confidence;
+  console.log(`Confidence: ${(confidence * 100).toFixed(1)}%`);
+
+  // Get alternatives
+  for (let i = 0; i < result.length; i++) {
+    console.log(`Alt ${i}: ${result[i].transcript}`);
+  }
+};</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <aside class="info">
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>SpeechRecognition</strong> - Main API interface</li>
+                <li><strong>continuous</strong> - Keep listening after results</li>
+                <li><strong>interimResults</strong> - Show results as you speak</li>
+                <li><strong>lang</strong> - Language code (e.g., 'en-US')</li>
+                <li><strong>maxAlternatives</strong> - Number of alternatives</li>
+                <li><strong>confidence</strong> - Accuracy score (0-1)</li>
+            </ul>
+
+            <h3>Browser Support</h3>
+            <ul>
+                <li>Chrome/Edge: Full support</li>
+                <li>Safari: Supported (webkit prefix)</li>
+                <li>Firefox: Not supported</li>
+                <li>Mobile: Chrome Android, Safari iOS</li>
+                <li>Requires HTTPS in production</li>
+            </ul>
+
+            <h3>Events</h3>
+            <ul>
+                <li><strong>onstart</strong> - Recognition begins</li>
+                <li><strong>onresult</strong> - Results received</li>
+                <li><strong>onerror</strong> - Error occurred</li>
+                <li><strong>onend</strong> - Recognition ended</li>
+                <li><strong>onspeechstart</strong> - Speech detected</li>
+                <li><strong>onspeechend</strong> - Speech stopped</li>
+            </ul>
+
+            <h3>Best Practices</h3>
+            <ul>
+                <li>Always check browser support</li>
+                <li>Handle errors gracefully</li>
+                <li>Provide visual feedback</li>
+                <li>Request microphone permission early</li>
+                <li>Use continuous for long dictation</li>
+                <li>Show interim results for UX</li>
+                <li>Test with different accents</li>
+            </ul>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>Voice commands in apps</li>
+                <li>Dictation and note-taking</li>
+                <li>Accessibility features</li>
+                <li>Hands-free controls</li>
+                <li>Search by voice</li>
+                <li>Form filling</li>
+                <li>Language learning apps</li>
+            </ul>
+
+            <h3>Error Handling</h3>
+            <ul>
+                <li><strong>no-speech</strong> - No speech detected</li>
+                <li><strong>aborted</strong> - Recognition aborted</li>
+                <li><strong>audio-capture</strong> - No microphone</li>
+                <li><strong>network</strong> - Network error</li>
+                <li><strong>not-allowed</strong> - Permission denied</li>
+            </ul>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
