@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MutationObserver API - Complete Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MutationObserver API</h1>
+            <p>Monitor and react to DOM changes in real-time</p>
+        </header>
+
+        <main>
+            <!-- Demo 1: Basic DOM Mutations -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>1. Basic DOM Mutations</h2>
+                    <span class="badge">Fundamentals</span>
+                </div>
+                <p class="description">Observe when child elements are added or removed</p>
+
+                <div class="demo-area">
+                    <div class="mutation-target" id="target1">
+                        <div class="item">Item 1</div>
+                        <div class="item">Item 2</div>
+                        <div class="item">Item 3</div>
+                    </div>
+                    <div class="mutation-log" id="log1">
+                        <h4>Mutation Log:</h4>
+                        <div class="log-content" id="logContent1">Waiting for mutations...</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="addNode1" class="btn btn-primary">Add Node</button>
+                    <button id="removeNode1" class="btn btn-danger">Remove Node</button>
+                    <button id="clearNodes1" class="btn btn-secondary">Clear All</button>
+                    <button id="clearLog1" class="btn btn-secondary">Clear Log</button>
+                    <span class="info-text">Mutations: <strong id="mutationCount1">0</strong></span>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    if (mutation.type === 'childList') {
+      console.log('Added:', mutation.addedNodes);
+      console.log('Removed:', mutation.removedNodes);
+    }
+  });
+});
+
+observer.observe(target, {
+  childList: true
+});</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 2: Attribute Changes -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>2. Attribute Changes</h2>
+                    <span class="badge">Attributes</span>
+                </div>
+                <p class="description">Detect when element attributes are modified</p>
+
+                <div class="demo-area">
+                    <div class="attribute-box" id="attrBox">
+                        <h3>Styled Box</h3>
+                        <p>Change my attributes!</p>
+                    </div>
+                    <div class="attribute-info" id="attrInfo">
+                        <h4>Current Attributes:</h4>
+                        <ul id="attrList"></ul>
+                        <h4>Change History:</h4>
+                        <div class="log-content" id="attrLog">No changes yet...</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="changeClass" class="btn btn-primary">Toggle Class</button>
+                    <button id="changeStyle" class="btn btn-primary">Change Style</button>
+                    <button id="changeData" class="btn btn-primary">Change Data Attr</button>
+                    <button id="resetAttrs" class="btn btn-secondary">Reset</button>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="trackOldValue" checked>
+                        Track old values
+                    </label>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    if (mutation.type === 'attributes') {
+      console.log('Attribute changed:', mutation.attributeName);
+      console.log('Old value:', mutation.oldValue);
+      console.log('New value:',
+        mutation.target.getAttribute(mutation.attributeName));
+    }
+  });
+});
+
+observer.observe(element, {
+  attributes: true,
+  attributeOldValue: true
+});</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 3: Text Content Monitoring -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>3. Text Content Changes</h2>
+                    <span class="badge">CharacterData</span>
+                </div>
+                <p class="description">Monitor changes to text nodes within elements</p>
+
+                <div class="demo-area">
+                    <div class="editable-area">
+                        <div contenteditable="true" id="editableBox" class="editable-box">
+                            Type something here and watch the mutations...
+                        </div>
+                        <div class="text-stats">
+                            <p>Characters: <strong id="charCount">0</strong></p>
+                            <p>Words: <strong id="wordCount">0</strong></p>
+                            <p>Text mutations: <strong id="textMutations">0</strong></p>
+                        </div>
+                    </div>
+                    <div class="mutation-log">
+                        <h4>Recent Changes:</h4>
+                        <div class="log-content" id="textLog"></div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="appendText" class="btn btn-primary">Append Text</button>
+                    <button id="replaceText" class="btn btn-warning">Replace Text</button>
+                    <button id="clearText" class="btn btn-danger">Clear Text</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    if (mutation.type === 'characterData') {
+      console.log('Text changed from:', mutation.oldValue);
+      console.log('Text changed to:', mutation.target.textContent);
+    }
+  });
+});
+
+observer.observe(element, {
+  characterData: true,
+  characterDataOldValue: true,
+  subtree: true
+});</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 4: Subtree Observation -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>4. Deep Subtree Watching</h2>
+                    <span class="badge">Subtree</span>
+                </div>
+                <p class="description">Observe all changes within an entire DOM subtree</p>
+
+                <div class="demo-area">
+                    <div class="tree-container" id="treeContainer">
+                        <div class="tree-node" data-level="0">
+                            <span class="node-label">Root</span>
+                            <div class="tree-children">
+                                <div class="tree-node" data-level="1">
+                                    <span class="node-label">Child 1</span>
+                                </div>
+                                <div class="tree-node" data-level="1">
+                                    <span class="node-label">Child 2</span>
+                                    <div class="tree-children">
+                                        <div class="tree-node" data-level="2">
+                                            <span class="node-label">Grandchild</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tree-stats">
+                        <h4>Mutation Statistics:</h4>
+                        <p>Total mutations: <strong id="totalMutations">0</strong></p>
+                        <p>Level 0: <strong id="level0">0</strong></p>
+                        <p>Level 1: <strong id="level1">0</strong></p>
+                        <p>Level 2: <strong id="level2">0</strong></p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="addChild" class="btn btn-primary">Add Child to Root</button>
+                    <button id="addGrandchild" class="btn btn-primary">Add Grandchild</button>
+                    <button id="modifyDeep" class="btn btn-warning">Modify Deep Node</button>
+                    <button id="resetTree" class="btn btn-secondary">Reset Tree</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const observer = new MutationObserver(mutations => {
+  mutations.forEach(mutation => {
+    console.log('Mutation at:', mutation.target);
+    console.log('Type:', mutation.type);
+    console.log('Deep in tree:',
+      mutation.target.dataset.level);
+  });
+});
+
+observer.observe(container, {
+  childList: true,
+  attributes: true,
+  characterData: true,
+  subtree: true  // Watch entire subtree!
+});</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 5: Auto-Save Form -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>5. Auto-Save Form Tracker</h2>
+                    <span class="badge">Practical</span>
+                </div>
+                <p class="description">Track form changes and auto-save with MutationObserver</p>
+
+                <div class="demo-area">
+                    <form class="auto-save-form" id="autoSaveForm">
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input type="text" id="formName" value="">
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" id="formEmail" value="">
+                        </div>
+                        <div class="form-group">
+                            <label>Message:</label>
+                            <textarea id="formMessage" rows="4"></textarea>
+                        </div>
+                        <div class="save-status" id="saveStatus">
+                            <span class="status-indicator"></span>
+                            <span class="status-text">No changes</span>
+                        </div>
+                    </form>
+                    <div class="save-history">
+                        <h4>Save History:</h4>
+                        <div class="log-content" id="saveLog">No saves yet...</div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="manualSave" class="btn btn-primary">Manual Save</button>
+                    <button id="loadData" class="btn btn-secondary">Load Saved Data</button>
+                    <button id="clearForm" class="btn btn-danger">Clear Form</button>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="autoSaveEnabled" checked>
+                        Enable auto-save
+                    </label>
+                </div>
+
+                <div class="code-preview">
+<pre><code>// Track form value changes
+const observer = new MutationObserver(mutations => {
+  // Debounce save
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveFormData();
+  }, 1000);
+});
+
+// Observe value attribute changes
+formFields.forEach(field => {
+  observer.observe(field, {
+    attributes: true,
+    attributeFilter: ['value']
+  });
+});</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 6: Performance Monitor -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>6. Performance & Batch Monitoring</h2>
+                    <span class="badge">Advanced</span>
+                </div>
+                <p class="description">Monitor mutation performance and batch processing</p>
+
+                <div class="demo-area">
+                    <div class="performance-container" id="perfContainer">
+                        <div class="perf-grid" id="perfGrid"></div>
+                    </div>
+                    <div class="performance-stats">
+                        <h4>Performance Metrics:</h4>
+                        <p>Observer callbacks: <strong id="callbackCount">0</strong></p>
+                        <p>Total mutations: <strong id="totalMutCount">0</strong></p>
+                        <p>Avg batch size: <strong id="avgBatch">0</strong></p>
+                        <p>Avg processing time: <strong id="avgTime">0</strong>ms</p>
+                        <p>Last batch: <strong id="lastBatch">0</strong> mutations</p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="addMany" class="btn btn-primary">Add 50 Nodes</button>
+                    <button id="modifyMany" class="btn btn-warning">Modify 20 Nodes</button>
+                    <button id="batchChanges" class="btn btn-primary">Batch 100 Changes</button>
+                    <button id="resetPerf" class="btn btn-danger">Reset & Clear</button>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="logPerf" checked>
+                        Log to console
+                    </label>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const observer = new MutationObserver(mutations => {
+  const startTime = performance.now();
+
+  console.log(`Processing ${mutations.length} mutations`);
+
+  // Process all mutations
+  mutations.forEach(mutation => {
+    handleMutation(mutation);
+  });
+
+  const duration = performance.now() - startTime;
+  console.log(`Processed in ${duration.toFixed(2)}ms`);
+});
+
+observer.observe(container, {
+  childList: true,
+  attributes: true,
+  subtree: true
+});</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <aside class="info">
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>MutationObserver</strong> - Constructor</li>
+                <li><strong>observe(target, options)</strong> - Start observing</li>
+                <li><strong>disconnect()</strong> - Stop observing</li>
+                <li><strong>takeRecords()</strong> - Get pending mutations</li>
+                <li><strong>childList</strong> - Watch child nodes</li>
+                <li><strong>attributes</strong> - Watch attributes</li>
+                <li><strong>characterData</strong> - Watch text</li>
+                <li><strong>subtree</strong> - Watch descendants</li>
+            </ul>
+
+            <h3>Mutation Types</h3>
+            <ul>
+                <li><strong>childList</strong> - Children added/removed</li>
+                <li><strong>attributes</strong> - Attributes changed</li>
+                <li><strong>characterData</strong> - Text content changed</li>
+            </ul>
+
+            <h3>Configuration Options</h3>
+            <ul>
+                <li><strong>childList</strong> - true/false</li>
+                <li><strong>attributes</strong> - true/false</li>
+                <li><strong>characterData</strong> - true/false</li>
+                <li><strong>subtree</strong> - Deep watching</li>
+                <li><strong>attributeOldValue</strong> - Track old values</li>
+                <li><strong>characterDataOldValue</strong> - Track old text</li>
+                <li><strong>attributeFilter</strong> - Specific attributes</li>
+            </ul>
+
+            <h3>Browser Support</h3>
+            <ul>
+                <li>Chrome: 26+</li>
+                <li>Firefox: 14+</li>
+                <li>Safari: 6.1+</li>
+                <li>Edge: 12+</li>
+                <li>Support: ~99% globally</li>
+            </ul>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>Auto-save forms</li>
+                <li>Track third-party changes</li>
+                <li>Custom element lifecycle</li>
+                <li>Analytics tracking</li>
+                <li>Accessibility features</li>
+                <li>Debug DOM changes</li>
+                <li>Content security monitoring</li>
+            </ul>
+
+            <h3>Best Practices</h3>
+            <ul>
+                <li>Be specific with options</li>
+                <li>Use attributeFilter when possible</li>
+                <li>Disconnect when done</li>
+                <li>Avoid infinite loops</li>
+                <li>Batch process mutations</li>
+                <li>Don't mutate in callback</li>
+            </ul>
+
+            <h3>Performance Tips</h3>
+            <ul>
+                <li>Limit subtree scope</li>
+                <li>Use specific filters</li>
+                <li>Debounce expensive operations</li>
+                <li>Process asynchronously</li>
+                <li>Disconnect inactive observers</li>
+            </ul>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
