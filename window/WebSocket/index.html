@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket API - Complete Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WebSocket API</h1>
+            <p>Real-time bidirectional communication with servers</p>
+        </header>
+
+        <main>
+            <!-- Demo 1: Basic WebSocket Connection -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>1. Basic WebSocket Connection</h2>
+                    <span class="badge">Fundamentals</span>
+                </div>
+                <p class="description">Connect to a WebSocket server, send and receive messages</p>
+
+                <div class="demo-area">
+                    <div class="connection-status" id="status1">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Disconnected</span>
+                    </div>
+                    <div class="message-area">
+                        <div class="message-log" id="messageLog1"></div>
+                        <div class="message-input-group">
+                            <input type="text" id="messageInput1" placeholder="Type a message..." class="message-input">
+                            <button id="sendBtn1" class="btn btn-primary" disabled>Send</button>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <p>Messages sent: <strong id="sentCount1">0</strong></p>
+                        <p>Messages received: <strong id="receivedCount1">0</strong></p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="connectBtn1" class="btn btn-primary">Connect</button>
+                    <button id="disconnectBtn1" class="btn btn-danger" disabled>Disconnect</button>
+                    <button id="clearLog1" class="btn btn-secondary">Clear Log</button>
+                    <span class="info-text">Server: <strong>wss://echo.websocket.org</strong></span>
+                </div>
+
+                <div class="code-preview">
+<pre><code>// Create WebSocket connection
+const ws = new WebSocket('wss://echo.websocket.org');
+
+// Connection opened
+ws.onopen = () => {
+  console.log('Connected!');
+  ws.send('Hello Server!');
+};
+
+// Listen for messages
+ws.onmessage = (event) => {
+  console.log('Received:', event.data);
+};
+
+// Connection closed
+ws.onclose = () => {
+  console.log('Disconnected');
+};</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 2: Real-time Chat -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>2. Real-time Chat Simulation</h2>
+                    <span class="badge">Interactive</span>
+                </div>
+                <p class="description">Simulate a real-time chat with multiple users</p>
+
+                <div class="demo-area">
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="connection-status" id="chatStatus">
+                                <span class="status-dot"></span>
+                                <span class="status-text">Offline</span>
+                            </div>
+                            <div class="user-info">
+                                <label>Username:</label>
+                                <input type="text" id="username" value="User" class="username-input">
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chatMessages"></div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chatInput" placeholder="Type your message..." class="chat-input">
+                            <button id="chatSend" class="btn btn-primary" disabled>Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="chatConnect" class="btn btn-primary">Join Chat</button>
+                    <button id="chatDisconnect" class="btn btn-danger" disabled>Leave Chat</button>
+                    <button id="simulateUser" class="btn btn-warning">Simulate Other User</button>
+                    <button id="clearChat" class="btn btn-secondary">Clear Chat</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const ws = new WebSocket('wss://echo.websocket.org');
+
+ws.onmessage = (event) => {
+  const message = JSON.parse(event.data);
+  displayMessage(message.user, message.text, message.time);
+};
+
+function sendMessage(text) {
+  const message = {
+    user: username,
+    text: text,
+    time: new Date().toLocaleTimeString()
+  };
+  ws.send(JSON.stringify(message));
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 3: Live Notifications -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>3. Live Notifications & Updates</h2>
+                    <span class="badge">Real-time</span>
+                </div>
+                <p class="description">Receive real-time notifications and live data updates</p>
+
+                <div class="demo-area">
+                    <div class="notifications-panel">
+                        <div class="connection-status" id="notifStatus">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Not listening</span>
+                        </div>
+                        <div class="notifications-list" id="notificationsList">
+                            <div class="empty-state">No notifications yet</div>
+                        </div>
+                        <div class="notification-stats">
+                            <p>Total notifications: <strong id="notifCount">0</strong></p>
+                            <p>Unread: <strong id="unreadCount">0</strong></p>
+                        </div>
+                    </div>
+                    <div class="live-data-panel">
+                        <h4>Live Data Stream</h4>
+                        <div class="data-display">
+                            <div class="data-item">
+                                <span>Temperature:</span>
+                                <strong id="temperature">--°C</strong>
+                            </div>
+                            <div class="data-item">
+                                <span>Pressure:</span>
+                                <strong id="pressure">-- hPa</strong>
+                            </div>
+                            <div class="data-item">
+                                <span>Humidity:</span>
+                                <strong id="humidity">--%</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="startNotif" class="btn btn-primary">Start Listening</button>
+                    <button id="stopNotif" class="btn btn-danger" disabled>Stop Listening</button>
+                    <button id="triggerNotif" class="btn btn-warning">Trigger Notification</button>
+                    <button id="clearNotif" class="btn btn-secondary">Clear All</button>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="soundEnabled" checked>
+                        Enable sound
+                    </label>
+                </div>
+
+                <div class="code-preview">
+<pre><code>ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+
+  if (data.type === 'notification') {
+    showNotification(data.title, data.message);
+    playSound();
+  }
+
+  if (data.type === 'data_update') {
+    updateLiveData(data.values);
+  }
+};</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 4: Connection Management & Reconnection -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>4. Connection State & Auto-Reconnect</h2>
+                    <span class="badge">Reliability</span>
+                </div>
+                <p class="description">Handle connection states and implement automatic reconnection</p>
+
+                <div class="demo-area">
+                    <div class="connection-manager">
+                        <div class="state-display">
+                            <h4>Connection State</h4>
+                            <div class="state-indicator" id="stateIndicator">
+                                <div class="state-dot"></div>
+                                <div class="state-info">
+                                    <p>Status: <strong id="wsState">CLOSED</strong></p>
+                                    <p>Ready State: <strong id="readyState">3</strong></p>
+                                    <p>Buffered: <strong id="buffered">0</strong> bytes</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="reconnection-info">
+                            <h4>Reconnection Info</h4>
+                            <p>Attempts: <strong id="reconnectAttempts">0</strong></p>
+                            <p>Max attempts: <strong id="maxAttempts">5</strong></p>
+                            <p>Next retry in: <strong id="retryTimer">-</strong></p>
+                            <p>Uptime: <strong id="uptime">0s</strong></p>
+                        </div>
+                    </div>
+                    <div class="event-log" id="eventLog"></div>
+                </div>
+
+                <div class="controls">
+                    <button id="connect4" class="btn btn-primary">Connect</button>
+                    <button id="disconnect4" class="btn btn-danger" disabled>Disconnect</button>
+                    <button id="forceDisconnect" class="btn btn-warning">Simulate Disconnect</button>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="autoReconnect" checked>
+                        Auto-reconnect
+                    </label>
+                    <input type="number" id="maxReconnect" min="1" max="10" value="5" class="number-input">
+                    <span class="info-text">Max retries</span>
+                </div>
+
+                <div class="code-preview">
+<pre><code>class ReconnectingWebSocket {
+  constructor(url, maxRetries = 5) {
+    this.url = url;
+    this.maxRetries = maxRetries;
+    this.retryCount = 0;
+    this.connect();
+  }
+
+  connect() {
+    this.ws = new WebSocket(this.url);
+
+    this.ws.onclose = () => {
+      if (this.retryCount < this.maxRetries) {
+        this.retryCount++;
+        setTimeout(() => this.connect(), 1000 * this.retryCount);
+      }
+    };
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 5: Binary Data Transfer -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>5. Binary Data Transfer</h2>
+                    <span class="badge">Advanced</span>
+                </div>
+                <p class="description">Send and receive binary data (ArrayBuffer, Blob)</p>
+
+                <div class="demo-area">
+                    <div class="binary-transfer">
+                        <div class="connection-status" id="binaryStatus">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Disconnected</span>
+                        </div>
+                        <div class="transfer-types">
+                            <div class="transfer-section">
+                                <h4>Text Data</h4>
+                                <input type="text" id="textData" value="Hello Binary World!" class="data-input">
+                                <button id="sendText" class="btn btn-primary" disabled>Send as Text</button>
+                            </div>
+                            <div class="transfer-section">
+                                <h4>ArrayBuffer</h4>
+                                <input type="text" id="arrayData" value="Binary data" class="data-input">
+                                <button id="sendArray" class="btn btn-primary" disabled>Send as ArrayBuffer</button>
+                            </div>
+                            <div class="transfer-section">
+                                <h4>Blob</h4>
+                                <input type="file" id="fileInput" class="file-input">
+                                <button id="sendBlob" class="btn btn-primary" disabled>Send File as Blob</button>
+                            </div>
+                        </div>
+                        <div class="binary-log">
+                            <h4>Transfer Log</h4>
+                            <div id="binaryLog" class="log-content"></div>
+                        </div>
+                        <div class="binary-stats">
+                            <p>Bytes sent: <strong id="bytesSent">0</strong></p>
+                            <p>Bytes received: <strong id="bytesReceived">0</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="connectBinary" class="btn btn-primary">Connect</button>
+                    <button id="disconnectBinary" class="btn btn-danger" disabled>Disconnect</button>
+                    <button id="clearBinaryLog" class="btn btn-secondary">Clear Log</button>
+                    <select id="binaryType" class="select-input">
+                        <option value="blob">Blob</option>
+                        <option value="arraybuffer">ArrayBuffer</option>
+                    </select>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const ws = new WebSocket('wss://echo.websocket.org');
+ws.binaryType = 'arraybuffer'; // or 'blob'
+
+// Send ArrayBuffer
+const buffer = new ArrayBuffer(8);
+const view = new Uint8Array(buffer);
+view[0] = 72; // 'H'
+view[1] = 101; // 'e'
+ws.send(buffer);
+
+// Receive binary
+ws.onmessage = (event) => {
+  if (event.data instanceof ArrayBuffer) {
+    const view = new Uint8Array(event.data);
+    console.log('Received bytes:', view);
+  }
+};</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 6: Multiple Connections & Performance -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>6. Multiple Connections & Performance</h2>
+                    <span class="badge">Performance</span>
+                </div>
+                <p class="description">Manage multiple WebSocket connections and monitor performance</p>
+
+                <div class="demo-area">
+                    <div class="multi-connections">
+                        <div class="connections-grid" id="connectionsGrid"></div>
+                        <div class="performance-metrics">
+                            <h4>Performance Metrics</h4>
+                            <p>Active connections: <strong id="activeConns">0</strong></p>
+                            <p>Total messages/sec: <strong id="msgPerSec">0</strong></p>
+                            <p>Total data/sec: <strong id="dataPerSec">0 KB</strong></p>
+                            <p>Avg latency: <strong id="avgLatency">0</strong>ms</p>
+                            <p>Memory usage: <strong id="memUsage">-</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="createConn" class="btn btn-primary">Create Connection</button>
+                    <button id="create5Conn" class="btn btn-primary">Create 5 Connections</button>
+                    <button id="closeAllConn" class="btn btn-danger">Close All</button>
+                    <button id="sendAllConn" class="btn btn-warning">Send to All</button>
+                    <button id="stressTest" class="btn btn-warning">Stress Test (100 msgs)</button>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="logPerformance" checked>
+                        Log to console
+                    </label>
+                </div>
+
+                <div class="code-preview">
+<pre><code>class WebSocketManager {
+  constructor() {
+    this.connections = new Map();
+  }
+
+  createConnection(id) {
+    const ws = new WebSocket('wss://echo.websocket.org');
+    this.connections.set(id, {
+      ws: ws,
+      messageCount: 0,
+      bytesSent: 0,
+      bytesReceived: 0
+    });
+  }
+
+  sendToAll(message) {
+    this.connections.forEach(conn => {
+      if (conn.ws.readyState === WebSocket.OPEN) {
+        conn.ws.send(message);
+      }
+    });
+  }
+}</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <aside class="info">
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>WebSocket</strong> - Constructor</li>
+                <li><strong>onopen</strong> - Connection opened</li>
+                <li><strong>onmessage</strong> - Message received</li>
+                <li><strong>onerror</strong> - Error occurred</li>
+                <li><strong>onclose</strong> - Connection closed</li>
+                <li><strong>send()</strong> - Send data</li>
+                <li><strong>close()</strong> - Close connection</li>
+                <li><strong>readyState</strong> - Connection state</li>
+            </ul>
+
+            <h3>Ready States</h3>
+            <ul>
+                <li><strong>CONNECTING (0)</strong> - Connecting</li>
+                <li><strong>OPEN (1)</strong> - Connected</li>
+                <li><strong>CLOSING (2)</strong> - Closing</li>
+                <li><strong>CLOSED (3)</strong> - Closed</li>
+            </ul>
+
+            <h3>Data Types</h3>
+            <ul>
+                <li><strong>String</strong> - Text messages</li>
+                <li><strong>ArrayBuffer</strong> - Binary data</li>
+                <li><strong>Blob</strong> - File data</li>
+                <li><strong>JSON</strong> - Structured data</li>
+            </ul>
+
+            <h3>Browser Support</h3>
+            <ul>
+                <li>Chrome: All versions</li>
+                <li>Firefox: All versions</li>
+                <li>Safari: All versions</li>
+                <li>Edge: All versions</li>
+                <li>Support: ~99% globally</li>
+            </ul>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>Real-time chat</li>
+                <li>Live notifications</li>
+                <li>Collaborative editing</li>
+                <li>Gaming</li>
+                <li>Live data feeds</li>
+                <li>Stock tickers</li>
+                <li>IoT communication</li>
+            </ul>
+
+            <h3>Best Practices</h3>
+            <ul>
+                <li>Handle reconnection</li>
+                <li>Validate messages</li>
+                <li>Use heartbeats</li>
+                <li>Close connections properly</li>
+                <li>Handle errors gracefully</li>
+                <li>Use WSS (secure)</li>
+                <li>Implement timeouts</li>
+            </ul>
+
+            <h3>Security</h3>
+            <ul>
+                <li>Always use WSS in production</li>
+                <li>Validate all incoming data</li>
+                <li>Authenticate connections</li>
+                <li>Rate limit messages</li>
+                <li>Sanitize user input</li>
+            </ul>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
