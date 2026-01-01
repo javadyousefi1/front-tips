@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>requestAnimationFrame - Complete Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>requestAnimationFrame</h1>
+            <p>Smooth, performant animations synchronized with browser repaints</p>
+        </header>
+
+        <main>
+            <!-- Demo 1: Basic Movement -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>1. Basic Movement Animation</h2>
+                    <span class="badge">Fundamentals</span>
+                </div>
+                <p class="description">Simple position animation using requestAnimationFrame</p>
+
+                <div class="demo-area">
+                    <div class="animated-box" id="box1">Moving Box</div>
+                    <div class="fps-counter">FPS: <span id="fps1">60</span></div>
+                </div>
+
+                <div class="controls">
+                    <button id="startMove" class="btn btn-primary">Start</button>
+                    <button id="stopMove" class="btn btn-danger">Stop</button>
+                    <button id="resetMove" class="btn btn-secondary">Reset</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>let animationId;
+let position = 0;
+
+function animate() {
+  position += 2;
+  element.style.transform = `translateX(${position}px)`;
+
+  if (position < 400) {
+    animationId = requestAnimationFrame(animate);
+  }
+}
+
+requestAnimationFrame(animate);</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 2: Smooth Easing -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>2. Easing Functions</h2>
+                    <span class="badge">Timing</span>
+                </div>
+                <p class="description">Implement custom easing for natural motion</p>
+
+                <div class="demo-area">
+                    <div class="animated-box" id="box2">Smooth</div>
+                </div>
+
+                <div class="controls">
+                    <button id="easeLinear" class="btn btn-primary">Linear</button>
+                    <button id="easeInOut" class="btn btn-primary">Ease In-Out</button>
+                    <button id="easeElastic" class="btn btn-primary">Elastic</button>
+                    <button id="easeBounce" class="btn btn-primary">Bounce</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>function easeInOutQuad(t) {
+  return t < 0.5
+    ? 2 * t * t
+    : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+
+function animate(timestamp) {
+  const elapsed = timestamp - startTime;
+  const progress = Math.min(elapsed / duration, 1);
+  const eased = easeInOutQuad(progress);
+
+  element.style.transform =
+    `translateX(${eased * distance}px)`;
+
+  if (progress < 1) {
+    requestAnimationFrame(animate);
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 3: Delta Time -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>3. Frame-Independent Animation</h2>
+                    <span class="badge">Performance</span>
+                </div>
+                <p class="description">Use delta time for consistent speed across different frame rates</p>
+
+                <div class="demo-area">
+                    <div class="animated-box" id="box3">Δt</div>
+                    <div class="fps-counter">
+                        Delta Time: <span id="deltaTime">0</span>ms
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="startDelta" class="btn btn-primary">Start</button>
+                    <button id="throttleFps" class="btn btn-warning">Throttle FPS</button>
+                    <button id="normalFps" class="btn btn-secondary">Normal FPS</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>let lastTime = 0;
+const speed = 100; // pixels per second
+
+function animate(timestamp) {
+  const deltaTime = (timestamp - lastTime) / 1000;
+  lastTime = timestamp;
+
+  // Speed independent of frame rate
+  position += speed * deltaTime;
+  element.style.transform =
+    `translateX(${position}px)`;
+
+  requestAnimationFrame(animate);
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 4: Multiple Objects -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>4. Multiple Object Animation</h2>
+                    <span class="badge">Coordination</span>
+                </div>
+                <p class="description">Animate multiple elements with a single animation loop</p>
+
+                <div class="demo-area">
+                    <div class="particle" id="particle1"></div>
+                    <div class="particle" id="particle2"></div>
+                    <div class="particle" id="particle3"></div>
+                    <div class="particle" id="particle4"></div>
+                    <div class="particle" id="particle5"></div>
+                </div>
+
+                <div class="controls">
+                    <button id="startParticles" class="btn btn-primary">Start Particles</button>
+                    <button id="stopParticles" class="btn btn-danger">Stop</button>
+                    <button id="resetParticles" class="btn btn-secondary">Reset</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const particles = [...Array(5)].map(() => ({
+  x: Math.random() * 400,
+  y: Math.random() * 300,
+  vx: (Math.random() - 0.5) * 3,
+  vy: (Math.random() - 0.5) * 3
+}));
+
+function animate() {
+  particles.forEach((p, i) => {
+    p.x += p.vx;
+    p.y += p.vy;
+
+    // Bounce off edges
+    if (p.x < 0 || p.x > 400) p.vx *= -1;
+    if (p.y < 0 || p.y > 300) p.vy *= -1;
+
+    elements[i].style.transform =
+      `translate(${p.x}px, ${p.y}px)`;
+  });
+
+  requestAnimationFrame(animate);
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 5: Scroll Animation -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>5. Scroll-Linked Animation</h2>
+                    <span class="badge">Interactive</span>
+                </div>
+                <p class="description">Smoothly animate based on scroll position</p>
+
+                <div class="demo-area scroll-container" id="scrollContainer">
+                    <div class="scroll-content">
+                        <div class="scroll-box" id="scrollBox">Scroll Me!</div>
+                        <div style="height: 600px;"></div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <span class="info-text">Scroll Position: <strong id="scrollPos">0</strong>px</span>
+                </div>
+
+                <div class="code-preview">
+<pre><code>let targetScroll = 0;
+let currentScroll = 0;
+
+window.addEventListener('scroll', () => {
+  targetScroll = window.scrollY;
+});
+
+function animate() {
+  // Smooth scroll with lerp
+  currentScroll += (targetScroll - currentScroll) * 0.1;
+
+  // Apply parallax effect
+  element.style.transform =
+    `translateY(${currentScroll * 0.5}px)
+     rotate(${currentScroll * 0.1}deg)`;
+
+  requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 6: Game Loop -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>6. Game Loop Pattern</h2>
+                    <span class="badge">Advanced</span>
+                </div>
+                <p class="description">Complete game loop with update and render phases</p>
+
+                <div class="demo-area game-area">
+                    <canvas id="gameCanvas" width="500" height="400"></canvas>
+                    <div class="game-stats">
+                        <span>FPS: <strong id="gameFps">60</strong></span>
+                        <span>Score: <strong id="gameScore">0</strong></span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="startGame" class="btn btn-primary">Start Game</button>
+                    <button id="pauseGame" class="btn btn-warning">Pause</button>
+                    <button id="resetGame" class="btn btn-secondary">Reset</button>
+                    <div class="info-text">Use Arrow Keys to move</div>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const game = {
+  player: { x: 250, y: 200, speed: 200 },
+  enemies: [],
+  score: 0,
+  isPaused: false
+};
+
+function update(deltaTime) {
+  if (game.isPaused) return;
+
+  // Update player position
+  if (keys.left) game.player.x -= game.player.speed * deltaTime;
+  if (keys.right) game.player.x += game.player.speed * deltaTime;
+
+  // Update enemies, check collisions, etc.
+}
+
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'blue';
+  ctx.fillRect(game.player.x, game.player.y, 20, 20);
+}
+
+let lastTime = 0;
+function gameLoop(timestamp) {
+  const deltaTime = (timestamp - lastTime) / 1000;
+  lastTime = timestamp;
+
+  update(deltaTime);
+  render();
+
+  requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <aside class="info">
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>requestAnimationFrame(callback)</strong> - Schedule callback before next repaint</li>
+                <li><strong>timestamp</strong> - High-resolution time in milliseconds</li>
+                <li><strong>cancelAnimationFrame(id)</strong> - Cancel scheduled animation</li>
+                <li><strong>60 FPS target</strong> - Browser aims for ~16.67ms per frame</li>
+                <li><strong>Automatic throttling</strong> - Pauses in hidden tabs</li>
+                <li><strong>Vsync synchronized</strong> - Matches display refresh rate</li>
+            </ul>
+
+            <h3>Advantages over setInterval</h3>
+            <ul>
+                <li>Synchronized with browser repaints</li>
+                <li>Automatic pause when tab is hidden</li>
+                <li>Better performance (no layout thrashing)</li>
+                <li>Smoother animations (60 FPS)</li>
+                <li>Lower CPU/battery usage</li>
+                <li>Adapts to display refresh rate</li>
+            </ul>
+
+            <h3>Best Practices</h3>
+            <ul>
+                <li>📊 Use delta time for frame-independent motion</li>
+                <li>🎯 Store animation ID for cleanup</li>
+                <li>⚡ Batch DOM reads and writes</li>
+                <li>🔄 Cancel animations when component unmounts</li>
+                <li>💾 Avoid creating new functions in loop</li>
+                <li>📈 Monitor FPS for performance issues</li>
+                <li>🎮 Use fixed timestep for game physics</li>
+            </ul>
+
+            <h3>Common Patterns</h3>
+            <ul>
+                <li><strong>Linear interpolation (lerp)</strong>
+                    <br><code>value += (target - value) * 0.1</code>
+                </li>
+                <li><strong>Easing functions</strong>
+                    <br><code>easeInOut, easeElastic, easeBounce</code>
+                </li>
+                <li><strong>Game loop</strong>
+                    <br><code>update() → render() → rAF(loop)</code>
+                </li>
+                <li><strong>FPS counter</strong>
+                    <br><code>1000 / deltaTime</code>
+                </li>
+            </ul>
+
+            <h3>Use Cases</h3>
+            <ul>
+                <li>🎮 Game rendering loops</li>
+                <li>🎨 Canvas animations</li>
+                <li>📜 Smooth scrolling effects</li>
+                <li>🎭 Page transitions</li>
+                <li>📊 Data visualizations</li>
+                <li>🎯 Physics simulations</li>
+                <li>✨ Particle systems</li>
+            </ul>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
