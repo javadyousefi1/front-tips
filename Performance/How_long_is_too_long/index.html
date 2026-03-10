@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How Long Is Too Long? — MDN</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #0f1117;
+      --surface:        #1a1d27;
+      --surface2:       #22263a;
+      --border:         #2e3250;
+      --text:           #e2e8f0;
+      --muted:          #94a3b8;
+      --accent:         #6c8ef7;
+      --accent2:        #a78bfa;
+      --green:          #4ade80;
+      --yellow:         #facc15;
+      --red:            #f87171;
+      --code-bg:        #12151f;
+      --persian-bg:     #1e2535;
+      --persian-border: #3b4a7a;
+      --persian-text:   #c4b5fd;
+      --radius:         10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      padding: 0 1rem 4rem;
+    }
+
+    /* Header */
+    header { max-width: 860px; margin: 0 auto; padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); }
+    header .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.5rem; }
+    header h1 { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.75rem; }
+    header .source { font-size: 0.8rem; color: var(--muted); }
+    header .source a { color: var(--accent); text-decoration: none; }
+
+    main { max-width: 860px; margin: 0 auto; }
+
+    /* Sections */
+    .section { margin-top: 3rem; }
+    .section-title { font-size: 1.5rem; font-weight: 700; color: var(--accent2); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .subsection-title { font-size: 1.15rem; font-weight: 600; color: var(--accent); margin: 1.75rem 0 0.75rem; }
+
+    /* Content block (English) */
+    .block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+    .block p { color: var(--text); margin-bottom: 0.5rem; }
+    .block p:last-of-type { margin-bottom: 0; }
+
+    /* Persian summary card */
+    .fa {
+      background: var(--persian-bg);
+      border: 1px solid var(--persian-border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1.25rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1.25rem;
+      direction: rtl;
+      text-align: right;
+      font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.9;
+      color: var(--persian-text);
+      position: relative;
+    }
+    .fa::before {
+      content: '🇮🇷 خلاصه';
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent2);
+      margin-bottom: 0.4rem;
+      direction: rtl;
+    }
+
+    /* Code */
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; overflow-x: auto; font-size: 0.88rem; line-height: 1.6; margin: 0.75rem 0; }
+    code { font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace; color: #93c5fd; }
+    .comment { color: #6b7280; }
+    .keyword { color: #c084fc; }
+    .string  { color: #86efac; }
+    .fn      { color: #67e8f9; }
+
+    /* Lists */
+    ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin-bottom: 0.3rem; color: var(--text); }
+
+    /* Badges */
+    .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600; margin-right: 0.35rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-good { background: #14532d; color: var(--green); }
+    .badge-bad  { background: #450a0a; color: var(--red);   }
+    .badge-note { background: #1c1917; color: var(--yellow); }
+
+    /* Note / Tip callout */
+    .note { border-left: 3px solid var(--yellow); background: #1c1917; border-radius: 0 var(--radius) var(--radius) 0; padding: 0.75rem 1rem; font-size: 0.9rem; color: #fde68a; margin: 0.75rem 0; }
+
+    strong { color: #f1f5f9; font-weight: 600; }
+
+    /* TOC */
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-top: 2rem; }
+    .toc h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.75rem; }
+    .toc ol { padding-left: 1.2rem; }
+    .toc a { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .toc a:hover { text-decoration: underline; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      .section-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="label">MDN Web Docs — Web Performance</div>
+    <h1>Recommended Web Performance Timings: How Long Is Too Long?</h1>
+    <div class="source">
+      Source: <a href="https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_long_is_too_long" target="_blank">developer.mozilla.org</a>
+      &nbsp;|&nbsp; Dark mode &nbsp;|&nbsp; English + Persian summary
+    </div>
+  </header>
+
+  <main>
+    <nav class="toc">
+      <h2>Table of Contents</h2>
+      <ol>
+        <li><a href="#load-goal">1. Load Goal — ~1 Second</a></li>
+        <li><a href="#idle-goal">2. Idle Goal — 50ms Chunks</a></li>
+        <li><a href="#animation-goal">3. Animation Goal — 16.7ms (60 fps)</a></li>
+        <li><a href="#responsiveness-goal">4. Responsiveness Goal — 50–200ms</a></li>
+      </ol>
+    </nav>
+
+    <!-- ─────────────────────────────────── -->
+    <section class="section" id="load-goal">
+      <h2 class="section-title">1. Load Goal — ~1 Second</h2>
+
+      <div class="block">
+        <p>
+          The very first visual indication that content is loading should appear within <strong>1 second</strong>
+          of the user initiating the request. This can be as minimal as displaying the page title and
+          background color — a signal that the browser has received and started processing the response.
+        </p>
+        <p>
+          Realistic targets vary by network conditions:
+        </p>
+        <ul>
+          <li><strong>~1.5 seconds</strong> on a typical office T1 / broadband connection</li>
+          <li><strong>~5 seconds</strong> over a mobile 3G network</li>
+        </ul>
+        <p>
+          Browsers begin rendering HTML as soon as the first bytes arrive — they do <em>not</em> wait for
+          all assets to finish downloading. Leveraging this progressive rendering is key to meeting the
+          1-second threshold even on slower connections.
+        </p>
+      </div>
+      <div class="fa">
+        اولین نشانه بصری از بارگذاری صفحه باید در کمتر از <strong>۱ ثانیه</strong> نمایش داده شود؛ حتی نمایش عنوان صفحه و رنگ پس‌زمینه کافی است. بسته به نوع شبکه، هدف واقعی‌تر عبارت است از: <strong>۱.۵ ثانیه</strong> روی خطوط اداری T1 و <strong>۵ ثانیه</strong> روی شبکه‌های موبایل 3G. مرورگرها بلافاصله پس از دریافت اولین بایت‌های HTML شروع به رندر می‌کنند — منتظر دانلود کامل همه منابع نمی‌مانند — و همین رفتار «رندر تدریجی» ابزار اصلی دستیابی به این هدف است.
+      </div>
+
+      <div class="note">
+        <span class="badge badge-note">Note</span>
+        The 1-second goal is for the <em>first paint</em>, not for full page load. Full interactivity
+        can take longer, but users need an immediate visual signal to stay engaged.
+      </div>
+    </section>
+
+    <hr />
+
+    <!-- ─────────────────────────────────── -->
+    <section class="section" id="idle-goal">
+      <h2 class="section-title">2. Idle Goal — 50ms Chunks</h2>
+
+      <div class="block">
+        <p>
+          JavaScript runs on the browser's <strong>main thread</strong> — the same thread responsible for
+          handling user interactions, painting pixels, and processing layout. Because the main thread is
+          single-threaded, long-running scripts block everything else.
+        </p>
+        <p>
+          The recommendation is to break JavaScript execution into <strong>chunks of 50ms or less</strong>
+          during idle periods. Keeping individual tasks under this threshold ensures that:
+        </p>
+        <ul>
+          <li>The main thread remains free to respond to user input at any moment.</li>
+          <li>The browser can schedule painting and layout between script tasks.</li>
+          <li>Time-to-interactive (TTI) stays low, since the thread is never blocked for long.</li>
+        </ul>
+        <p>
+          APIs like <code>requestIdleCallback()</code> and chunking via <code>setTimeout()</code> /
+          <code>scheduler.postTask()</code> are designed exactly for this pattern.
+        </p>
+      </div>
+      <div class="fa">
+        مرورگر یک <strong>main thread</strong> دارد که هم کد JavaScript را اجرا می‌کند، هم رویدادهای کاربر را پردازش می‌کند، و هم رندر صفحه را انجام می‌دهد. از آنجا که این thread تک‌هسته‌ای است، اسکریپت‌های طولانی همه چیز را مسدود می‌کنند. هدف این است که اجرای JavaScript را به <strong>تکه‌های حداکثر ۵۰ میلی‌ثانیه</strong> تقسیم کنیم تا: thread همیشه برای پاسخ به ورودی کاربر آزاد باشد، مرورگر بتواند بین تسک‌ها رندر کند، و زمان تعامل‌پذیری (TTI) پایین بماند. APIهایی مثل <code>requestIdleCallback()</code> و <code>scheduler.postTask()</code> دقیقاً برای همین الگو طراحی شده‌اند.
+      </div>
+
+      <h3 class="subsection-title">2.1 Chunking Example</h3>
+      <div class="block">
+        <p>
+          Instead of processing a large array in one blocking loop, yield control back to the browser
+          between batches using <code>setTimeout</code> with zero delay or <code>scheduler.yield()</code>:
+        </p>
+<pre><code><span class="keyword">async function</span> <span class="fn">processInChunks</span>(items) {
+  <span class="keyword">const</span> CHUNK_SIZE = <span class="string">100</span>;
+  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="string">0</span>; i &lt; items.length; i += CHUNK_SIZE) {
+    <span class="keyword">const</span> chunk = items.slice(i, i + CHUNK_SIZE);
+    chunk.<span class="fn">forEach</span>(item =&gt; <span class="fn">processItem</span>(item));
+
+    <span class="comment">// yield to the browser — keeps each task ≤ 50ms</span>
+    <span class="keyword">await</span> <span class="keyword">new</span> <span class="fn">Promise</span>(resolve =&gt; <span class="fn">setTimeout</span>(resolve, <span class="string">0</span>));
+  }
+}</code></pre>
+      </div>
+      <div class="fa">
+        به جای پردازش یک آرایه بزرگ در یک حلقه مسدودکننده، کنترل را بین دسته‌ها به مرورگر برمی‌گردانیم. با استفاده از <code>setTimeout(resolve, 0)</code> یا <code>scheduler.yield()</code> در بین هر دسته (chunk)، اجازه می‌دهیم مرورگر رندر کند یا به رویدادهای کاربر پاسخ دهد. این الگو مانع بلوکه‌شدن main thread می‌شود و هر تسک را زیر آستانه ۵۰ میلی‌ثانیه نگه می‌دارد.
+      </div>
+    </section>
+
+    <hr />
+
+    <!-- ─────────────────────────────────── -->
+    <section class="section" id="animation-goal">
+      <h2 class="section-title">3. Animation Goal — 16.7ms (60 fps)</h2>
+
+      <div class="block">
+        <p>
+          Smooth animations require the browser to produce <strong>60 frames per second (fps)</strong>.
+          At 60 fps, each frame budget is <strong>1000 ÷ 60 ≈ 16.7 milliseconds</strong>.
+        </p>
+        <p>
+          Within that 16.7ms window, the browser itself needs roughly <strong>6ms</strong> to handle
+          compositing and rendering. That leaves approximately <strong>10ms</strong> for:
+        </p>
+        <ul>
+          <li>JavaScript execution (event handlers, animation callbacks)</li>
+          <li>Style recalculation</li>
+          <li>Layout (reflow)</li>
+          <li>Paint and composite</li>
+        </ul>
+        <p>
+          Whenever the frame rate drops below 60 fps — or frame times are uneven — users perceive the
+          animation as <em>janky</em>. High-refresh-rate displays (90 Hz, 120 Hz) have even tighter
+          budgets: ~11ms and ~8ms respectively.
+        </p>
+      </div>
+      <div class="fa">
+        انیمیشن‌های روان نیاز به <strong>۶۰ فریم در ثانیه (fps)</strong> دارند، یعنی بودجه هر فریم حدود <strong>۱۶.۷ میلی‌ثانیه</strong> است. از این بودجه، خود مرورگر حدود <strong>۶ میلی‌ثانیه</strong> برای compositing مصرف می‌کند، پس تنها <strong>~۱۰ میلی‌ثانیه</strong> برای اجرای JavaScript، محاسبه Style، Layout (reflow) و Paint باقی می‌ماند. هر بار که نرخ فریم زیر ۶۰ افت کند یا زمان‌بندی فریم‌ها نامنظم شود، کاربر انیمیشن را «لرزان» (jank) حس می‌کند. نمایشگرهای high-refresh-rate مانند ۹۰ و ۱۲۰ هرتز بودجه تنگ‌تری دارند — حدود ۱۱ و ۸ میلی‌ثانیه.
+      </div>
+
+      <h3 class="subsection-title">3.1 Using requestAnimationFrame</h3>
+      <div class="block">
+        <p>
+          Always drive visual updates through <code>requestAnimationFrame()</code> — never with
+          <code>setInterval</code> or <code>setTimeout</code> for animations. The browser calls your
+          callback at the optimal time just before the next paint, so you stay synchronized with the
+          display's refresh cycle and avoid wasted frames.
+        </p>
+<pre><code><span class="keyword">function</span> <span class="fn">animate</span>(timestamp) {
+  <span class="comment">// timestamp is DOMHighResTimeStamp — use it for delta calculations</span>
+  <span class="fn">updateScene</span>(timestamp);
+  <span class="fn">drawFrame</span>();
+  <span class="fn">requestAnimationFrame</span>(animate); <span class="comment">// schedule next frame</span>
+}
+
+<span class="fn">requestAnimationFrame</span>(animate); <span class="comment">// kick off the loop</span></code></pre>
+      </div>
+      <div class="fa">
+        برای همه به‌روزرسانی‌های بصری همیشه از <code>requestAnimationFrame()</code> استفاده کنید، نه از <code>setInterval</code> یا <code>setTimeout</code>. مرورگر این callback را دقیقاً قبل از رندر بعدی صدا می‌زند تا انیمیشن با چرخه رفرش نمایشگر هماهنگ بماند و فریم‌های اضافه تولید نشود. پارامتر <code>timestamp</code> از نوع <code>DOMHighResTimeStamp</code> است و برای محاسبه delta بین فریم‌ها استفاده می‌شود.
+      </div>
+
+      <div class="note">
+        <span class="badge badge-note">Tip</span>
+        Prefer CSS animations and transitions for simple effects — the browser can often run them on
+        the compositor thread entirely, bypassing JavaScript overhead and keeping the main thread free.
+      </div>
+    </section>
+
+    <hr />
+
+    <!-- ─────────────────────────────────── -->
+    <section class="section" id="responsiveness-goal">
+      <h2 class="section-title">4. Responsiveness Goal — 50–200ms</h2>
+
+      <div class="block">
+        <p>
+          Perceived responsiveness is how quickly the UI <em>acknowledges</em> a user's action. The
+          guidelines define two thresholds:
+        </p>
+        <ul>
+          <li>
+            <strong>Immediate feedback (hover, button press):</strong> within <strong>50ms</strong> —
+            the user should feel the UI react instantly, with no detectable lag.
+          </li>
+          <li>
+            <strong>Complete response:</strong> within <strong>100–200ms</strong> — the full result
+            of the action (data loaded, navigation complete, etc.) should appear within this window.
+          </li>
+        </ul>
+        <p>
+          If a response will take <strong>longer than 100ms</strong>, always provide immediate
+          visual feedback — a spinner, loading skeleton, progress bar, or button state change — to
+          acknowledge that the action was received. Without feedback, users assume the UI is frozen
+          and may click again, creating duplicate requests.
+        </p>
+      </div>
+      <div class="fa">
+        پاسخ‌دهی درک‌شده به این بستگی دارد که رابط کاربری چقدر سریع عمل کاربر را <em>تأیید</em> کند. دو آستانه وجود دارد: <strong>۵۰ میلی‌ثانیه</strong> برای بازخورد فوری (hover، کلیک دکمه) و <strong>۱۰۰ تا ۲۰۰ میلی‌ثانیه</strong> برای پاسخ کامل. اگر پاسخ بیش از ۱۰۰ میلی‌ثانیه طول بکشد، باید بلافاصله یک نشانه بصری نمایش دهید — spinner، skeleton loading، نوار پیشرفت، یا تغییر حالت دکمه — تا به کاربر بگویید درخواستش دریافت شده است. در غیر این صورت کاربر فکر می‌کند UI منجمد شده و دوباره کلیک می‌کند.
+      </div>
+
+      <h3 class="subsection-title">4.1 Interaction to Next Paint (INP)</h3>
+      <div class="block">
+        <p>
+          <strong>INP (Interaction to Next Paint)</strong> is a Core Web Vital that measures the
+          latency of <em>all</em> interactions on a page — clicks, taps, and keyboard input — and
+          reports the worst-case value. Google's thresholds are:
+        </p>
+        <ul>
+          <li><span class="badge badge-good">Good</span> ≤ <strong>200ms</strong></li>
+          <li><span class="badge badge-note">Needs Improvement</span> 201ms – 500ms</li>
+          <li><span class="badge badge-bad">Poor</span> &gt; <strong>500ms</strong></li>
+        </ul>
+        <p>
+          INP replaced First Input Delay (FID) as a Core Web Vital in March 2024, shifting focus
+          from the first interaction to the <em>overall</em> responsiveness of a page during its
+          entire lifetime.
+        </p>
+      </div>
+      <div class="fa">
+        <strong>INP (Interaction to Next Paint)</strong> یک Core Web Vital است که تأخیر تمام تعاملات صفحه — کلیک، لمس، و ورودی صفحه‌کلید — را اندازه می‌گیرد و بدترین مقدار را گزارش می‌دهد. آستانه‌های Google: <strong>≤ ۲۰۰ میلی‌ثانیه</strong> خوب، <strong>۲۰۱ تا ۵۰۰ میلی‌ثانیه</strong> نیاز به بهبود، و <strong>&gt; ۵۰۰ میلی‌ثانیه</strong> ضعیف است. INP در مارس ۲۰۲۴ جایگزین FID (First Input Delay) شد و تمرکز را از اولین تعامل به پاسخ‌دهی کلی صفحه در طول عمرش تغییر داد.
+      </div>
+
+      <h3 class="subsection-title">4.2 Reducing Input Latency</h3>
+      <div class="block">
+        <p>
+          The most effective strategies for staying within the 50–200ms responsiveness window:
+        </p>
+        <ul>
+          <li>
+            <strong>Avoid long tasks on the main thread.</strong> Any task over 50ms delays event
+            processing. Break long tasks with <code>scheduler.yield()</code> or
+            <code>setTimeout(0)</code>.
+          </li>
+          <li>
+            <strong>Debounce / throttle expensive handlers.</strong> Scroll and input events fire
+            at very high frequency; running heavy logic on every event causes jank.
+          </li>
+          <li>
+            <strong>Minimize layout thrashing.</strong> Interleaving DOM reads and writes forces
+            synchronous reflows. Batch all reads first, then all writes.
+          </li>
+          <li>
+            <strong>Use passive event listeners.</strong> Marking touch/wheel listeners as
+            <code>{ passive: true }</code> lets the browser scroll without waiting for your handler
+            to complete.
+          </li>
+          <li>
+            <strong>Offload work to Web Workers.</strong> CPU-heavy computation (parsing, filtering,
+            encoding) should run off the main thread so it cannot block interactions.
+          </li>
+        </ul>
+      </div>
+      <div class="fa">
+        مؤثرترین راهکارها برای ماندن در پنجره ۵۰ تا ۲۰۰ میلی‌ثانیه عبارتند از: ۱) <strong>پرهیز از long task در main thread</strong> — هر تسک بیشتر از ۵۰ میلی‌ثانیه پردازش رویداد را به تأخیر می‌اندازد؛ با <code>scheduler.yield()</code> یا <code>setTimeout(0)</code> تسک‌ها را بشکنید. ۲) <strong>Debounce/Throttle کردن handlerهای سنگین</strong> — رویدادهای scroll و input با فرکانس بالا فیر می‌شوند. ۳) <strong>کاهش layout thrashing</strong> — خواندن و نوشتن DOM را با هم قاطی نکنید؛ ابتدا همه read، سپس همه write. ۴) <strong>استفاده از passive event listener</strong> — با <code>{ passive: true }</code> اسکرول را بدون انتظار برای handler بلافاصله اجرا کنید. ۵) <strong>انتقال کار به Web Worker</strong> — محاسبات سنگین (parse، filter، encode) باید خارج از main thread اجرا شوند.
+      </div>
+
+      <div class="note">
+        <span class="badge badge-bad">Warning</span>
+        Never assume "my users are on fast devices." INP is measured in the field across all your
+        real users — budget for the slowest common hardware and network, not your dev machine.
+      </div>
+    </section>
+
+    <hr />
+
+  </main>
+</body>
+</html>
