@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IP Address — Network Concepts</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #060b14;
+      --surface:        #0d1626;
+      --surface2:       #152035;
+      --border:         #1e3557;
+      --text:           #dde6f0;
+      --muted:          #8aa3c0;
+      --accent:         #38bdf8;
+      --accent2:        #7dd3fc;
+      --accent3:        #0ea5e9;
+      --green:          #34d399;
+      --yellow:         #fbbf24;
+      --red:            #f87171;
+      --code-bg:        #05080f;
+      --persian-bg:     #0a1929;
+      --persian-border: #1a4266;
+      --persian-text:   #93c5fd;
+      --radius:         10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      padding: 0;
+    }
+
+    header {
+      background: linear-gradient(135deg, #060b14 0%, #0d1f3c 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 2rem 2rem;
+    }
+    .header-inner { max-width: 1100px; margin: 0 auto; }
+    header .topic-num {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.15em;
+      color: var(--accent3); margin-bottom: 0.4rem;
+    }
+    header h1 { font-size: 2rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; }
+    header .meta { font-size: 0.8rem; color: var(--muted); display: flex; gap: 1rem; flex-wrap: wrap; }
+    header .meta a { color: var(--accent); text-decoration: none; }
+
+    .layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 2.5rem;
+      padding: 2rem 1.5rem 4rem;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+    .toc h2 {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--muted); margin-bottom: 0.75rem;
+    }
+    .toc ol { padding-left: 1.1rem; }
+    .toc li { margin-bottom: 0.4rem; }
+    .toc a { color: var(--accent); text-decoration: none; font-size: 0.85rem; line-height: 1.4; }
+    .toc a:hover { color: var(--accent2); text-decoration: underline; }
+
+    .section { margin-top: 2.5rem; }
+    .section:first-child { margin-top: 0; }
+
+    .section-title {
+      font-size: 1.4rem; font-weight: 700; color: var(--accent2);
+      margin-bottom: 1.25rem; padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .subsection-title {
+      font-size: 1.05rem; font-weight: 600; color: var(--accent);
+      margin: 1.5rem 0 0.65rem;
+    }
+
+    .block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 0.85rem;
+    }
+    .block p { color: var(--text); margin-bottom: 0.5rem; }
+    .block p:last-of-type { margin-bottom: 0; }
+
+    .fa {
+      background: var(--persian-bg);
+      border: 1px solid var(--persian-border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1.25rem;
+      margin-top: 0.4rem;
+      margin-bottom: 1.25rem;
+      direction: rtl; text-align: right;
+      font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', sans-serif;
+      font-size: 0.92rem; line-height: 1.9;
+      color: var(--persian-text);
+    }
+    .fa::before {
+      content: '🇮🇷 خلاصه';
+      display: block; font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent2);
+      margin-bottom: 0.4rem; direction: rtl;
+    }
+
+    .diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin: 0.75rem 0 1.25rem;
+      overflow-x: auto;
+      text-align: center;
+    }
+    .diagram figcaption {
+      font-size: 0.8rem; color: var(--muted);
+      margin-top: 0.75rem; text-align: center;
+    }
+
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.25rem; overflow-x: auto; font-size: 0.88rem; line-height: 1.6; margin: 0.75rem 0; }
+    code { font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace; color: #93c5fd; }
+    .comment { color: #4a6080; }
+    .keyword { color: #38bdf8; }
+    .string  { color: #34d399; }
+    .fn      { color: #7dd3fc; }
+
+    ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin-bottom: 0.3rem; color: var(--text); }
+
+    .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem;
+      border-radius: 999px; font-weight: 600; margin-right: 0.35rem;
+      text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-good { background: #064e3b; color: var(--green); }
+    .badge-bad  { background: #450a0a; color: var(--red); }
+    .badge-note { background: #1c1405; color: var(--yellow); }
+    .badge-info { background: #0c2744; color: var(--accent); }
+
+    .note { border-left: 3px solid var(--accent3); background: #081828;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.75rem 1rem; font-size: 0.9rem; color: #bae6fd; margin: 0.75rem 0; }
+
+    strong { color: #f0f6ff; font-weight: 600; }
+    em { color: var(--muted); font-style: italic; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+    .table-wrap { overflow-x: auto; margin: 0.75rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    thead tr { background: var(--surface2); }
+    th { color: var(--accent); text-align: left; padding: 0.6rem 1rem;
+      border-bottom: 2px solid var(--border); font-weight: 600; white-space: nowrap; }
+    td { padding: 0.55rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+
+    @media (max-width: 720px) {
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; }
+      header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="topic-num">Topic 2 — Network Concepts</div>
+    <h1>IP Address</h1>
+    <div class="meta">
+      <span>Network for Frontend Developers</span>
+      <a href="https://developer.mozilla.org/en-US/docs/Glossary/IP_Address" target="_blank">MDN Reference</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#what-is-ip">1. What is an IP Address?</a></li>
+      <li><a href="#ipv4">2. IPv4</a></li>
+      <li><a href="#ipv6">3. IPv6</a></li>
+      <li><a href="#public-private">4. Public vs Private IP</a></li>
+      <li><a href="#localhost">5. localhost &amp; 127.0.0.1</a></li>
+      <li><a href="#zero-zero">6. 0.0.0.0</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <!-- Section 1 -->
+    <section class="section" id="what-is-ip">
+      <h2 class="section-title">1. What is an IP Address?</h2>
+
+      <div class="block">
+        <p>
+          An <strong>IP address (Internet Protocol address)</strong> is a unique numerical label assigned to every device connected to a network. It serves two core purposes: <strong>identification</strong> (who is this device?) and <strong>location addressing</strong> (where is this device on the network?).
+        </p>
+        <p>
+          Without IP addresses, routers would have no way to know where to send data packets. Every request you make from a browser — fetching an HTML file, calling an API, loading an image — travels from your IP to the server's IP and back.
+        </p>
+      </div>
+      <div class="fa">
+        آدرس IP یک شناسه عددی منحصربه‌فرد برای هر دستگاه متصل به شبکه است. دو کار مهم انجام می‌ده: شناسایی دستگاه (کیه؟) و مکان‌یابی روی شبکه (کجاست؟). بدون IP، روترها نمی‌دونن داده رو کجا بفرستن. هر request مرورگر از IP شما به IP سرور و برمی‌گرده.
+      </div>
+
+      <figure class="diagram">
+        <svg width="560" height="130" viewBox="0 0 560 130" xmlns="http://www.w3.org/2000/svg">
+          <!-- Browser -->
+          <rect x="20" y="30" width="130" height="70" rx="8" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="85" y="60" text-anchor="middle" fill="#7dd3fc" font-size="12" font-family="monospace">Browser</text>
+          <text x="85" y="80" text-anchor="middle" fill="#38bdf8" font-size="11" font-family="monospace">192.168.1.5</text>
+
+          <!-- Arrow right -->
+          <line x1="150" y1="65" x2="215" y2="65" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <polygon points="215,60 225,65 215,70" fill="#38bdf8"/>
+          <text x="187" y="56" text-anchor="middle" fill="#8aa3c0" font-size="10">Request</text>
+
+          <!-- Internet cloud -->
+          <ellipse cx="280" cy="65" rx="48" ry="28" fill="#0d1626" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="280" y="61" text-anchor="middle" fill="#8aa3c0" font-size="11">Internet</text>
+          <text x="280" y="76" text-anchor="middle" fill="#4a6080" font-size="10">routing</text>
+
+          <!-- Arrow right -->
+          <line x1="328" y1="65" x2="393" y2="65" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <polygon points="393,60 403,65 393,70" fill="#34d399"/>
+          <text x="365" y="56" text-anchor="middle" fill="#8aa3c0" font-size="10">Response</text>
+
+          <!-- Server -->
+          <rect x="403" y="30" width="130" height="70" rx="8" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="468" y="60" text-anchor="middle" fill="#7dd3fc" font-size="12" font-family="monospace">Server</text>
+          <text x="468" y="80" text-anchor="middle" fill="#34d399" font-size="11" font-family="monospace">93.184.216.34</text>
+        </svg>
+        <figcaption>Every network request travels between two IP addresses</figcaption>
+      </figure>
+    </section>
+
+    <hr />
+
+    <!-- Section 2 -->
+    <section class="section" id="ipv4">
+      <h2 class="section-title">2. IPv4</h2>
+
+      <div class="block">
+        <p>
+          <strong>IPv4 (Internet Protocol version 4)</strong> is the original addressing scheme, introduced in 1981. An IPv4 address is <strong>32 bits</strong> long, written as four decimal octets separated by dots — e.g. <code>192.168.0.1</code>. Each octet ranges from <strong>0–255</strong>.
+        </p>
+        <p>
+          32 bits gives a theoretical maximum of <strong>2³² ≈ 4.3 billion</strong> unique addresses. This seemed enormous in 1981, but with the explosion of internet-connected devices we've largely exhausted the pool. Techniques like <strong>NAT (Network Address Translation)</strong> and <strong>CIDR (Classless Inter-Domain Routing)</strong> helped stretch the supply, but the long-term fix is IPv6.
+        </p>
+      </div>
+      <div class="fa">
+        IPv4 نسخه اول پروتکل IP است. آدرس ۳۲ بیتی با ۴ عدد ۰-۲۵۵ که با نقطه جدا می‌شن (مثل ۱۹۲.۱۶۸.۰.۱). حداکثر ۴.۳ میلیارد آدرس ممکن داره. این تعداد برای دنیای امروز کافی نبود، به همین خاطر از NAT برای اشتراک‌گذاری IP و CIDR برای تقسیم‌بندی بهتر استفاده می‌شه. راه‌حل اصلی جایگزینی با IPv6 هست.
+      </div>
+
+      <h3 class="subsection-title">2.1 IPv4 Address Structure</h3>
+
+      <figure class="diagram">
+        <svg width="560" height="120" viewBox="0 0 560 120" xmlns="http://www.w3.org/2000/svg">
+          <!-- 4 octets -->
+          <rect x="20"  y="30" width="115" height="50" rx="6" fill="#152035" stroke="#38bdf8" stroke-width="1.5"/>
+          <rect x="150" y="30" width="115" height="50" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <rect x="280" y="30" width="115" height="50" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <rect x="410" y="30" width="115" height="50" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+
+          <text x="77"  y="52" text-anchor="middle" fill="#38bdf8" font-size="18" font-family="monospace" font-weight="bold">192</text>
+          <text x="207" y="52" text-anchor="middle" fill="#dde6f0" font-size="18" font-family="monospace" font-weight="bold">168</text>
+          <text x="337" y="52" text-anchor="middle" fill="#dde6f0" font-size="18" font-family="monospace" font-weight="bold">1</text>
+          <text x="467" y="52" text-anchor="middle" fill="#dde6f0" font-size="18" font-family="monospace" font-weight="bold">10</text>
+
+          <text x="77"  y="70" text-anchor="middle" fill="#8aa3c0" font-size="10">octet 1 (8 bits)</text>
+          <text x="207" y="70" text-anchor="middle" fill="#8aa3c0" font-size="10">octet 2 (8 bits)</text>
+          <text x="337" y="70" text-anchor="middle" fill="#8aa3c0" font-size="10">octet 3 (8 bits)</text>
+          <text x="467" y="70" text-anchor="middle" fill="#8aa3c0" font-size="10">octet 4 (8 bits)</text>
+
+          <text x="135" y="56" text-anchor="middle" fill="#4a6080" font-size="14">.</text>
+          <text x="265" y="56" text-anchor="middle" fill="#4a6080" font-size="14">.</text>
+          <text x="395" y="56" text-anchor="middle" fill="#4a6080" font-size="14">.</text>
+
+          <text x="280" y="108" text-anchor="middle" fill="#8aa3c0" font-size="11">Total: 32 bits → max 4,294,967,296 addresses</text>
+        </svg>
+        <figcaption>IPv4 address: 4 octets × 8 bits = 32 bits</figcaption>
+      </figure>
+
+      <h3 class="subsection-title">2.2 Special IPv4 Ranges</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Range</th>
+              <th>Purpose</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>10.0.0.0/8</code></td><td>Private (Class A)</td><td>10.0.0.1</td></tr>
+            <tr><td><code>172.16.0.0/12</code></td><td>Private (Class B)</td><td>172.16.0.1</td></tr>
+            <tr><td><code>192.168.0.0/16</code></td><td>Private (Class C — home networks)</td><td>192.168.1.1</td></tr>
+            <tr><td><code>127.0.0.0/8</code></td><td>Loopback</td><td>127.0.0.1</td></tr>
+            <tr><td><code>0.0.0.0/0</code></td><td>Unspecified / catch-all</td><td>0.0.0.0</td></tr>
+            <tr><td><code>255.255.255.255</code></td><td>Broadcast</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fa">
+        IPv4 رنج‌های خاصی داره: ۱۰.x.x.x، ۱۷۲.۱۶-۳۱.x.x و ۱۹۲.۱۶۸.x.x برای شبکه‌های خصوصی رزرو شدن و از اینترنت عمومی قابل دسترس نیستن. ۱۲۷.x.x.x برای loopback (خود دستگاه) هست. ۰.۰.۰.۰ یعنی «همه اینترفیس‌ها» یا «هنوز آدرسی نداره». ۲۵۵.۲۵۵.۲۵۵.۲۵۵ برای broadcast به همه دستگاه‌های شبکه محلی.
+      </div>
+    </section>
+
+    <hr />
+
+    <!-- Section 3 -->
+    <section class="section" id="ipv6">
+      <h2 class="section-title">3. IPv6</h2>
+
+      <div class="block">
+        <p>
+          <strong>IPv6 (Internet Protocol version 6)</strong> was standardized in 1998 to solve IPv4 exhaustion. An IPv6 address is <strong>128 bits</strong> long, written as eight groups of four hexadecimal digits separated by colons — e.g. <code>2001:0db8:85a3:0000:0000:8a2e:0370:7334</code>.
+        </p>
+        <p>
+          128 bits provides <strong>2¹²⁸ ≈ 3.4 × 10³⁸</strong> addresses — enough to give every atom on Earth its own address many times over. IPv6 also removes the need for NAT (every device can get a globally unique address), improves routing efficiency, and has built-in support for auto-configuration (SLAAC).
+        </p>
+      </div>
+      <div class="fa">
+        IPv6 با ۱۲۸ بیت آدرس‌دهی می‌کنه که ۳.۴×۱۰³⁸ آدرس ممکن می‌ده — عملاً نامحدود. به‌صورت ۸ گروه ۴ رقم hex با کولون نوشته می‌شه. مزایا: نیاز به NAT نداره، routing بهتره، پیکربندی خودکار (SLAAC) داره. گروه‌های صفر متوالی رو می‌شه با :: خلاصه کرد (فقط یه بار در آدرس).
+      </div>
+
+      <h3 class="subsection-title">3.1 IPv6 Shorthand Rules</h3>
+      <div class="block">
+        <p><span class="badge badge-info">Rule 1</span> Leading zeros in each group can be dropped: <code>0db8</code> → <code>db8</code></p>
+        <p><span class="badge badge-info">Rule 2</span> One or more consecutive all-zero groups can be replaced with <code>::</code> (only once per address):</p>
+        <pre><code><span class="comment">// Full</span>
+2001:0db8:0000:0000:0000:0000:0000:0001
+
+<span class="comment">// Shortened</span>
+2001:db8::1</code></pre>
+      </div>
+
+      <h3 class="subsection-title">3.2 IPv4 vs IPv6 — Quick Comparison</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Property</th><th>IPv4</th><th>IPv6</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Bit length</td><td>32 bits</td><td>128 bits</td></tr>
+            <tr><td>Address count</td><td>~4.3 billion</td><td>~3.4 × 10³⁸</td></tr>
+            <tr><td>Notation</td><td>Decimal, dots</td><td>Hex, colons</td></tr>
+            <tr><td>NAT needed?</td><td>Yes (exhaustion)</td><td>No</td></tr>
+            <tr><td>Header size</td><td>20–60 bytes (variable)</td><td>40 bytes (fixed)</td></tr>
+            <tr><td>Broadcast</td><td>Yes</td><td>No (multicast instead)</td></tr>
+            <tr><td>Auto-config</td><td>DHCP</td><td>SLAAC / DHCPv6</td></tr>
+            <tr><td>Loopback</td><td>127.0.0.1</td><td>::1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fa">
+        مقایسه IPv4 و IPv6: IPv4 دارای ۳۲ بیت و ~۴.۳ میلیارد آدرس، IPv6 دارای ۱۲۸ بیت و عملاً آدرس بی‌نهایت است. IPv6 نیاز به NAT ندارد، هدر ثابت ۴۰ بایتی دارد، از multicast به‌جای broadcast استفاده می‌کند و با SLAAC می‌تواند بدون DHCP آدرس خودکار تخصیص دهد. آدرس loopback در IPv6 برابر ::1 است (معادل ۱۲۷.۰.۰.۱ در IPv4).
+      </div>
+    </section>
+
+    <hr />
+
+    <!-- Section 4 -->
+    <section class="section" id="public-private">
+      <h2 class="section-title">4. Public IP vs Private IP</h2>
+
+      <h3 class="subsection-title">4.1 Private IP</h3>
+      <div class="block">
+        <p>
+          A <strong>private IP address</strong> is used within a local network (home, office, data center). These addresses are defined by <strong>RFC 1918</strong> and are <em>not routable on the public internet</em> — routers on the internet will drop packets destined for private ranges.
+        </p>
+        <p>
+          Every device on your home network gets a private IP from the router (usually via DHCP). Typical ranges: <code>192.168.x.x</code> for home networks, <code>10.x.x.x</code> inside cloud VPCs.
+        </p>
+      </div>
+      <div class="fa">
+        آدرس IP خصوصی فقط داخل شبکه محلی معنا داره و در اینترنت عمومی قابل route نیست (RFC 1918). رنج‌ها: ۱۰.۰.۰.۰/۸، ۱۷۲.۱۶.۰.۰/۱۲، ۱۹۲.۱۶۸.۰.۰/۱۶. روتر خانگی به هر دستگاه یک IP خصوصی (مثل ۱۹۲.۱۶۸.۱.x) می‌ده. داخل cloud هم سرورها IP خصوصی دارن.
+      </div>
+
+      <h3 class="subsection-title">4.2 Public IP</h3>
+      <div class="block">
+        <p>
+          A <strong>public IP address</strong> is globally unique and routable on the internet. It's assigned by your ISP (Internet Service Provider) or a cloud provider. When you visit a website, the server sees your <em>public</em> IP — which is the IP of your router, not your laptop.
+        </p>
+        <p>
+          Public IPs are either <strong>static</strong> (fixed, common for servers) or <strong>dynamic</strong> (changes periodically, common for home internet connections). You can see your own public IP at services like <code>ifconfig.me</code>.
+        </p>
+      </div>
+      <div class="fa">
+        IP عمومی به‌صورت جهانی منحصربه‌فرد است و توسط ISP یا ارائه‌دهنده cloud تخصیص می‌یابد. سرور مقصد این IP رو می‌بینه (IP روتر، نه لپ‌تاپ شما). IP عمومی می‌تونه static (ثابت - برای سرورها) یا dynamic (متغیر - برای خانه‌ها) باشه. برای دیدن IP عمومی خودتون می‌تونید از ifconfig.me استفاده کنید.
+      </div>
+
+      <h3 class="subsection-title">4.3 NAT — The Bridge Between Private and Public</h3>
+      <div class="block">
+        <p>
+          <strong>NAT (Network Address Translation)</strong> allows many devices with private IPs to share a single public IP. The router maintains a translation table: when device <code>192.168.1.5:54321</code> makes a request, the router rewrites the source to <code>203.0.113.1:54321</code> (the public IP), and maps the response back.
+        </p>
+      </div>
+      <div class="fa">
+        NAT (ترجمه آدرس شبکه) به چندین دستگاه با IP خصوصی اجازه می‌ده از یک IP عمومی مشترک استفاده کنن. روتر جدول ترجمه نگه می‌داره: درخواست از ۱۹۲.۱۶۸.۱.۵ با IP عمومی روتر جایگزین می‌شه و جواب به دستگاه اصلی برمی‌گرده. این مکانیزم اصلی‌ترین دلیل کافی بودن IPv4 تا اینجاست.
+      </div>
+
+      <figure class="diagram">
+        <svg width="560" height="180" viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg">
+          <!-- LAN devices -->
+          <rect x="10" y="10" width="130" height="40" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.2"/>
+          <text x="75" y="28" text-anchor="middle" fill="#dde6f0" font-size="11" font-family="monospace">Laptop</text>
+          <text x="75" y="43" text-anchor="middle" fill="#8aa3c0" font-size="10" font-family="monospace">192.168.1.2</text>
+
+          <rect x="10" y="65" width="130" height="40" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.2"/>
+          <text x="75" y="83" text-anchor="middle" fill="#dde6f0" font-size="11" font-family="monospace">Phone</text>
+          <text x="75" y="98" text-anchor="middle" fill="#8aa3c0" font-size="10" font-family="monospace">192.168.1.3</text>
+
+          <rect x="10" y="120" width="130" height="40" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.2"/>
+          <text x="75" y="138" text-anchor="middle" fill="#dde6f0" font-size="11" font-family="monospace">Smart TV</text>
+          <text x="75" y="153" text-anchor="middle" fill="#8aa3c0" font-size="10" font-family="monospace">192.168.1.4</text>
+
+          <!-- Router / NAT -->
+          <rect x="185" y="55" width="110" height="60" rx="8" fill="#0d1626" stroke="#38bdf8" stroke-width="2"/>
+          <text x="240" y="80" text-anchor="middle" fill="#38bdf8" font-size="12" font-weight="bold">Router</text>
+          <text x="240" y="95" text-anchor="middle" fill="#7dd3fc" font-size="10">NAT</text>
+          <text x="240" y="108" text-anchor="middle" fill="#34d399" font-size="10" font-family="monospace">203.0.113.1</text>
+
+          <!-- Lines to router -->
+          <line x1="140" y1="30" x2="185" y2="75" stroke="#1e3557" stroke-width="1.2"/>
+          <line x1="140" y1="85" x2="185" y2="85" stroke="#1e3557" stroke-width="1.2"/>
+          <line x1="140" y1="140" x2="185" y2="100" stroke="#1e3557" stroke-width="1.2"/>
+
+          <!-- Arrow to internet -->
+          <line x1="295" y1="85" x2="360" y2="85" stroke="#38bdf8" stroke-width="2"/>
+          <polygon points="360,80 370,85 360,90" fill="#38bdf8"/>
+
+          <!-- Internet -->
+          <ellipse cx="415" cy="85" rx="45" ry="30" fill="#0d1626" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="415" y="80" text-anchor="middle" fill="#8aa3c0" font-size="11">Internet</text>
+          <text x="415" y="95" text-anchor="middle" fill="#4a6080" font-size="10">sees only</text>
+
+          <!-- Server -->
+          <rect x="475" y="60" width="75" height="50" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.2"/>
+          <text x="512" y="83" text-anchor="middle" fill="#dde6f0" font-size="11">Server</text>
+          <text x="512" y="98" text-anchor="middle" fill="#34d399" font-size="10" font-family="monospace">93.x.x.x</text>
+          <line x1="460" y1="85" x2="475" y2="85" stroke="#1e3557" stroke-width="1.2"/>
+
+          <text x="240" y="170" text-anchor="middle" fill="#8aa3c0" font-size="10">All three devices share the single public IP 203.0.113.1</text>
+        </svg>
+        <figcaption>NAT allows multiple private-IP devices to share one public IP</figcaption>
+      </figure>
+    </section>
+
+    <hr />
+
+    <!-- Section 5 -->
+    <section class="section" id="localhost">
+      <h2 class="section-title">5. localhost &amp; 127.0.0.1</h2>
+
+      <div class="block">
+        <p>
+          <strong><code>localhost</code></strong> is a hostname that resolves to <code>127.0.0.1</code> (IPv4) or <code>::1</code> (IPv6). It refers to the <em>loopback interface</em> — a virtual network interface built into the OS that never sends data to a real network.
+        </p>
+        <p>
+          When you run a dev server on <code>localhost:3000</code>, the request never leaves your machine. The OS intercepts it and routes it to the local process listening on port 3000. This is why other devices on the same Wi-Fi can't access <code>localhost</code> on your computer — it's local-only by design.
+        </p>
+      </div>
+      <div class="fa">
+        localhost یک hostname هست که به ۱۲۷.۰.۰.۱ (IPv4) یا ::1 (IPv6) ترجمه می‌شه. این آدرس loopback interface است — یک اینترفیس مجازی که داده رو هرگز به شبکه واقعی نمی‌فرسته. وقتی dev server روی localhost:3000 اجرا می‌کنی، درخواست از ماشین خارج نمی‌شه. به همین دلیل دستگاه‌های دیگه روی همان Wi-Fi نمی‌تونن به localhost دسترسی داشته باشن — عمداً فقط محلیه.
+      </div>
+
+      <div class="note">
+        <span class="badge badge-note">Dev Tip</span>
+        To let other devices on the same network reach your dev server, bind it to <code>0.0.0.0</code> instead of <code>localhost</code>. Then access it via your machine's LAN IP (e.g., <code>192.168.1.5:3000</code>).
+      </div>
+
+      <h3 class="subsection-title">5.1 The Loopback Flow</h3>
+
+      <figure class="diagram">
+        <svg width="480" height="130" viewBox="0 0 480 130" xmlns="http://www.w3.org/2000/svg">
+          <!-- Browser -->
+          <rect x="20" y="40" width="120" height="50" rx="8" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="80" y="62" text-anchor="middle" fill="#7dd3fc" font-size="12">Browser</text>
+          <text x="80" y="79" text-anchor="middle" fill="#8aa3c0" font-size="10">fetch localhost:3000</text>
+
+          <!-- OS / loopback -->
+          <rect x="180" y="40" width="130" height="50" rx="8" fill="#0d1626" stroke="#38bdf8" stroke-width="2"/>
+          <text x="245" y="62" text-anchor="middle" fill="#38bdf8" font-size="12">OS Loopback</text>
+          <text x="245" y="78" text-anchor="middle" fill="#7dd3fc" font-size="10">127.0.0.1 / ::1</text>
+
+          <!-- Dev server -->
+          <rect x="350" y="40" width="110" height="50" rx="8" fill="#152035" stroke="#34d399" stroke-width="1.5"/>
+          <text x="405" y="62" text-anchor="middle" fill="#34d399" font-size="12">Dev Server</text>
+          <text x="405" y="78" text-anchor="middle" fill="#8aa3c0" font-size="10">port 3000</text>
+
+          <!-- Arrows -->
+          <line x1="140" y1="65" x2="180" y2="65" stroke="#38bdf8" stroke-width="1.5"/>
+          <polygon points="180,60 190,65 180,70" fill="#38bdf8"/>
+          <line x1="310" y1="65" x2="350" y2="65" stroke="#34d399" stroke-width="1.5"/>
+          <polygon points="350,60 360,65 350,70" fill="#34d399"/>
+
+          <!-- No network badge -->
+          <rect x="155" y="100" width="170" height="22" rx="4" fill="#0a1929" stroke="#1a4266" stroke-width="1"/>
+          <text x="240" y="115" text-anchor="middle" fill="#fbbf24" font-size="10">never leaves the machine</text>
+        </svg>
+        <figcaption>localhost traffic loops back through the OS — no real network involved</figcaption>
+      </figure>
+      <div class="fa">
+        جریان loopback: مرورگر درخواست به localhost:3000 می‌فرسته → سیستم‌عامل آن رو intercept می‌کنه → داده از طریق اینترفیس مجازی ۱۲۷.۰.۰.۱ به پروسه dev server روی پورت ۳۰۰۰ می‌رسه. هیچ داده‌ای از کارت شبکه واقعی خارج نمی‌شه.
+      </div>
+    </section>
+
+    <hr />
+
+    <!-- Section 6 -->
+    <section class="section" id="zero-zero">
+      <h2 class="section-title">6. What Does 0.0.0.0 Mean?</h2>
+
+      <div class="block">
+        <p>
+          <code>0.0.0.0</code> is a special-purpose address with two distinct meanings depending on context:
+        </p>
+        <ul>
+          <li><strong>As a bind address (server context):</strong> "Listen on <em>all</em> available network interfaces." A server bound to <code>0.0.0.0:8080</code> accepts connections arriving on any IP the machine has — loopback, LAN, public interface, etc.</li>
+          <li><strong>As a route/source address:</strong> "This host, on this network" — used before the device has been assigned an IP (e.g., during DHCP discovery).</li>
+        </ul>
+      </div>
+      <div class="fa">
+        ۰.۰.۰.۰ دو معنا داره: ۱) در context سرور (bind address): «روی همه اینترفیس‌های شبکه گوش بده». سرور bind شده به ۰.۰.۰.۰ هم از localhost قابل دسترسه هم از شبکه LAN. ۲) در context routing/DHCP: «این دستگاه قبل از گرفتن IP». در مقابل، localhost/127.0.0.1 فقط loopback هست.
+      </div>
+
+      <h3 class="subsection-title">6.1 0.0.0.0 vs localhost — Key Difference</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Bind address</th>
+              <th>Accessible from localhost?</th>
+              <th>Accessible from LAN?</th>
+              <th>Accessible from internet?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>127.0.0.1</code></td>
+              <td><span class="badge badge-good">Yes</span></td>
+              <td><span class="badge badge-bad">No</span></td>
+              <td><span class="badge badge-bad">No</span></td>
+            </tr>
+            <tr>
+              <td><code>0.0.0.0</code></td>
+              <td><span class="badge badge-good">Yes</span></td>
+              <td><span class="badge badge-good">Yes</span></td>
+              <td><span class="badge badge-note">Depends on firewall</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fa">
+        فرق bind به ۱۲۷.۰.۰.۱ vs ۰.۰.۰.۰: bind به ۱۲۷.۰.۰.۱ فقط از خود ماشین قابل دسترسه. bind به ۰.۰.۰.۰ از localhost و از شبکه LAN هم قابل دسترسه. دسترسی از اینترنت به firewall بستگی داره. مثلاً Vite با --host به ۰.۰.۰.۰ bind می‌کنه تا از موبایل روی همان Wi-Fi قابل تست باشه.
+      </div>
+
+      <pre><code><span class="comment"># Vite: bind to all interfaces so teammates can test on their phone</span>
+vite --host
+
+<span class="comment"># Node.js: same effect manually</span>
+server.listen(<span class="string">3000</span>, <span class="string">'0.0.0.0'</span>)
+
+<span class="comment"># Check what your machine is listening on (macOS/Linux)</span>
+lsof -i :3000</code></pre>
+
+      <div class="note">
+        <span class="badge badge-note">Warning</span>
+        Binding to <code>0.0.0.0</code> in a cloud environment without a firewall means your service is potentially reachable from the public internet. Always configure security groups / firewall rules.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>
