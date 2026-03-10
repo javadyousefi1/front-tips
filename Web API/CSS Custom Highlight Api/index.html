@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Custom Highlight API</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1>✏️ CSS Custom Highlight API</h1>
+            <p class="subtitle">Style arbitrary text ranges with CSS — no extra DOM elements needed</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="support-banner" id="supportBanner">Checking support...</div>
+
+        <!-- Demo 1: Search Highlight -->
+        <section class="card">
+            <h2>Search &amp; Highlight</h2>
+            <p>Type in the search box to highlight all matching words in the text below.</p>
+
+            <div class="search-bar">
+                <input type="text" id="searchInput" class="input" placeholder="Type to search... e.g. 'the'">
+                <span class="match-count" id="matchCount"></span>
+            </div>
+
+            <div class="text-content" id="textContent">
+                The CSS Custom Highlight API is a powerful tool for styling text ranges
+                without modifying the DOM. Unlike traditional approaches that wrap text
+                in span elements, this API lets you create highlights programmatically
+                using Range objects and register them with CSS. This makes it ideal for
+                building search features, code editors, text annotation tools, and
+                spell checkers. The API is supported in Chrome and Edge, and the
+                performance is excellent even with thousands of highlighted ranges.
+                Custom highlights can be layered — each highlight has its own name and
+                its own CSS rule via the ::highlight() pseudo-element.
+            </div>
+
+            <div class="code-block"><pre>const range = new Range();
+range.setStart(textNode, startOffset);
+range.setEnd(textNode, endOffset);
+
+CSS.highlights.set('search-results', new Highlight(range));
+
+/* In CSS */
+::highlight(search-results) {
+  background-color: #fff176;
+  color: #000;
+}</pre></div>
+        </section>
+
+        <!-- Demo 2: Multiple Highlight Layers -->
+        <section class="card">
+            <h2>Multiple Highlight Layers</h2>
+            <p>Apply different highlight styles at the same time — each with its own CSS rule.</p>
+
+            <div class="layer-controls">
+                <button class="btn layer-btn" data-layer="keywords" id="btn-keywords">
+                    <span class="swatch swatch-keywords"></span> Highlight Keywords
+                </button>
+                <button class="btn layer-btn" data-layer="errors" id="btn-errors">
+                    <span class="swatch swatch-errors"></span> Highlight Errors
+                </button>
+                <button class="btn layer-btn" data-layer="names" id="btn-names">
+                    <span class="swatch swatch-names"></span> Highlight Names
+                </button>
+                <button class="btn btn-clear" id="clearLayersBtn">Clear All</button>
+            </div>
+
+            <div class="text-content" id="layerContent">
+                JavaScript is a programming language widely used for web development.
+                It was created by Brendan Eich in 1995 and has since become one of
+                the most popular languages in the world. JavaScript supports
+                object-oriented, functional, and event-driven paradigms. Common
+                errors include TypeError, ReferenceError, and SyntaxError. Notable
+                figures include Brendan Eich, Douglas Crockford, and Ryan Dahl.
+            </div>
+
+            <div class="code-block"><pre>// Register multiple named highlights
+CSS.highlights.set('keywords', new Highlight(...keywordRanges));
+CSS.highlights.set('errors',   new Highlight(...errorRanges));
+CSS.highlights.set('names',    new Highlight(...nameRanges));
+
+/* Each has its own CSS rule */
+::highlight(keywords) { background-color: #c8e6c9; }
+::highlight(errors)   { text-decoration: underline wavy red; }
+::highlight(names)    { background-color: #bbdefb; font-style: italic; }</pre></div>
+        </section>
+
+        <!-- Demo 3: Custom Selection Color -->
+        <section class="card">
+            <h2>Highlight on Selection</h2>
+            <p>Select any text below — it gets saved as a persistent custom highlight.</p>
+
+            <div class="text-content selectable" id="selectionContent">
+                Select any portion of this text with your mouse or keyboard.
+                The selected text will be saved as a custom highlight — it persists
+                even after you deselect it! Click "Clear Highlights" to remove them.
+                You can keep selecting more text to add additional highlight ranges.
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-clear" id="clearSelectionBtn">Clear Highlights</button>
+                <span class="selection-count" id="selectionCount">0 highlights saved</span>
+            </div>
+
+            <div class="code-block"><pre>document.addEventListener('selectionchange', () => {
+  const selection = window.getSelection();
+  if (selection.isCollapsed) return;
+
+  const range = selection.getRangeAt(0).cloneRange();
+  savedRanges.push(range);
+
+  CSS.highlights.set('saved-selection', new Highlight(...savedRanges));
+});</pre></div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>CSS Custom Highlight API Demo — Chrome 105+ / Edge 105+ / Safari 17.2+</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

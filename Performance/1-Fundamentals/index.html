@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performance Fundamentals — MDN</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3250;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #6c8ef7;
+      --accent2: #a78bfa;
+      --green: #4ade80;
+      --yellow: #facc15;
+      --red: #f87171;
+      --code-bg: #12151f;
+      --persian-bg: #1e2535;
+      --persian-border: #3b4a7a;
+      --persian-text: #c4b5fd;
+      --radius: 10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      padding: 0 1rem 4rem;
+    }
+
+    header {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+
+    header .source {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    header .source a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* ── Section ─────────────────────────────────────────── */
+    .section {
+      margin-top: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .subsection-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 1.75rem 0 0.75rem;
+    }
+
+    /* ── Block ───────────────────────────────────────────── */
+    .block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .block p {
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .block p:last-of-type { margin-bottom: 0; }
+
+    /* ── Persian summary ─────────────────────────────────── */
+    .fa {
+      background: var(--persian-bg);
+      border: 1px solid var(--persian-border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1.25rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1.25rem;
+      direction: rtl;
+      text-align: right;
+      font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.9;
+      color: var(--persian-text);
+      position: relative;
+    }
+
+    .fa::before {
+      content: '🇮🇷 خلاصه';
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent2);
+      margin-bottom: 0.4rem;
+      direction: rtl;
+    }
+
+    /* ── Code ────────────────────────────────────────────── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      margin: 0.75rem 0;
+    }
+
+    code {
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      color: #93c5fd;
+    }
+
+    .comment { color: #6b7280; }
+    .keyword { color: #c084fc; }
+    .string  { color: #86efac; }
+    .fn      { color: #67e8f9; }
+
+    /* ── List ────────────────────────────────────────────── */
+    ul, ol {
+      padding-left: 1.5rem;
+      margin: 0.5rem 0;
+    }
+
+    li { margin-bottom: 0.3rem; color: var(--text); }
+
+    /* ── Badges ──────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-weight: 600;
+      margin-right: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-good  { background: #14532d; color: var(--green); }
+    .badge-bad   { background: #450a0a; color: var(--red);   }
+    .badge-note  { background: #1c1917; color: var(--yellow);}
+
+    /* ── Note / Tip ──────────────────────────────────────── */
+    .note {
+      border-left: 3px solid var(--yellow);
+      background: #1c1917;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      color: #fde68a;
+      margin: 0.75rem 0;
+    }
+
+    strong { color: #f1f5f9; font-weight: 600; }
+
+    /* ── TOC ─────────────────────────────────────────────── */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .toc h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .toc ol { padding-left: 1.2rem; }
+
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .toc a:hover { text-decoration: underline; }
+
+    /* ── Divider ─────────────────────────────────────────── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      .section-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="label">MDN Web Docs — Web Performance</div>
+  <h1>Performance Fundamentals</h1>
+  <div class="source">
+    Source: <a href="https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Fundamentals" target="_blank">
+      developer.mozilla.org
+    </a> &nbsp;|&nbsp; Dark mode &nbsp;|&nbsp; English + Persian summary
+  </div>
+</header>
+
+<main>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#what-is-performance">What is Performance?</a></li>
+      <li><a href="#platform-optimizations">Platform Performance Optimizations</a></li>
+      <li><a href="#application-performance">Application Performance</a></li>
+      <li><a href="#coding-tips">Specific Coding Tips</a></li>
+      <li><a href="#analysis">General Performance Analysis</a></li>
+    </ol>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       1. WHAT IS PERFORMANCE?
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="what-is-performance">
+    <h2 class="section-title">1. What is Performance?</h2>
+
+    <div class="block">
+      <p>
+        Performance ultimately means <strong>user-perceived performance (UPP)</strong> — the quality
+        of system outputs in response to user inputs. Users prefer a responsive, smooth app that
+        processes fewer transactions over a choppy, unresponsive app that processes more transactions.
+      </p>
+    </div>
+    <div class="fa">
+      عملکرد (Performance) به معنای «عملکرد درک‌شده توسط کاربر» است. کاربران ترجیح می‌دهند
+      یک اپ روان و پاسخ‌گو داشته باشند، حتی اگر تراکنش‌های کمتری پردازش کند — نه یک اپ
+      ناهموار که تراکنش بیشتری انجام می‌دهد.
+    </div>
+
+    <!-- Responsiveness -->
+    <h3 class="subsection-title">1.1 Responsiveness</h3>
+
+    <div class="block">
+      <p>
+        Responsiveness is how fast the system provides outputs in response to user inputs. For example,
+        when a user taps the screen, they expect pixels to change immediately. The responsiveness metric
+        is the time elapsed between the tap and the pixel change.
+      </p>
+      <p>Application startup involves three user-perceived events:</p>
+      <ul>
+        <li><strong>First paint</strong> — sufficient resources loaded to paint an initial frame</li>
+        <li><strong>Interactive</strong> — users can tap a button and the app responds</li>
+        <li><strong>Full load</strong> — all content has loaded</li>
+      </ul>
+    </div>
+    <div class="fa">
+      پاسخ‌گویی یعنی چقدر سریع سیستم به ورودی کاربر واکنش نشان می‌دهد. مثلاً وقتی کاربر صفحه
+      را لمس می‌کند، انتظار دارد پیکسل‌ها فوری تغییر کنند. هنگام راه‌اندازی یک اپ، سه رویداد مهم
+      وجود دارد: <strong>اولین رندر</strong>، <strong>تعامل‌پذیر شدن</strong> و <strong>بارگذاری کامل</strong>.
+    </div>
+
+    <!-- Frame Rate -->
+    <h3 class="subsection-title">1.2 Frame Rate</h3>
+
+    <div class="block">
+      <p>
+        Frame rate is the rate at which the system changes displayed pixels. Users prefer higher frame
+        rates (e.g., 60 fps over 10 fps) for smoother motion perception.
+      </p>
+      <div class="note">
+        <span class="badge badge-note">Note</span>
+        Humans usually cannot perceive differences above 60 Hz, which is why most modern displays
+        refresh at that rate.
+      </div>
+    </div>
+    <div class="fa">
+      نرخ فریم تعداد بار در ثانیه‌ای است که سیستم پیکسل‌های نمایش را تغییر می‌دهد. کاربران
+      نرخ‌های بالاتر (مثل ۶۰ fps) را روان‌تر حس می‌کنند. انسان‌ها معمولاً تفاوتی بالاتر از
+      ۶۰ هرتز درک نمی‌کنند، به همین دلیل اکثر نمایشگرهای مدرن با همین نرخ کار می‌کنند.
+    </div>
+
+    <!-- Memory -->
+    <h3 class="subsection-title">1.3 Memory Usage</h3>
+
+    <div class="block">
+      <p>
+        Memory usage doesn't directly impact user perception but closely approximates "user state."
+        A well-designed system uses as much memory as possible to maintain user state while meeting
+        other UPP goals. Free memory is an unused resource.
+      </p>
+    </div>
+    <div class="fa">
+      مصرف حافظه مستقیماً بر کاربر تأثیر نمی‌گذارد ولی «وضعیت کاربر» را حفظ می‌کند. یک سیستم
+      خوب تا حد امکان از حافظه استفاده می‌کند تا وضعیت کاربر حفظ شود. حافظهٔ آزاد یک منبع
+      استفاده‌نشده محسوب می‌شود.
+    </div>
+
+    <!-- Power -->
+    <h3 class="subsection-title">1.4 Power Usage</h3>
+
+    <div class="block">
+      <p>
+        Users perceive power usage indirectly through device battery life. The system must use only
+        the minimum power required to meet UPP goals.
+      </p>
+    </div>
+    <div class="fa">
+      کاربران مصرف انرژی را از طریق عمر باتری دستگاه احساس می‌کنند. سیستم باید فقط حداقل
+      انرژی لازم برای رسیدن به اهداف عملکرد را مصرف کند.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       2. PLATFORM PERFORMANCE OPTIMIZATIONS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="platform-optimizations">
+    <h2 class="section-title">2. Platform Performance Optimizations</h2>
+
+    <!-- Web API Technologies -->
+    <h3 class="subsection-title">2.1 Web Technologies</h3>
+
+    <div class="block">
+      <p>
+        <strong>HTML and CSS</strong> provide high-level declarative languages, increasing productivity
+        with automatic reflow, system theming, and built-in support for different resolutions and languages.
+      </p>
+      <p>
+        <strong>Canvas</strong> offers pixel-level control and precise frame-rate control but requires
+        developers to handle multiple resolutions, orientations, and languages.
+      </p>
+      <p>
+        <strong>SVG</strong> offers benefits between HTML/CSS and Canvas.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>HTML و CSS</strong> زبان‌های اعلانی سطح بالا هستند که reflow خودکار، تم سیستم و
+      پشتیبانی از رزولوشن‌های مختلف را فراهم می‌کنند. <strong>Canvas</strong> کنترل دقیق‌تری
+      روی پیکسل‌ها دارد ولی پیچیدگی بیشتری برای توسعه‌دهنده ایجاد می‌کند.
+      <strong>SVG</strong> بین این دو قرار می‌گیرد.
+    </div>
+
+    <!-- Gecko -->
+    <h3 class="subsection-title">2.2 Gecko Rendering Optimizations</h3>
+
+    <div class="block">
+      <p>
+        <strong>JIT Compilation:</strong> Gecko's JavaScript engine supports just-in-time compilation,
+        enabling performance comparable to Java virtual machines.
+      </p>
+      <p><strong>Graphics pipeline optimizations:</strong></p>
+      <ul>
+        <li>Reduced invalidation and repainting for common cases (scrolling)</li>
+        <li>Minimized copies when drawing to display framebuffer</li>
+        <li>Special graphics buffer memory directly accessed by compositor hardware</li>
+        <li>GPU rendering for complex scenes</li>
+        <li>Dedicated composition hardware for simple scenes</li>
+      </ul>
+      <p>
+        <strong>Animations and Transitions:</strong> CSS animations and transitions are offloaded to
+        the system compositor for efficient, power-efficient rendering.
+      </p>
+    </div>
+    <div class="fa">
+      موتور رندر Gecko (در فایرفاکس) از کامپایل JIT برای جاوااسکریپت استفاده می‌کند که سرعت
+      آن را به سطح JVM می‌رساند. همچنین pipeline گرافیکی آن بهینه‌سازی‌هایی مثل کاهش
+      repaint، استفاده از GPU برای صحنه‌های پیچیده و offload کردن انیمیشن‌ها به compositor
+      سیستم را شامل می‌شود.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       3. APPLICATION PERFORMANCE
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="application-performance">
+    <h2 class="section-title">3. Application Performance</h2>
+
+    <!-- Startup -->
+    <h3 class="subsection-title">3.1 Startup Performance: The Critical Path</h3>
+
+    <div class="block">
+      <p>To paint the first frame containing HTML and CSS, the browser must:</p>
+      <ol>
+        <li>Parse HTML</li>
+        <li>Construct the DOM</li>
+        <li>Load and decode resources (images)</li>
+        <li>Apply CSS styles</li>
+        <li>Reflow the document</li>
+      </ol>
+      <p>
+        <strong>The key trick:</strong> Run <em>only code on the critical path</em>. Defer work using
+        lazy loading of unnecessary content.
+      </p>
+      <p><strong>Strategies:</strong></p>
+      <ul>
+        <li>Simplify the initial scene</li>
+        <li>Lazily load non-critical resources</li>
+        <li>Front-load requests to avoid waiting for data later</li>
+        <li>Use Service Workers for local caching / offline apps</li>
+      </ul>
+    </div>
+    <div class="fa">
+      برای رندر اولین فریم، مرورگر باید HTML را parse کند، DOM بسازد، منابع را بارگذاری کند،
+      CSS اعمال شود و reflow انجام شود. <strong>نکته کلیدی:</strong> فقط کد مسیر بحرانی (critical path)
+      را اجرا کنید. سایر موارد را با lazy loading به تعویق بیندازید. استفاده از Service Worker
+      برای کش محلی هم توصیه می‌شود.
+    </div>
+
+    <!-- Frame Rate -->
+    <h3 class="subsection-title">3.2 Frame Rate</h3>
+
+    <div class="block">
+      <p>Choose the right tool for content type:</p>
+      <ul>
+        <li><strong>HTML/CSS</strong> — for mostly static, scrolled, and infrequently animated content</li>
+        <li><strong>Canvas</strong> — for highly dynamic content requiring tight rendering control</li>
+      </ul>
+      <p>Firefox optimizes transitions/animations that:</p>
+      <ul>
+        <li>Use pages/panels approximately device screen size or smaller</li>
+        <li>Animate only the CSS <code>transform</code> and <code>opacity</code> properties</li>
+      </ul>
+    </div>
+    <div class="fa">
+      برای محتوای ایستا از HTML/CSS و برای محتوای بسیار پویا از Canvas استفاده کنید.
+      فایرفاکس انیمیشن‌هایی را که فقط از <code>transform</code> و <code>opacity</code> استفاده
+      می‌کنند، بهتر بهینه می‌کند.
+    </div>
+
+    <!-- Memory & Power -->
+    <h3 class="subsection-title">3.3 Memory and Power Usage</h3>
+
+    <div class="block">
+      <p><strong>Optimization strategies:</strong></p>
+      <ul>
+        <li>Don't perform unneeded work</li>
+        <li>Lazily load uncommonly-used UI resources</li>
+        <li>Use efficient data structures</li>
+        <li>Optimize images well</li>
+        <li>Avoid constant timers that prevent CPU low-power modes</li>
+        <li>Listen for the <code>visibilitychange</code> event when apps go to background</li>
+      </ul>
+    </div>
+    <div class="fa">
+      برای بهینه‌سازی حافظه و مصرف انرژی: از کارهای غیرضروری خودداری کنید، منابع UI را lazy
+      load کنید، از ساختار داده‌های کارآمد استفاده کنید، تصاویر را فشرده کنید، از تایمرهای
+      دائمی پرهیز کنید و رویداد <code>visibilitychange</code> را برای مدیریت حالت پس‌زمینه
+      گوش دهید.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       4. SPECIFIC CODING TIPS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="coding-tips">
+    <h2 class="section-title">4. Specific Coding Tips for Application Performance</h2>
+
+    <!-- CSS Animations -->
+    <h3 class="subsection-title">4.1 Use CSS Animations and Transitions</h3>
+
+    <div class="block">
+      <p>
+        Instead of library functions using <code>setTimeout()</code> or absolute positioning, use
+        <strong>CSS animations</strong> and <strong>CSS transitions</strong>.
+      </p>
+      <p><strong>Benefits:</strong></p>
+      <ul>
+        <li>Browser optimizes and uses GPU automatically</li>
+        <li>Minimal processor impact</li>
+        <li>Standardized syntax</li>
+        <li>Granular control via keyframes</li>
+        <li>Easily triggered with <code>:hover</code>, <code>:focus</code>, <code>:target</code>, or JS class changes</li>
+      </ul>
+    </div>
+    <div class="fa">
+      به جای استفاده از <code>setTimeout()</code> یا موقعیت‌دهی absolute در جاوااسکریپت،
+      از <strong>CSS animations</strong> و <strong>CSS transitions</strong> استفاده کنید.
+      مرورگر این‌ها را GPU-accelerated می‌کند و پردازنده کمتری مصرف می‌کنند.
+    </div>
+
+    <!-- CSS Transforms -->
+    <h3 class="subsection-title">4.2 Use CSS Transforms</h3>
+
+    <div class="block">
+      <p>
+        Instead of tweaking <code>top</code>/<code>left</code> absolute positioning, use the
+        <code>transform</code> CSS property or individual transform properties.
+      </p>
+      <pre><code><span class="comment">/* ❌ Avoid: triggers layout recalculation */</span>
+element.style.left = '50px';
+element.style.top  = '100px';
+
+<span class="comment">/* ✅ Prefer: GPU-accelerated, no layout cost */</span>
+<span class="fn">transform</span>: translate(50px, 100px);
+
+<span class="comment">/* Or with individual properties (modern CSS) */</span>
+<span class="fn">translate</span>: 50px 100px;
+<span class="fn">rotate</span>: 45deg;
+<span class="fn">scale</span>: 1.2;</code></pre>
+      <div class="note">
+        <span class="badge badge-note">Tip</span>
+        On some platforms you may need <code>translateZ(0.1)</code> to force hardware acceleration,
+        but overuse can cause memory issues.
+      </div>
+    </div>
+    <div class="fa">
+      به جای تغییر <code>top</code> و <code>left</code> که باعث recalculation layout می‌شوند،
+      از <code>transform</code> استفاده کنید. این ویژگی hardware-accelerated است و هیچ هزینهٔ
+      layout ندارد. می‌توانید از properties جداگانه مثل <code>translate</code>، <code>rotate</code>
+      و <code>scale</code> هم استفاده کنید.
+    </div>
+
+    <!-- requestAnimationFrame -->
+    <h3 class="subsection-title">4.3 Use <code>requestAnimationFrame()</code> Instead of <code>setInterval()</code></h3>
+
+    <div class="block">
+      <pre><code><span class="comment">// ❌ Don't use — wastes CPU, reduces battery life</span>
+<span class="fn">setInterval</span>(() => {
+  <span class="comment">// animate something</span>
+}, 16);
+
+<span class="comment">// ✅ Use requestAnimationFrame instead</span>
+<span class="keyword">function</span> <span class="fn">animate</span>() {
+  <span class="comment">// animate something</span>
+  window.<span class="fn">requestAnimationFrame</span>(animate);
+}
+<span class="fn">animate</span>();</code></pre>
+      <p><strong>Why <code>requestAnimationFrame</code> is better:</strong></p>
+      <ul>
+        <li>Waits until the browser is ready to render a new frame</li>
+        <li>Won't run while the app is in the background — saves battery</li>
+        <li>Synced to the display refresh rate (no over-rendering)</li>
+      </ul>
+    </div>
+    <div class="fa">
+      به جای <code>setInterval</code> از <code>requestAnimationFrame</code> استفاده کنید.
+      این تابع منتظر می‌ماند تا مرورگر آماده رندر شود، در پس‌زمینه اجرا نمی‌شود (در نتیجه
+      باتری ذخیره می‌شود) و با نرخ refresh صفحه همگام است.
+    </div>
+
+    <!-- Touch Events -->
+    <h3 class="subsection-title">4.4 Make Events Immediate</h3>
+
+    <div class="block">
+      <p>
+        On mobile, <code>click</code> events have a ~300 ms delay. Use touch events for immediate response:
+      </p>
+      <pre><code><span class="comment">// ❌ Slow on mobile (300 ms delay)</span>
+element.<span class="fn">addEventListener</span>(<span class="string">'click'</span>, handleClick);
+
+<span class="comment">// ✅ Immediate on mobile</span>
+element.<span class="fn">addEventListener</span>(<span class="string">'touchstart'</span>, handleStart);
+element.<span class="fn">addEventListener</span>(<span class="string">'touchend'</span>,   handleEnd);</code></pre>
+      <div class="note">
+        <span class="badge badge-note">Tip</span>
+        Always test for touch support first to maintain keyboard/mouse accessibility.
+        Libraries like <strong>fastclick</strong> handle this gracefully.
+      </div>
+    </div>
+    <div class="fa">
+      در موبایل، رویداد <code>click</code> تقریباً ۳۰۰ میلی‌ثانیه تأخیر دارد. برای پاسخ‌دهی
+      فوری از <code>touchstart</code> و <code>touchend</code> استفاده کنید. ولی حتماً ابتدا
+      پشتیبانی لمسی را چک کنید تا accessibility خراب نشود.
+    </div>
+
+    <!-- Simple UI -->
+    <h3 class="subsection-title">4.5 Keep Your Interface Simple</h3>
+
+    <div class="block">
+      <p><strong>Problems with complex interfaces:</strong></p>
+      <ul>
+        <li>Moving many DOM elements makes everything sluggish</li>
+        <li>Gradients and drop shadows are performance-heavy</li>
+      </ul>
+      <p><strong>Solutions:</strong></p>
+      <ul>
+        <li>Simplify look-and-feel</li>
+        <li>During drag-and-drop, move only a proxy element</li>
+        <li>Keep in the DOM only visible elements plus a few on either side</li>
+        <li>Store data in JavaScript objects rather than reading from the DOM</li>
+        <li>Think of the display as a <em>presentation of data</em>, not the data itself</li>
+      </ul>
+      <p>
+        <strong>Example — Long list (like tweets):</strong> Keep only visible items in the DOM.
+        When scrolling, update the content of the topmost/bottommost elements rather than
+        moving hundreds of invisible nodes. This is far more efficient.
+      </p>
+    </div>
+    <div class="fa">
+      رابط کاربری پیچیده کند است: حرکت دادن عناصر زیاد، gradient‌ها و سایه‌ها هزینه دارند.
+      راه‌حل: DOM را ساده نگه دارید. در لیست‌های بلند (مثل توییتر) فقط آیتم‌های مرئی را
+      در DOM نگه دارید. داده‌ها را در آبجکت‌های JS نگه دارید و DOM را فقط برای نمایش استفاده کنید.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       5. GENERAL PERFORMANCE ANALYSIS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="analysis">
+    <h2 class="section-title">5. General Application Performance Analysis</h2>
+
+    <!-- Dev Tools -->
+    <h3 class="subsection-title">5.1 Browser Developer Tools</h3>
+
+    <div class="block">
+      <ul>
+        <li>
+          <strong>Firefox Network Monitor</strong> — Shows precise timeline of network requests,
+          request size, load time, and a visual graph of resource loading.
+        </li>
+        <li>
+          <strong>Firefox JavaScript Profiler</strong> — Identifies the slowest lines of code and
+          shows which functions consume the most time.
+        </li>
+        <li>
+          <strong>Built-in Gecko Profiler</strong> — More detailed than the JS profiler; shows which
+          browser code runs slowly and provides comprehensive performance data.
+        </li>
+      </ul>
+      <div class="note">
+        <span class="badge badge-note">Note</span>
+        These tools work with Android Firefox via <code>about:debugging</code>.
+      </div>
+    </div>
+    <div class="fa">
+      فایرفاکس چندین ابزار تحلیل عملکرد دارد: <strong>Network Monitor</strong> برای بررسی
+      درخواست‌های شبکه، <strong>JavaScript Profiler</strong> برای یافتن کندترین کدها، و
+      <strong>Gecko Profiler</strong> که جزئیات بیشتری ارائه می‌دهد. این ابزارها از طریق
+      <code>about:debugging</code> روی موبایل هم کار می‌کنند.
+    </div>
+
+    <!-- Mobile -->
+    <h3 class="subsection-title">5.2 Mobile-Specific Considerations</h3>
+
+    <div class="block">
+      <p>Mobile browsers are slower at:</p>
+      <ul>
+        <li>Making dozens/hundreds of network requests</li>
+        <li>Rendering large images and CSS gradients</li>
+        <li>Downloading large files (hardware often can't use full bandwidth)</li>
+      </ul>
+    </div>
+    <div class="fa">
+      مرورگرهای موبایل در سه زمینه کندتر هستند: درخواست‌های شبکه زیاد، رندر تصاویر بزرگ و
+      gradient های CSS، و دانلود فایل‌های حجیم. سخت‌افزار موبایل اغلب نمی‌تواند از تمام
+      پهنای باند موجود استفاده کند.
+    </div>
+
+    <!-- Test Cases -->
+    <h3 class="subsection-title">5.3 Test Cases and Submitting Bugs</h3>
+
+    <div class="block">
+      <p>When tools don't reveal the problem:</p>
+      <ol>
+        <li>Create a reduced test case that maximally isolates the issue</li>
+        <li>Try reproducing with a static HTML copy (including embedded resources)</li>
+        <li>Remove any private information</li>
+        <li>Share files or a URL for help</li>
+        <li>Include profiling information from the tools above</li>
+        <li>Submit a Bugzilla report or host on a server</li>
+      </ol>
+    </div>
+    <div class="fa">
+      وقتی ابزارها مشکل را پیدا نکردند: یک test case کوچک بسازید که مشکل را ایزوله کند،
+      با یک کپی HTML استاتیک آزمایش کنید، اطلاعات خصوصی را حذف کنید و همراه با اطلاعات
+      profiling، گزارش باگ ثبت کنید.
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

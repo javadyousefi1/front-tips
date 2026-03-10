@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResizeObserver API - Complete Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ResizeObserver API</h1>
+            <p>Observe changes to element dimensions with high performance</p>
+        </header>
+
+        <main>
+            <!-- Demo 1: Basic Resize Detection -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>1. Basic Resize Detection</h2>
+                    <span class="badge">Fundamentals</span>
+                </div>
+                <p class="description">Detect when an element's size changes with ResizeObserver</p>
+
+                <div class="demo-area">
+                    <div class="resizable-box" id="box1">
+                        <div class="resize-handle"></div>
+                        <div class="size-display" id="sizeDisplay1">
+                            Width: 300px<br>
+                            Height: 200px
+                        </div>
+                    </div>
+                    <div class="info-panel" id="infoPanel1">
+                        <h4>Resize Information</h4>
+                        <p>Resize count: <strong id="resizeCount1">0</strong></p>
+                        <p>Content box: <strong id="contentBox1">-</strong></p>
+                        <p>Border box: <strong id="borderBox1">-</strong></p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="resetBox1" class="btn btn-secondary">Reset Size</button>
+                    <span class="info-text">Drag the bottom-right corner to resize</span>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const observer = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    const { width, height } = entry.contentRect;
+    console.log(`Size: ${width}x${height}`);
+  }
+});
+
+observer.observe(element);</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 2: Responsive Text Sizing -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>2. Responsive Text Sizing</h2>
+                    <span class="badge">Typography</span>
+                </div>
+                <p class="description">Automatically adjust font size based on container width</p>
+
+                <div class="demo-area">
+                    <div class="text-container" id="textContainer">
+                        <div class="responsive-text" id="responsiveText">
+                            Resize Me!
+                        </div>
+                        <div class="container-info">
+                            Container: <span id="containerWidth">-</span>px
+                            | Font: <span id="fontSize">-</span>px
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="smallContainer" class="btn btn-primary">Small (200px)</button>
+                    <button id="mediumContainer" class="btn btn-primary">Medium (400px)</button>
+                    <button id="largeContainer" class="btn btn-primary">Large (600px)</button>
+                    <button id="resetContainer" class="btn btn-secondary">Reset</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const observer = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    const width = entry.contentRect.width;
+    // Scale font size based on container width
+    const fontSize = Math.max(16, width / 10);
+    entry.target.style.fontSize = `${fontSize}px`;
+  }
+});
+
+observer.observe(container);</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 3: Container Queries Simulation -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>3. Container Queries Simulation</h2>
+                    <span class="badge">Responsive</span>
+                </div>
+                <p class="description">Apply different styles based on container size</p>
+
+                <div class="demo-area">
+                    <div class="adaptive-container" id="adaptiveContainer">
+                        <div class="card-grid" id="cardGrid">
+                            <div class="grid-card">Card 1</div>
+                            <div class="grid-card">Card 2</div>
+                            <div class="grid-card">Card 3</div>
+                            <div class="grid-card">Card 4</div>
+                            <div class="grid-card">Card 5</div>
+                            <div class="grid-card">Card 6</div>
+                        </div>
+                        <div class="layout-info" id="layoutInfo">Layout: <strong>-</strong></div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <input type="range" id="containerSlider" min="200" max="800" value="500" class="slider">
+                    <span class="info-text">Width: <strong id="sliderValue">500</strong>px</span>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const observer = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    const width = entry.contentRect.width;
+
+    // Apply different layouts based on width
+    if (width < 400) {
+      entry.target.classList.add('small');
+      entry.target.classList.remove('medium', 'large');
+    } else if (width < 600) {
+      entry.target.classList.add('medium');
+      entry.target.classList.remove('small', 'large');
+    } else {
+      entry.target.classList.add('large');
+      entry.target.classList.remove('small', 'medium');
+    }
+  }
+});</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 4: Canvas/Chart Resize -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>4. Canvas Auto-Resize</h2>
+                    <span class="badge">Graphics</span>
+                </div>
+                <p class="description">Automatically redraw canvas when container resizes</p>
+
+                <div class="demo-area">
+                    <div class="canvas-wrapper" id="canvasWrapper">
+                        <canvas id="chart"></canvas>
+                        <div class="chart-info">
+                            Canvas: <span id="canvasSize">-</span>
+                            | Redraws: <span id="redrawCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="toggleFullWidth" class="btn btn-primary">Toggle Full Width</button>
+                    <button id="animateCanvas" class="btn btn-warning">Animate Size</button>
+                    <button id="stopAnimation" class="btn btn-danger">Stop</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const observer = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    const canvas = entry.target;
+    const { width, height } = entry.contentRect;
+
+    // Update canvas resolution
+    canvas.width = width;
+    canvas.height = height;
+
+    // Redraw
+    drawChart(canvas);
+  }
+});
+
+observer.observe(canvas);</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 5: Sidebar Resize Detection -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>5. Resizable Sidebar</h2>
+                    <span class="badge">Layout</span>
+                </div>
+                <p class="description">Detect sidebar resize and adjust main content</p>
+
+                <div class="demo-area">
+                    <div class="split-layout">
+                        <div class="sidebar" id="sidebar">
+                            <div class="sidebar-content">
+                                <h3>Sidebar</h3>
+                                <p>Width: <strong id="sidebarWidth">250</strong>px</p>
+                                <p>Drag the right edge to resize</p>
+                            </div>
+                            <div class="sidebar-resizer" id="sidebarResizer"></div>
+                        </div>
+                        <div class="main-content" id="mainContent">
+                            <h3>Main Content</h3>
+                            <p>Available width: <strong id="mainWidth">-</strong>px</p>
+                            <p>Sidebar takes: <strong id="sidebarPercent">-</strong>%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="collapseSidebar" class="btn btn-primary">Collapse Sidebar</button>
+                    <button id="expandSidebar" class="btn btn-primary">Expand Sidebar</button>
+                    <button id="resetSidebar" class="btn btn-secondary">Reset</button>
+                </div>
+
+                <div class="code-preview">
+<pre><code>const sidebarObserver = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    const sidebarWidth = entry.contentRect.width;
+    const totalWidth = container.offsetWidth;
+    const mainWidth = totalWidth - sidebarWidth;
+
+    mainContent.style.width = `${mainWidth}px`;
+    updateLayout(sidebarWidth, mainWidth);
+  }
+});
+
+sidebarObserver.observe(sidebar);</code></pre>
+                </div>
+            </section>
+
+            <!-- Demo 6: Multiple Elements Performance -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>6. Multiple Elements Observation</h2>
+                    <span class="badge">Performance</span>
+                </div>
+                <p class="description">Efficiently observe multiple elements with a single observer</p>
+
+                <div class="demo-area">
+                    <div class="grid-container" id="gridContainer">
+                        <div class="observed-item" data-index="1">Item 1</div>
+                        <div class="observed-item" data-index="2">Item 2</div>
+                        <div class="observed-item" data-index="3">Item 3</div>
+                        <div class="observed-item" data-index="4">Item 4</div>
+                        <div class="observed-item" data-index="5">Item 5</div>
+                        <div class="observed-item" data-index="6">Item 6</div>
+                    </div>
+                    <div class="performance-stats">
+                        <p>Total observations: <strong id="totalObs">0</strong></p>
+                        <p>Active elements: <strong id="activeElements">6</strong></p>
+                        <p>Last update: <strong id="lastUpdate">-</strong></p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="randomResize" class="btn btn-primary">Random Resize All</button>
+                    <button id="syncResize" class="btn btn-warning">Synchronized Resize</button>
+                    <button id="resetGrid" class="btn btn-secondary">Reset All</button>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="logUpdates" checked>
+                        Log updates to console
+                    </label>
+                </div>
+
+                <div class="code-preview">
+<pre><code>// Single observer for multiple elements
+const observer = new ResizeObserver(entries => {
+  console.log(`Processing ${entries.length} elements`);
+
+  for (const entry of entries) {
+    const element = entry.target;
+    const { width, height } = entry.contentRect;
+
+    element.querySelector('.size').textContent =
+      `${Math.round(width)}x${Math.round(height)}`;
+  }
+});
+
+// Observe all elements
+elements.forEach(el => observer.observe(el));</code></pre>
+                </div>
+            </section>
+        </main>
+
+        <aside class="info">
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>ResizeObserver</strong> - Constructor for observer</li>
+                <li><strong>observe(element)</strong> - Start observing</li>
+                <li><strong>unobserve(element)</strong> - Stop observing</li>
+                <li><strong>disconnect()</strong> - Stop all observations</li>
+                <li><strong>contentRect</strong> - Element dimensions</li>
+                <li><strong>borderBoxSize</strong> - With border/padding</li>
+                <li><strong>contentBoxSize</strong> - Content area only</li>
+            </ul>
+
+            <h3>Browser Support</h3>
+            <ul>
+                <li>Chrome: 64+</li>
+                <li>Firefox: 69+</li>
+                <li>Safari: 13.1+</li>
+                <li>Edge: 79+</li>
+                <li>Support: ~95% globally</li>
+                <li>Polyfill available</li>
+            </ul>
+
+            <h3>Advantages</h3>
+            <ul>
+                <li>Better than window.resize</li>
+                <li>Per-element notifications</li>
+                <li>High performance</li>
+                <li>No polling required</li>
+                <li>Debouncing built-in</li>
+                <li>Works with CSS animations</li>
+            </ul>
+
+            <h3>Common Use Cases</h3>
+            <ul>
+                <li>Responsive components</li>
+                <li>Container queries</li>
+                <li>Canvas/chart resizing</li>
+                <li>Adaptive typography</li>
+                <li>Layout calculations</li>
+                <li>Dynamic grids</li>
+                <li>Virtual scrolling</li>
+            </ul>
+
+            <h3>Best Practices</h3>
+            <ul>
+                <li>Use single observer for multiple elements</li>
+                <li>Disconnect when done</li>
+                <li>Avoid expensive operations in callback</li>
+                <li>Use requestAnimationFrame for rendering</li>
+                <li>Check browser support</li>
+                <li>Consider debouncing heavy operations</li>
+            </ul>
+
+            <h3>Box Models</h3>
+            <ul>
+                <li><strong>content-box</strong> - Content only</li>
+                <li><strong>border-box</strong> - Includes padding/border</li>
+                <li><strong>device-pixel-content-box</strong> - Physical pixels</li>
+            </ul>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

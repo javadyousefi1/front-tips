@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AbortController API - Complete Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AbortController API</h1>
+            <p>Learn how to cancel asynchronous operations</p>
+        </header>
+
+        <main>
+            <!-- Demo 1: Basic Fetch Abort -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>1. Abort Fetch Request</h2>
+                    <span class="badge">Basic</span>
+                </div>
+                <p class="description">Cancel an ongoing fetch request before it completes</p>
+
+                <div class="controls">
+                    <button id="startFetch" class="btn btn-primary">Start Slow Fetch (5s)</button>
+                    <button id="abortFetch" class="btn btn-danger">Abort Request</button>
+                </div>
+
+                <div class="output" id="fetchOutput">Click "Start Slow Fetch" to begin...</div>
+            </section>
+
+            <!-- Demo 2: Fetch with Timeout -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>2. Fetch with Timeout</h2>
+                    <span class="badge">Practical</span>
+                </div>
+                <p class="description">Automatically abort request if it takes too long</p>
+
+                <div class="controls">
+                    <div class="input-group">
+                        <label for="timeoutInput">Timeout (seconds):</label>
+                        <input type="number" id="timeoutInput" value="3" min="1" max="10">
+                    </div>
+                    <button id="startTimeout" class="btn btn-primary">Fetch with Timeout</button>
+                </div>
+
+                <div class="output" id="timeoutOutput">Set a timeout and start the request...</div>
+            </section>
+
+            <!-- Demo 3: Multiple Requests -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>3. Abort Multiple Requests</h2>
+                    <span class="badge">Advanced</span>
+                </div>
+                <p class="description">Cancel multiple simultaneous requests with one controller</p>
+
+                <div class="controls">
+                    <button id="startMultiple" class="btn btn-primary">Start 5 Requests</button>
+                    <button id="abortMultiple" class="btn btn-danger">Abort All</button>
+                </div>
+
+                <div class="output" id="multipleOutput">
+                    <div class="request-list" id="requestList"></div>
+                </div>
+            </section>
+
+            <!-- Demo 4: Event Listeners -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>4. Abort Event Listeners</h2>
+                    <span class="badge">Useful</span>
+                </div>
+                <p class="description">Remove event listeners using AbortController</p>
+
+                <div class="controls">
+                    <button id="addListeners" class="btn btn-primary">Add Event Listeners</button>
+                    <button id="removeListeners" class="btn btn-danger">Remove All Listeners</button>
+                </div>
+
+                <div class="interactive-area" id="interactiveArea">
+                    <div class="click-box" id="clickBox">Click Me!</div>
+                    <div class="hover-box" id="hoverBox">Hover Over Me!</div>
+                    <input type="text" id="inputBox" placeholder="Type something...">
+                </div>
+
+                <div class="output" id="eventOutput">Event log will appear here...</div>
+            </section>
+
+            <!-- Demo 5: Long Running Operation -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>5. Abort Long Operation</h2>
+                    <span class="badge">Complex</span>
+                </div>
+                <p class="description">Cancel a long-running loop or async operation</p>
+
+                <div class="controls">
+                    <button id="startOperation" class="btn btn-primary">Start Heavy Calculation</button>
+                    <button id="abortOperation" class="btn btn-danger">Abort Operation</button>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar" id="operationProgress"></div>
+                    <div class="progress-text" id="operationProgressText">0%</div>
+                </div>
+
+                <div class="output" id="operationOutput">Ready to start calculation...</div>
+            </section>
+
+            <!-- Demo 6: Chained Requests -->
+            <section class="demo-card">
+                <div class="demo-header">
+                    <h2>6. Abort Chained Operations</h2>
+                    <span class="badge">Real-world</span>
+                </div>
+                <p class="description">Cancel a series of dependent async operations</p>
+
+                <div class="controls">
+                    <button id="startChain" class="btn btn-primary">Start Chain (3 steps)</button>
+                    <button id="abortChain" class="btn btn-danger">Abort Chain</button>
+                </div>
+
+                <div class="chain-steps" id="chainSteps">
+                    <div class="step" id="step1">Step 1: Fetch User</div>
+                    <div class="step" id="step2">Step 2: Fetch Profile</div>
+                    <div class="step" id="step3">Step 3: Fetch Posts</div>
+                </div>
+
+                <div class="output" id="chainOutput">Click to start the chain...</div>
+            </section>
+        </main>
+
+        <aside class="info">
+            <h3>Key Concepts</h3>
+            <ul>
+                <li><strong>AbortController</strong> creates a controller object</li>
+                <li><strong>signal</strong> property is passed to abortable APIs</li>
+                <li><strong>abort()</strong> method cancels the operation</li>
+                <li><strong>AbortSignal</strong> communicates abort status</li>
+                <li>Can abort: fetch, event listeners, async operations</li>
+                <li>Always handle the <code>AbortError</code> exception</li>
+            </ul>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

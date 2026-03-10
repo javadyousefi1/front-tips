@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Background Synchronization API Complete Guide with Interactive Demos">
+    <meta name="theme-color" content="#00897B">
+    <title>Background Sync API - Interactive Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>🔄 Background Sync API</h1>
+            <p class="subtitle">Defer Actions Until Connectivity Returns — Interactive Demo</p>
+        </div>
+    </header>
+
+    <!-- SW Status Banner -->
+    <div class="status-banner" id="statusBanner">
+        <div class="container">
+            <div class="status-content">
+                <span class="status-indicator" id="statusIndicator">●</span>
+                <span id="statusText">Checking Service Worker status...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Network Status Bar -->
+    <div class="network-status" id="networkStatus">
+        <div class="container">
+            <span id="networkText">🌐 Online</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container">
+
+        <!-- Navigation Tabs -->
+        <nav class="demo-nav">
+            <button class="nav-btn active" data-demo="basic">Basic Sync</button>
+            <button class="nav-btn" data-demo="queue">Offline Queue</button>
+            <button class="nav-btn" data-demo="periodic">Periodic Sync</button>
+            <button class="nav-btn" data-demo="status">Sync Monitor</button>
+            <button class="nav-btn" data-demo="support">Support & Fallback</button>
+        </nav>
+
+        <!-- ================================================================ -->
+        <!-- Demo 1: Basic Background Sync                                    -->
+        <!-- ================================================================ -->
+        <section class="demo-section active" id="demo-basic">
+            <div class="demo-header">
+                <h2>📡 Demo 1: Basic Background Sync</h2>
+                <p>Register a sync event and watch it fire automatically when connectivity returns</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>How Background Sync Works:</h3>
+                    <ul>
+                        <li>Register a sync event with a unique tag name</li>
+                        <li>Browser fires the <code>sync</code> event in the Service Worker</li>
+                        <li>If offline, it waits and fires as soon as you're back online</li>
+                        <li>Automatically retries if the handler throws an error</li>
+                        <li>Works even if the tab is closed!</li>
+                    </ul>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Register a Sync Event</h3>
+                    <p>Type a tag name and register a one-time background sync:</p>
+                    <div class="form-group">
+                        <label for="syncTag">Sync Tag:</label>
+                        <input type="text" id="syncTag" value="sync-messages" class="input-field" placeholder="e.g. sync-messages">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="registerSyncBtn">Register Sync</button>
+                        <button class="btn btn-secondary" id="getPendingTagsBtn">Get Pending Tags</button>
+                    </div>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Sync Event Log:</h3>
+                    <div class="output-content" id="basicSyncOutput">
+                        <p class="muted">Sync events and results will appear here...</p>
+                    </div>
+                </div>
+
+                <div class="code-example">
+                    <h3>Code Example:</h3>
+                    <pre><code>// In your page JavaScript
+const registration = await navigator.serviceWorker.ready;
+await registration.sync.register('sync-messages');
+
+// In your Service Worker (sync-sw.js)
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-messages') {
+    event.waitUntil(sendPendingMessages());
+  }
+});</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================ -->
+        <!-- Demo 2: Offline Queue                                            -->
+        <!-- ================================================================ -->
+        <section class="demo-section" id="demo-queue">
+            <div class="demo-header">
+                <h2>📬 Demo 2: Offline Queue System</h2>
+                <p>Queue messages offline. They sync automatically when you go back online</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>Offline Queue Pattern:</h3>
+                    <ul>
+                        <li>Save data to IndexedDB before attempting to send</li>
+                        <li>Register a background sync event</li>
+                        <li>Service Worker picks up queued data and sends it</li>
+                        <li>On success: item removed from queue</li>
+                        <li>On failure: browser retries automatically</li>
+                    </ul>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Message Queue</h3>
+                    <p>Add a message to the queue. It will sync to the "server" when possible:</p>
+                    <div class="form-group">
+                        <label for="messageText">Message:</label>
+                        <input
+                            type="text"
+                            id="messageText"
+                            class="input-field"
+                            placeholder="Type a message to queue..."
+                        >
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="addToQueueBtn">Add to Queue</button>
+                        <button class="btn btn-secondary" id="triggerSyncBtn">Trigger Sync Now</button>
+                        <button class="btn btn-danger" id="clearQueueBtn">Clear Queue</button>
+                    </div>
+                </div>
+
+                <div class="queue-display">
+                    <h3>Queue Status:</h3>
+                    <div class="queue-stats" id="queueStats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="pendingCount">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="syncedCount">0</div>
+                            <div class="stat-label">Synced</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="failedCount">0</div>
+                            <div class="stat-label">Failed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Queue Items:</h3>
+                    <div class="output-content" id="queueOutput">
+                        <p class="muted">No items in the queue yet...</p>
+                    </div>
+                </div>
+
+                <div class="instruction-box">
+                    <h3>Try the Offline Experience:</h3>
+                    <ol>
+                        <li>Add a few messages to the queue</li>
+                        <li>Go offline (DevTools → Network → Offline)</li>
+                        <li>Add more messages while offline</li>
+                        <li>Come back online — watch messages sync automatically!</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================ -->
+        <!-- Demo 3: Periodic Background Sync                                 -->
+        <!-- ================================================================ -->
+        <section class="demo-section" id="demo-periodic">
+            <div class="demo-header">
+                <h2>⏰ Demo 3: Periodic Background Sync</h2>
+                <p>Register periodic sync to keep content fresh in the background</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>Periodic Background Sync:</h3>
+                    <ul>
+                        <li>Registers a recurring sync task with a minimum interval</li>
+                        <li>Browser decides actual timing based on usage patterns</li>
+                        <li>Requires the site to be installed as a PWA</li>
+                        <li>Requires user permission (similar to notifications)</li>
+                        <li>Fires the <code>periodicsync</code> event in the Service Worker</li>
+                    </ul>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Periodic Sync Controls</h3>
+                    <div class="form-group">
+                        <label for="periodicTag">Sync Tag:</label>
+                        <input type="text" id="periodicTag" value="periodic-content-refresh" class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label for="periodicInterval">Minimum Interval:</label>
+                        <select id="periodicInterval" class="input-field">
+                            <option value="60000">1 minute</option>
+                            <option value="3600000" selected>1 hour</option>
+                            <option value="86400000">24 hours</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="registerPeriodicBtn">Register Periodic Sync</button>
+                        <button class="btn btn-secondary" id="getPeriodicTagsBtn">Get Active Tags</button>
+                        <button class="btn btn-danger" id="unregisterPeriodicBtn">Unregister</button>
+                    </div>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Periodic Sync Log:</h3>
+                    <div class="output-content" id="periodicOutput">
+                        <p class="muted">Periodic sync events will appear here...</p>
+                    </div>
+                </div>
+
+                <div class="instruction-box">
+                    <h3>Browser Support Note:</h3>
+                    <p>Periodic Background Sync requires:</p>
+                    <ul>
+                        <li>Chrome 80+ or Edge 80+</li>
+                        <li>The site must be installed as a PWA</li>
+                        <li>User must have engaged with the site</li>
+                    </ul>
+                    <p>If your browser doesn't support it, a fallback message will be shown.</p>
+                </div>
+
+                <div class="comparison-table">
+                    <h3>One-Time vs Periodic Sync Comparison:</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>One-Time Sync</th>
+                                <th>Periodic Sync</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Trigger</td>
+                                <td>Fires once when online</td>
+                                <td>Fires repeatedly at intervals</td>
+                            </tr>
+                            <tr>
+                                <td>Use Case</td>
+                                <td>Submit pending data</td>
+                                <td>Refresh content</td>
+                            </tr>
+                            <tr>
+                                <td>Retry Logic</td>
+                                <td>Auto-retry on failure</td>
+                                <td>Skipped if offline</td>
+                            </tr>
+                            <tr>
+                                <td>Permission</td>
+                                <td>Not required</td>
+                                <td>Required (PWA)</td>
+                            </tr>
+                            <tr>
+                                <td>Browser Support</td>
+                                <td>Chrome, Edge, Opera</td>
+                                <td>Chrome 80+, Edge</td>
+                            </tr>
+                            <tr>
+                                <td>SW Event</td>
+                                <td><code>sync</code></td>
+                                <td><code>periodicsync</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================ -->
+        <!-- Demo 4: Sync Monitor                                             -->
+        <!-- ================================================================ -->
+        <section class="demo-section" id="demo-status">
+            <div class="demo-header">
+                <h2>📊 Demo 4: Sync Monitor</h2>
+                <p>Real-time monitoring of sync events and Service Worker messages</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>What the Monitor Shows:</h3>
+                    <ul>
+                        <li>All messages from the Service Worker</li>
+                        <li>Sync completion events with count of items synced</li>
+                        <li>Error notifications and retry information</li>
+                        <li>Periodic sync completion timestamps</li>
+                        <li>Network status changes</li>
+                    </ul>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Simulate Scenarios</h3>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="simulateSyncBtn">Simulate Background Sync</button>
+                        <button class="btn btn-secondary" id="simulateFailBtn">Simulate Sync Failure</button>
+                        <button class="btn btn-danger" id="clearMonitorBtn">Clear Log</button>
+                    </div>
+                </div>
+
+                <div class="monitor-panel">
+                    <div class="monitor-header">
+                        <h3>Live Event Monitor</h3>
+                        <div class="monitor-badge" id="eventCount">0 events</div>
+                    </div>
+                    <div class="output-content monitor-output" id="monitorOutput">
+                        <p class="muted">Waiting for events from Service Worker...</p>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">📡</div>
+                        <div class="metric-label">SW Status</div>
+                        <div class="metric-value" id="metricSwStatus">Checking...</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🌐</div>
+                        <div class="metric-label">Network</div>
+                        <div class="metric-value" id="metricNetwork">Online</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🔄</div>
+                        <div class="metric-label">Pending Syncs</div>
+                        <div class="metric-value" id="metricPendingSyncs">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">✅</div>
+                        <div class="metric-label">Total Synced</div>
+                        <div class="metric-value" id="metricTotalSynced">0</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================ -->
+        <!-- Demo 5: Browser Support & Fallback                              -->
+        <!-- ================================================================ -->
+        <section class="demo-section" id="demo-support">
+            <div class="demo-header">
+                <h2>🌐 Demo 5: Browser Support &amp; Fallback</h2>
+                <p>Check what's supported and implement graceful degradation</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>Graceful Degradation Strategy:</h3>
+                    <ul>
+                        <li>Check support before using any API</li>
+                        <li>Always save data locally as a safety net</li>
+                        <li>Fall back to <code>online</code> event listener</li>
+                        <li>Or use direct fetch with retry logic</li>
+                        <li>Never block the user interface</li>
+                    </ul>
+                </div>
+
+                <div class="support-checker">
+                    <h3>Your Browser's Support Status:</h3>
+                    <div class="support-grid" id="supportGrid">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Fallback Demo: Online Event Listener</h3>
+                    <p>When Background Sync is unavailable, listen to the <code>online</code> event:</p>
+                    <div class="form-group">
+                        <label for="fallbackMessage">Message to send:</label>
+                        <input
+                            type="text"
+                            id="fallbackMessage"
+                            class="input-field"
+                            placeholder="Message using fallback method..."
+                        >
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="sendWithFallbackBtn">Send (with Fallback)</button>
+                        <button class="btn btn-secondary" id="retryFetchBtn">Test Retry Logic</button>
+                    </div>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Fallback Log:</h3>
+                    <div class="output-content" id="fallbackOutput">
+                        <p class="muted">Fallback events will appear here...</p>
+                    </div>
+                </div>
+
+                <div class="code-example">
+                    <h3>Graceful Degradation Pattern:</h3>
+                    <pre><code>async function syncData(data) {
+  // Always save locally first!
+  await saveToIndexedDB('pending', data);
+
+  if ('serviceWorker' in navigator) {
+    const reg = await navigator.serviceWorker.ready;
+
+    if ('sync' in reg) {
+      // Background Sync supported
+      await reg.sync.register('sync-data');
+      return { method: 'background-sync' };
+    }
+  }
+
+  // Fallback: use online event listener
+  if (navigator.onLine) {
+    await sendToServer(data);
+    return { method: 'direct' };
+  }
+
+  window.addEventListener('online', async () => {
+    const pending = await getFromIndexedDB('pending');
+    for (const item of pending) {
+      await sendToServer(item);
+    }
+  }, { once: true });
+
+  return { method: 'online-listener-fallback' };
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section class="resources-section">
+            <h2>📚 Additional Resources</h2>
+            <div class="resource-grid">
+                <div class="resource-card">
+                    <h3>📖 Documentation</h3>
+                    <p>Read the complete README.md guide for detailed explanations and code examples.</p>
+                    <a href="README.md" class="btn btn-link">Read Guide</a>
+                </div>
+                <div class="resource-card">
+                    <h3>💻 View Service Worker</h3>
+                    <p>Examine the Service Worker source code to see how sync events are handled.</p>
+                    <a href="sync-sw.js" class="btn btn-link">View sync-sw.js</a>
+                </div>
+                <div class="resource-card">
+                    <h3>🔧 DevTools</h3>
+                    <p>Open DevTools → Application → Background Sync to inspect registered syncs.</p>
+                    <button class="btn btn-link" onclick="alert('Press F12 → Application → Background Sync')">How To</button>
+                </div>
+                <div class="resource-card">
+                    <h3>🌐 Browser Support</h3>
+                    <p>Check Background Sync support across different browsers on Can I Use.</p>
+                    <a href="https://caniuse.com/background-sync" target="_blank" class="btn btn-link">Can I Use</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Background Synchronization API - Interactive Guide | Learn by Doing 🚀</p>
+            <p class="muted">Open DevTools → Application → Background Sync to inspect registered syncs!</p>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

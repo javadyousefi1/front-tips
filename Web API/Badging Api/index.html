@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badging API - Interactive Guide</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#E53935">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1>🔴 Badging API</h1>
+            <p class="subtitle">Set a badge on your PWA icon — like unread message counters</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Support Check -->
+        <div class="support-banner" id="supportBanner">Checking support...</div>
+
+        <!-- PWA Install Banner -->
+        <div class="install-banner" id="installBanner" style="display:none">
+            <div class="install-text">
+                <strong>📲 Install as PWA</strong>
+                <span>to see the real badge on your OS taskbar / dock</span>
+            </div>
+            <button class="btn btn-install" id="installBtn">Install App</button>
+        </div>
+
+        <!-- Demo 1: Set Badge -->
+        <section class="card">
+            <h2>Set a Badge</h2>
+            <p>Set a numeric badge on your app icon. <strong>Install this page as a PWA</strong> to see the badge on your OS taskbar/dock.</p>
+
+            <div class="controls">
+                <label for="badgeCount">Badge count:</label>
+                <input type="number" id="badgeCount" value="3" min="0" max="999" class="input">
+                <button class="btn btn-primary" id="setBadgeBtn">Set Badge</button>
+                <button class="btn btn-secondary" id="setDotBtn">Set Dot (no number)</button>
+                <button class="btn btn-danger" id="clearBadgeBtn">Clear Badge</button>
+            </div>
+
+            <div class="output" id="output1">Click a button to see the result...</div>
+
+            <div class="code-block"><pre>// Set numeric badge
+await navigator.setAppBadge(3);
+
+// Set dot (no number)
+await navigator.setAppBadge();
+
+// Clear badge
+await navigator.clearAppBadge();</pre></div>
+        </section>
+
+        <!-- Demo 2: Unread Counter -->
+        <section class="card">
+            <h2>Unread Messages Counter</h2>
+            <p>A practical example: simulate incoming messages and track unread count with a badge.</p>
+
+            <div class="counter-display">
+                <div class="message-icon">💬</div>
+                <div class="badge-preview" id="badgePreview">0</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="newMessageBtn">+ New Message</button>
+                <button class="btn btn-secondary" id="readAllBtn">Mark All Read</button>
+            </div>
+
+            <div class="output" id="output2">Click "New Message" to simulate receiving a message...</div>
+
+            <div class="code-block"><pre>let unread = 0;
+
+function onNewMessage() {
+  unread++;
+  navigator.setAppBadge(unread);
+}
+
+function onMarkAllRead() {
+  unread = 0;
+  navigator.clearAppBadge();
+}</pre></div>
+        </section>
+
+        <!-- Demo 3: Auto-update on visibility -->
+        <section class="card">
+            <h2>Auto Badge on Tab Visibility</h2>
+            <p>A common pattern: show badge when the tab is hidden, clear it when the user returns.</p>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="startAutoBtn">Start Auto Mode</button>
+                <button class="btn btn-danger" id="stopAutoBtn" disabled>Stop Auto Mode</button>
+            </div>
+
+            <div class="output" id="output3">Click "Start Auto Mode", then switch to another tab...</div>
+
+            <div class="code-block"><pre>// Show badge when user leaves the tab
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    navigator.setAppBadge(pendingCount);
+  } else {
+    navigator.clearAppBadge();
+  }
+});</pre></div>
+        </section>
+
+        <!-- Browser Support Table -->
+        <section class="card">
+            <h2>Browser Support</h2>
+            <table>
+                <thead>
+                    <tr><th>Browser</th><th>Support</th><th>Note</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Chrome 81+</td><td>✅</td><td>Requires PWA install for OS badge</td></tr>
+                    <tr><td>Edge 81+</td><td>✅</td><td>Requires PWA install for OS badge</td></tr>
+                    <tr><td>Safari 17.4+</td><td>✅</td><td>iOS/macOS PWA</td></tr>
+                    <tr><td>Firefox</td><td>❌</td><td>Not supported</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Badging API Guide | Install as PWA to see OS-level badge 🔴</p>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(r => console.log('SW registered:', r.scope))
+                .catch(e => console.error('SW failed:', e));
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

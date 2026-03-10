@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How Browsers Work — MDN</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #0f1117;
+      --surface:        #1a1d27;
+      --surface2:       #22263a;
+      --border:         #2e3250;
+      --text:           #e2e8f0;
+      --muted:          #94a3b8;
+      --accent:         #6c8ef7;
+      --accent2:        #a78bfa;
+      --green:          #4ade80;
+      --yellow:         #facc15;
+      --red:            #f87171;
+      --code-bg:        #12151f;
+      --persian-bg:     #1e2535;
+      --persian-border: #3b4a7a;
+      --persian-text:   #c4b5fd;
+      --radius:         10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      padding: 0 1rem 4rem;
+    }
+
+    header { max-width: 860px; margin: 0 auto; padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); }
+    header .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.5rem; }
+    header h1 { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.75rem; }
+    header .source { font-size: 0.8rem; color: var(--muted); }
+    header .source a { color: var(--accent); text-decoration: none; }
+
+    main { max-width: 860px; margin: 0 auto; }
+
+    .section { margin-top: 3rem; }
+    .section-title { font-size: 1.5rem; font-weight: 700; color: var(--accent2); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .subsection-title { font-size: 1.15rem; font-weight: 600; color: var(--accent); margin: 1.75rem 0 0.75rem; }
+
+    .block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+    .block p { color: var(--text); margin-bottom: 0.5rem; }
+    .block p:last-of-type { margin-bottom: 0; }
+
+    .fa {
+      background: var(--persian-bg);
+      border: 1px solid var(--persian-border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1.25rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1.25rem;
+      direction: rtl;
+      text-align: right;
+      font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.9;
+      color: var(--persian-text);
+      position: relative;
+    }
+    .fa::before {
+      content: '🇮🇷 خلاصه';
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent2);
+      margin-bottom: 0.4rem;
+      direction: rtl;
+    }
+
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; overflow-x: auto; font-size: 0.88rem; line-height: 1.6; margin: 0.75rem 0; }
+    code { font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace; color: #93c5fd; }
+    .comment { color: #6b7280; }
+    .keyword { color: #c084fc; }
+    .string  { color: #86efac; }
+    .fn      { color: #67e8f9; }
+    .tag     { color: #f87171; }
+    .attr    { color: #facc15; }
+    .val     { color: #86efac; }
+
+    ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin-bottom: 0.3rem; color: var(--text); }
+
+    .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600; margin-right: 0.35rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-good { background: #14532d; color: var(--green); }
+    .badge-bad  { background: #450a0a; color: var(--red); }
+    .badge-note { background: #1c1917; color: var(--yellow); }
+
+    .note { border-left: 3px solid var(--yellow); background: #1c1917; border-radius: 0 var(--radius) var(--radius) 0; padding: 0.75rem 1rem; font-size: 0.9rem; color: #fde68a; margin: 0.75rem 0; }
+
+    strong { color: #f1f5f9; font-weight: 600; }
+    em { color: var(--muted); font-style: italic; }
+
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-top: 2rem; }
+    .toc h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.75rem; }
+    .toc ol { padding-left: 1.2rem; }
+    .toc a { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .toc a:hover { text-decoration: underline; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      .section-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="label">MDN Web Docs — Web Performance</div>
+  <h1>Populating the Page: How Browsers Work</h1>
+  <div class="source">
+    Source: <a href="https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/How_browsers_work" target="_blank">developer.mozilla.org</a>
+    &nbsp;|&nbsp; Dark mode &nbsp;|&nbsp; English + Persian summary
+  </div>
+</header>
+
+<main>
+
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#navigation">Navigation</a>
+        <ol>
+          <li><a href="#dns">DNS Lookup</a></li>
+          <li><a href="#tcp">TCP Handshake</a></li>
+          <li><a href="#tls">TLS Negotiation</a></li>
+        </ol>
+      </li>
+      <li><a href="#response">Response</a>
+        <ol>
+          <li><a href="#slow-start">Congestion Control / TCP Slow Start</a></li>
+        </ol>
+      </li>
+      <li><a href="#parsing">Parsing</a>
+        <ol>
+          <li><a href="#dom">Building the DOM Tree</a></li>
+          <li><a href="#preload">Preload Scanner</a></li>
+          <li><a href="#cssom">Building the CSSOM Tree</a></li>
+          <li><a href="#js-compile">JavaScript Compilation</a></li>
+          <li><a href="#aom">Building the Accessibility Tree</a></li>
+        </ol>
+      </li>
+      <li><a href="#render">Render</a>
+        <ol>
+          <li><a href="#style">Style</a></li>
+          <li><a href="#layout">Layout</a></li>
+          <li><a href="#paint">Paint</a></li>
+          <li><a href="#compositing">Compositing</a></li>
+        </ol>
+      </li>
+      <li><a href="#interactivity">Interactivity</a></li>
+    </ol>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       1. OVERVIEW
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="overview">
+    <h2 class="section-title">1. Overview</h2>
+
+    <div class="block">
+      <p>
+        Fast sites provide better user experiences. Users want and expect web experiences with content
+        that is fast to load and smooth to interact with.
+      </p>
+      <p>Two major issues in web performance are:</p>
+      <ol>
+        <li>Issues having to do with <strong>latency</strong></li>
+        <li>Issues having to do with the fact that <strong>browsers are single-threaded</strong></li>
+      </ol>
+      <p>
+        <strong>Latency</strong> is the biggest threat to ensuring a fast-loading page. It is the
+        developers' goal to make the site load as fast as possible — or at least <em>appear</em> to
+        load super fast — so the user gets the requested information as quickly as possible. Network
+        latency is the time it takes to transmit bytes over the air to computers.
+      </p>
+      <p>
+        For the most part, <strong>browsers are single-threaded</strong>. They execute a task from
+        beginning to end before taking up another task. For smooth interactions, the developer's goal
+        is to ensure performant site interactions — from smooth scrolling to being responsive to touch.
+        Render time is key, ensuring the main thread can complete all the work and still always be
+        available to handle user interactions. Web performance can be improved by understanding the
+        single-threaded nature of the browser and minimizing the main thread's responsibilities to
+        ensure rendering is smooth and responses to interactions are immediate.
+      </p>
+    </div>
+    <div class="fa">
+      سایت‌های سریع تجربه بهتری ارائه می‌دهند. دو مشکل اصلی در عملکرد وب وجود دارد:
+      اول <strong>تأخیر (Latency)</strong> که بزرگ‌ترین تهدید برای سرعت بارگذاری است و
+      به زمان انتقال بایت‌ها از طریق شبکه گفته می‌شود. هدف توسعه‌دهنده اینست که سایت واقعاً
+      یا حداقل <em>به‌نظر</em> سریع باشد. دوم <strong>تک‌نخی بودن مرورگر (Single-threaded)</strong>:
+      مرورگر یک وظیفه را از ابتدا تا انتها اجرا می‌کند و تا اتمام آن به وظیفه دیگری نمی‌پردازد.
+      بنابراین thread اصلی باید همیشه آزاد باشد تا به تعاملات کاربر پاسخ دهد.
+      بهبود عملکرد یعنی به حداقل رساندن مسئولیت‌های thread اصلی.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       2. NAVIGATION
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="navigation">
+    <h2 class="section-title">2. Navigation</h2>
+
+    <div class="block">
+      <p>
+        <em>Navigation</em> is the first step in loading a web page. It occurs whenever a user
+        requests a page by:
+      </p>
+      <ul>
+        <li>Entering a URL into the address bar</li>
+        <li>Clicking a link</li>
+        <li>Submitting a form</li>
+        <li>Other actions</li>
+      </ul>
+      <p>
+        One of the goals of web performance is to minimize the amount of time navigation takes to
+        complete. In ideal conditions, this usually doesn't take too long, but latency and bandwidth
+        are foes that can cause delays.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>Navigation</strong> اولین مرحله بارگذاری یک صفحه وب است و هر بار که کاربر
+      آدرسی وارد می‌کند، روی لینکی کلیک می‌کند، فرمی ارسال می‌کند یا اقدام مشابهی انجام
+      می‌دهد رخ می‌دهد. یکی از اهداف عملکرد وب، به حداقل رساندن زمان navigation است.
+      در شرایط ایده‌آل سریع است، اما تأخیر شبکه و پهنای باند می‌توانند آن را کند کنند.
+    </div>
+
+    <!-- DNS -->
+    <h3 class="subsection-title" id="dns">2.1 DNS Lookup</h3>
+
+    <div class="block">
+      <p>
+        The first step of navigating to a web page is finding where the assets for that page are
+        located. If you navigate to <code>https://example.com</code>, the HTML page is located on
+        the server with IP address <code>93.184.216.34</code>. If you've never visited this site,
+        a DNS lookup must happen.
+      </p>
+      <p>
+        Your browser requests a DNS lookup, which is eventually fielded by a name server, which in
+        turn responds with an IP address. After this initial request, the IP will likely be
+        <strong>cached</strong> for a time, which speeds up subsequent requests by retrieving the
+        IP address from the cache instead of contacting a name server again.
+      </p>
+      <p>
+        DNS lookups usually only need to be done <strong>once per hostname</strong> for a page load.
+        However, DNS lookups must be done for <strong>each unique hostname</strong> the requested
+        page references. If your fonts, images, scripts, ads, and metrics all have different
+        hostnames, a DNS lookup will have to be made for each one.
+      </p>
+      <p>
+        This can be problematic for performance, particularly on <strong>mobile networks</strong>.
+        When a user is on a mobile network, each DNS lookup has to go from the phone to the cell
+        tower to reach an authoritative DNS server. The distance between a phone, a cell tower, and
+        the name server can add significant latency.
+      </p>
+    </div>
+    <div class="fa">
+      اولین قدم، پیدا کردن آدرس IP سرور است. مرورگر یک <strong>DNS Lookup</strong> درخواست
+      می‌کند و name server آدرس IP را برمی‌گرداند. این IP معمولاً برای مدتی <strong>cache</strong>
+      می‌شود تا درخواست‌های بعدی سریع‌تر باشند. نکته مهم: DNS lookup <strong>برای هر hostname
+      منحصربه‌فرد</strong> در صفحه باید انجام شود — فونت‌ها، تصاویر، اسکریپت‌ها، تبلیغات و
+      metrics اگر hostname متفاوت داشته باشند، هر کدام به یک DNS lookup جداگانه نیاز دارند.
+      در شبکه‌های موبایل این مشکل‌سازتر است چون سیگنال باید از گوشی به آنتن و از آنتن به
+      DNS server برود که تأخیر قابل توجهی ایجاد می‌کند.
+    </div>
+
+    <!-- TCP -->
+    <h3 class="subsection-title" id="tcp">2.2 TCP Handshake</h3>
+
+    <div class="block">
+      <p>
+        Once the IP address is known, the browser sets up a connection to the server via a
+        <strong>TCP three-way handshake</strong>. This mechanism is designed so that two entities
+        attempting to communicate — in this case the browser and web server — can negotiate the
+        parameters of the network TCP socket connection before transmitting data, often over HTTPS.
+      </p>
+      <p>
+        TCP's three-way handshaking technique is often referred to as
+        <strong>"SYN-SYN-ACK"</strong> — or more accurately <strong>SYN, SYN-ACK, ACK</strong> —
+        because there are three messages transmitted by TCP to negotiate and start a TCP session
+        between two computers. This means <strong>three more messages back and forth</strong>
+        between each server, and the request has yet to be made.
+      </p>
+    </div>
+    <div class="fa">
+      پس از یافتن IP، مرورگر از طریق <strong>TCP Three-Way Handshake</strong> اتصال برقرار
+      می‌کند. این فرآیند شامل سه پیام است: <strong>SYN → SYN-ACK → ACK</strong>. هدف آن
+      توافق بر روی پارامترهای اتصال قبل از ارسال داده است. یعنی قبل از اینکه هنوز هیچ
+      درخواستی ارسال شده باشد، سه پیام رفت‌وبرگشت بین مرورگر و سرور انجام می‌شود.
+    </div>
+
+    <!-- TLS -->
+    <h3 class="subsection-title" id="tls">2.3 TLS Negotiation</h3>
+
+    <div class="block">
+      <p>
+        For secure connections established over HTTPS, another "handshake" is required — the
+        <strong>TLS negotiation</strong>. It determines which cipher will be used to encrypt the
+        communication, verifies the server, and establishes that a secure connection is in place
+        before beginning the actual transfer of data. This requires
+        <strong>five more round trips</strong> to the server before the request for content is
+        actually sent.
+      </p>
+      <p>
+        While making the connection secure adds time to the page load, a secure connection is worth
+        the latency expense, as the data transmitted between the browser and the web server cannot
+        be decrypted by a third party.
+      </p>
+      <div class="note">
+        <span class="badge badge-note">Note</span>
+        After the eight round trips to the server (3 TCP + 5 TLS), the browser is finally able to
+        make the actual content request.
+      </div>
+    </div>
+    <div class="fa">
+      برای اتصالات HTTPS، یک <strong>TLS Negotiation</strong> اضافی لازم است. این مذاکره
+      تعیین می‌کند از چه cipher رمزنگاری استفاده شود، سرور را تأیید می‌کند و اتصال امن
+      برقرار می‌کند. این فرآیند <strong>پنج رفت‌وبرگشت اضافه</strong> به سرور نیاز دارد.
+      در کل، قبل از ارسال اولین درخواست واقعی، <strong>۸ رفت‌وبرگشت</strong> (۳ مرحله TCP
+      + ۵ مرحله TLS) انجام می‌شود. با اینکه امنیت زمان می‌برد، ارزشش را دارد چون داده‌ها
+      توسط اشخاص ثالث رمزگشایی نمی‌شوند.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       3. RESPONSE
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="response">
+    <h2 class="section-title">3. Response</h2>
+
+    <div class="block">
+      <p>
+        Once we have an established connection to a web server, the browser sends an initial HTTP
+        <code>GET</code> request on behalf of the user, which for websites is most often an HTML
+        file. Once the server receives the request, it will reply with relevant response headers and
+        the contents of the HTML.
+      </p>
+      <pre><code><span class="tag">&lt;!doctype html&gt;</span>
+<span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="val">"en-US"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="val">"UTF-8"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;title&gt;</span>My simple page<span class="tag">&lt;/title&gt;</span>
+    <span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span> <span class="attr">href</span>=<span class="val">"styles.css"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"myscript.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+  <span class="tag">&lt;/head&gt;</span>
+  <span class="tag">&lt;body&gt;</span>
+    <span class="tag">&lt;h1</span> <span class="attr">class</span>=<span class="val">"heading"</span><span class="tag">&gt;</span>My Page<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>A paragraph with a <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://example.com/about"</span><span class="tag">&gt;</span>link<span class="tag">&lt;/a&gt;&lt;/p&gt;</span>
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"my-image.jpg"</span> <span class="attr">alt</span>=<span class="val">"image description"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"another-script.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+  <span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+      <p>
+        This response contains the first byte of data received. <strong>Time to First Byte (TTFB)</strong>
+        is the time between when the user made the request — say by clicking on a link — and the
+        receipt of this first packet of HTML. The first chunk of content is usually
+        <strong>14KB of data</strong>.
+      </p>
+      <p>
+        The linked resources aren't requested until the browser encounters the links during parsing,
+        even if the total page is larger than the initial 14KB packet.
+      </p>
+    </div>
+    <div class="fa">
+      پس از برقراری اتصال، مرورگر یک HTTP <code>GET</code> request ارسال می‌کند و سرور با
+      HTML پاسخ می‌دهد. <strong>TTFB (Time to First Byte)</strong> زمانی است که از کلیک
+      کاربر تا دریافت اولین بایت HTML طول می‌کشد. اولین بسته داده معمولاً <strong>۱۴ کیلوبایت</strong>
+      است. منابع لینک‌شده (CSS، JS، تصاویر) تا زمانی که مرورگر در حین parse کردن به آن‌ها
+      برسد درخواست داده نمی‌شوند.
+    </div>
+
+    <!-- TCP Slow Start -->
+    <h3 class="subsection-title" id="slow-start">3.1 Congestion Control / TCP Slow Start</h3>
+
+    <div class="block">
+      <p>
+        TCP packets are split into segments during transmission. Because TCP guarantees the sequence
+        of packets, the server must receive an acknowledgment (<strong>ACK</strong>) from the client
+        after sending a certain number of segments.
+      </p>
+      <p>
+        In order to balance the number of transmitted segments, the <strong>TCP slow start</strong>
+        algorithm is used to gradually increase the amount of transmitted data until the maximum
+        network bandwidth can be determined, and to reduce the amount of transmitted data in case
+        of high network load.
+      </p>
+      <p>
+        The number of segments to be transmitted is controlled by the value of the
+        <strong>congestion window (CWND)</strong>, which can be initialized to 1, 2, 4, or
+        10 MSS (MSS is 1500 bytes over the Ethernet protocol).
+      </p>
+      <ul>
+        <li>If an <strong>ACK is received</strong> → CWND value is <strong>doubled</strong>, so the server can send more segments next time</li>
+        <li>If <strong>no ACK is received</strong> → CWND value is <strong>halved</strong> to reduce load</li>
+      </ul>
+      <p>
+        This mechanism achieves a balance between sending too many segments and sending too few,
+        adapting to the actual network capacity dynamically.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>TCP Slow Start</strong> الگوریتمی است که حجم داده ارسالی را به‌تدریج افزایش
+      می‌دهد تا حداکثر پهنای باند شبکه تعیین شود. تعداد بخش‌های قابل ارسال توسط
+      <strong>congestion window (CWND)</strong> کنترل می‌شود که می‌تواند با ۱، ۲، ۴ یا ۱۰
+      MSS (هر MSS برابر ۱۵۰۰ بایت) شروع شود. اگر <strong>ACK دریافت شود</strong>، CWND
+      دو برابر می‌شود و سرور می‌تواند بیشتر بفرستد. اگر <strong>ACK دریافت نشود</strong>،
+      CWND نصف می‌شود. این مکانیسم به‌صورت پویا با ظرفیت واقعی شبکه تطبیق پیدا می‌کند
+      و از ارسال بیش از حد یا کمتر از حد جلوگیری می‌کند.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       4. PARSING
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="parsing">
+    <h2 class="section-title">4. Parsing</h2>
+
+    <div class="block">
+      <p>
+        Once the browser receives the first chunk of data, it can begin parsing the information
+        received. <strong>Parsing</strong> is the step the browser takes to turn the data it
+        receives over the network into the <strong>DOM</strong> and <strong>CSSOM</strong>, which
+        is used by the renderer to paint a page to the screen.
+      </p>
+      <p>
+        Even if the requested page's HTML is larger than the initial 14KB packet, the browser will
+        begin parsing and attempting to render an experience based on the data it has. This is why
+        it's important for web performance optimization to include everything the browser needs to
+        start rendering a page — or at least a template of the page — the CSS and HTML needed for
+        the first render — in the first 14KB.
+      </p>
+    </div>
+    <div class="fa">
+      به محض دریافت اولین بسته داده، مرورگر شروع به <strong>Parsing</strong> می‌کند.
+      Parsing فرآیند تبدیل داده‌های دریافتی از شبکه به <strong>DOM</strong> و <strong>CSSOM</strong>
+      است که renderer برای رسم صفحه از آن‌ها استفاده می‌کند. حتی اگر صفحه بزرگ‌تر از
+      ۱۴ کیلوبایت اولیه باشد، مرورگر فوراً شروع به parse و render می‌کند. به همین دلیل
+      بسیار مهم است که همه چیزی که برای رندر اولیه لازم است — CSS و HTML — در همان ۱۴
+      کیلوبایت اول قرار بگیرد.
+    </div>
+
+    <!-- DOM -->
+    <h3 class="subsection-title" id="dom">4.1 Building the DOM Tree</h3>
+
+    <div class="block">
+      <p>
+        The first step is processing the HTML markup and building the DOM tree. HTML parsing
+        involves <strong>tokenization</strong> and <strong>tree construction</strong>. HTML tokens
+        include start and end tags, as well as attribute names and values. If the document is
+        well-formed, parsing it is straightforward and faster.
+      </p>
+      <p>
+        The DOM tree describes the content of the document. The <code>&lt;html&gt;</code> element
+        is the first element and root node of the document tree. The tree reflects the relationships
+        and hierarchies between different elements. Elements nested within other elements are child
+        nodes. <strong>The greater the number of DOM nodes, the longer it takes to construct the
+        DOM tree.</strong>
+      </p>
+      <p>
+        When the parser finds <strong>non-blocking resources</strong>, such as an image, the browser
+        will request those resources and continue parsing. Parsing can continue when a CSS file is
+        encountered, but <code>&lt;script&gt;</code> elements — particularly those without an
+        <code>async</code> or <code>defer</code> attribute — <strong>block rendering and pause
+        the parsing of HTML</strong>. Though the browser's preload scanner hastens this process,
+        excessive scripts can still be a significant bottleneck.
+      </p>
+    </div>
+    <div class="fa">
+      اولین قدم، پردازش HTML و ساخت <strong>DOM tree</strong> است. HTML parsing شامل دو
+      مرحله است: <strong>Tokenization</strong> (تقسیم به توکن‌های start tag، end tag،
+      attribute و مقدار) و <strong>Tree Construction</strong> (ساختن درخت سلسله‌مراتبی).
+      عنصر <code>&lt;html&gt;</code> root node درخت است. هر چه تعداد DOM node‌ها بیشتر باشد،
+      ساختن DOM tree طولانی‌تر است. منابع non-blocking مثل تصاویر بارگذاری می‌شوند و
+      parsing ادامه می‌یابد، اما تگ <code>&lt;script&gt;</code> بدون <code>async</code> یا
+      <code>defer</code> هم رندر و هم parsing HTML را <strong>متوقف می‌کند</strong>.
+    </div>
+
+    <!-- Preload Scanner -->
+    <h3 class="subsection-title" id="preload">4.2 Preload Scanner</h3>
+
+    <div class="block">
+      <p>
+        While the browser builds the DOM tree, this process occupies the main thread. As this
+        happens, the <em>preload scanner</em> will parse through the content available and request
+        high-priority resources like CSS, JavaScript, and web fonts. Thanks to the preload scanner,
+        we don't have to wait until the parser finds a reference to an external resource to request
+        it. It will retrieve resources in the background so that by the time the main HTML parser
+        reaches the requested assets, they may already be in flight or have been downloaded.
+      </p>
+      <pre><code><span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="val">"stylesheet"</span> <span class="attr">href</span>=<span class="val">"styles.css"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"my-script.js"</span> <span class="attr">async</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"my-image.jpg"</span> <span class="attr">alt</span>=<span class="val">"image description"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"another-script.js"</span> <span class="attr">async</span><span class="tag">&gt;&lt;/script&gt;</span></code></pre>
+      <p>
+        In this example, while the main thread is parsing the HTML and CSS, the preload scanner
+        will find the scripts and image, and start downloading them. To ensure the script doesn't
+        block the process, add the <code>async</code> attribute, or the <code>defer</code> attribute
+        if JavaScript parsing and execution order is important.
+      </p>
+      <div class="note">
+        <span class="badge badge-note">Note</span>
+        Waiting to obtain CSS doesn't block HTML parsing or downloading, but it does
+        <strong>block JavaScript</strong> because JavaScript is often used to query CSS properties'
+        impact on elements.
+      </div>
+    </div>
+    <div class="fa">
+      در حالی که thread اصلی مشغول ساخت DOM است، <strong>Preload Scanner</strong> به‌طور
+      موازی محتوای HTML را اسکن می‌کند و منابع با اولویت بالا مثل CSS، JavaScript و فونت‌ها
+      را در پس‌زمینه دانلود می‌کند. این باعث می‌شود وقتی parser اصلی به این منابع می‌رسد،
+      احتمالاً قبلاً دانلود شده باشند. برای جلوگیری از blocking اسکریپت‌ها، از attribute
+      <code>async</code> (برای اسکریپت‌های مستقل) یا <code>defer</code> (برای اسکریپت‌هایی
+      که ترتیب اجرا مهم است) استفاده کنید. نکته مهم: CSS دانلود HTML را block نمی‌کند،
+      اما <strong>JavaScript را block می‌کند</strong> چون JS اغلب به CSS properties دسترسی
+      دارد.
+    </div>
+
+    <!-- CSSOM -->
+    <h3 class="subsection-title" id="cssom">4.3 Building the CSSOM Tree</h3>
+
+    <div class="block">
+      <p>
+        The second step in the critical rendering path is processing CSS and building the
+        <strong>CSSOM tree</strong>. The CSS object model is similar to the DOM — both are trees
+        and independent data structures. The browser converts the CSS rules into a map of styles
+        it can understand and work with. The browser goes through each rule set in the CSS, creating
+        a tree of nodes with parent, child, and sibling relationships based on the CSS selectors.
+      </p>
+      <p>
+        The CSSOM tree includes styles from the <strong>user agent style sheet</strong>. The browser
+        begins with the most general rule applicable to a node and recursively refines the computed
+        styles by applying more specific rules — in other words, it <strong>cascades</strong> the
+        property values.
+      </p>
+      <p>
+        Building the CSSOM is very fast, and its build time is not displayed separately in developer
+        tools. Rather, the <em>"Recalculate Style"</em> in DevTools shows the total time to parse
+        CSS, construct the CSSOM tree, and recursively calculate computed styles. In terms of web
+        performance, the total time to create the CSSOM is generally <strong>less than the time it
+        takes for one DNS lookup</strong>.
+      </p>
+    </div>
+    <div class="fa">
+      دومین قدم در مسیر رندر، ساخت <strong>CSSOM tree</strong> است. مثل DOM، CSSOM هم
+      یک درخت مستقل است. مرورگر قوانین CSS را به یک نقشه از استایل‌ها تبدیل می‌کند و
+      برای هر selector یک گره در درخت می‌سازد با روابط parent، child و sibling. CSSOM
+      شامل استایل‌های <strong>user agent (مرورگر پیش‌فرض)</strong> هم هست. مرورگر از
+      کلی‌ترین قانون شروع می‌کند و با قوانین خاص‌تر آن را override می‌کند — یعنی
+      همان <strong>cascade</strong>. ساخت CSSOM بسیار سریع است و در DevTools زیر
+      "Recalculate Style" نشان داده می‌شود. معمولاً <strong>سریع‌تر از یک DNS Lookup</strong>
+      انجام می‌شود.
+    </div>
+
+    <!-- JS Compilation -->
+    <h3 class="subsection-title" id="js-compile">4.4 JavaScript Compilation</h3>
+
+    <div class="block">
+      <p>
+        While the CSS is being parsed and the CSSOM created, other assets including JavaScript
+        files are downloading (thanks to the preload scanner). JavaScript is
+        <strong>parsed, compiled, and interpreted</strong>. The scripts are parsed into
+        <strong>abstract syntax trees (AST)</strong>. Some browser engines take the ASTs and pass
+        them into a compiler, outputting <strong>bytecode</strong>. This is known as
+        JavaScript compilation. Most of the code is interpreted on the main thread, but there
+        are exceptions such as code run in web workers.
+      </p>
+    </div>
+    <div class="fa">
+      در حین parse و ساخت CSSOM، فایل‌های JavaScript هم (توسط preload scanner) دانلود
+      می‌شوند. JS سه مرحله را طی می‌کند: <strong>Parsing</strong> (تبدیل به Abstract Syntax
+      Tree یا AST)، <strong>Compilation</strong> (برخی موتورها AST را به bytecode کامپایل
+      می‌کنند) و <strong>Interpretation</strong> (اجرا). اکثر کدها روی thread اصلی
+      اجرا می‌شوند، به استثنای کدهایی که در <strong>Web Worker</strong> اجرا می‌شوند.
+    </div>
+
+    <!-- AOM -->
+    <h3 class="subsection-title" id="aom">4.5 Building the Accessibility Tree (AOM)</h3>
+
+    <div class="block">
+      <p>
+        The browser also builds an <strong>accessibility tree</strong> that assistive devices use
+        to parse and interpret content. The <strong>accessibility object model (AOM)</strong> is
+        like a semantic version of the DOM. The browser updates the accessibility tree when the DOM
+        is updated. The accessibility tree is not modifiable by assistive technologies themselves.
+      </p>
+      <div class="note">
+        <span class="badge badge-note">Important</span>
+        Until the AOM is built, the content is not accessible to screen readers.
+      </div>
+    </div>
+    <div class="fa">
+      مرورگر همچنین یک <strong>Accessibility Tree</strong> می‌سازد که ابزارهای کمکی مثل
+      screen reader‌ها از آن برای parse و تفسیر محتوا استفاده می‌کنند.
+      <strong>AOM (Accessibility Object Model)</strong> نسخه معنایی (semantic) DOM است.
+      هرگاه DOM بروز شود، AOM هم بروز می‌شود. ابزارهای کمکی نمی‌توانند مستقیماً AOM
+      را تغییر دهند. نکته حیاتی: <strong>تا زمانی که AOM ساخته نشده، محتوا برای
+      screen reader‌ها قابل دسترسی نیست.</strong>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       5. RENDER
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="render">
+    <h2 class="section-title">5. Render</h2>
+
+    <div class="block">
+      <p>
+        Rendering steps include <strong>style, layout, paint</strong>, and in some cases
+        <strong>compositing</strong>. The CSSOM and DOM trees created in the parsing step are
+        combined into a <strong>render tree</strong> which is then used to compute the layout of
+        every visible element, which is then painted to the screen. In some cases, content can be
+        promoted to its own layer and composited, improving performance by painting portions of
+        the screen on the GPU instead of the CPU, freeing up the main thread.
+      </p>
+    </div>
+    <div class="fa">
+      مرحله Render شامل چهار زیرمرحله است: <strong>Style → Layout → Paint → Compositing</strong>.
+      DOM و CSSOM با هم ترکیب شده و یک <strong>Render Tree</strong> می‌سازند که برای
+      محاسبه layout هر عنصر مرئی استفاده می‌شود، سپس روی صفحه نقاشی می‌شود. در برخی
+      موارد محتوا به لایه جداگانه‌ای ارتقا می‌یابد که روی GPU رندر می‌شود — این کار
+      عملکرد را بهبود می‌دهد و thread اصلی را آزاد می‌کند.
+    </div>
+
+    <!-- Style -->
+    <h3 class="subsection-title" id="style">5.1 Style</h3>
+
+    <div class="block">
+      <p>
+        The third step in the critical rendering path is combining the DOM and CSSOM into a
+        <strong>render tree</strong>. Construction starts with the root of the DOM tree, traversing
+        each visible node.
+      </p>
+      <p>
+        Elements that aren't going to be displayed — like the <code>&lt;head&gt;</code> element and
+        any nodes with <code>display: none</code> — are <strong>not included</strong> in the render
+        tree as they will not appear in the rendered output. However, nodes with
+        <code>visibility: hidden</code> applied <strong>are included</strong> in the render tree,
+        as they do take up space.
+      </p>
+      <p>
+        Each visible node has its CSSOM rules applied to it. The render tree holds all the visible
+        nodes with content and computed styles — matching up all the relevant styles to every visible
+        node in the DOM tree, and determining, based on the CSS cascade, what the computed styles
+        are for each node.
+      </p>
+    </div>
+    <div class="fa">
+      سومین قدم: ترکیب DOM و CSSOM برای ساخت <strong>Render Tree</strong>. مرورگر از root
+      شروع می‌کند و هر node مرئی را traverse می‌کند. عناصری مثل <code>&lt;head&gt;</code>
+      یا هر چیزی با <code>display: none</code> در render tree <strong>نیستند</strong>.
+      اما عناصر با <code>visibility: hidden</code> <strong>هستند</strong> چون فضا اشغال
+      می‌کنند. در نهایت هر node مرئی با computed style خودش (بر اساس cascade CSS) در
+      render tree قرار می‌گیرد.
+    </div>
+
+    <!-- Layout -->
+    <h3 class="subsection-title" id="layout">5.2 Layout</h3>
+
+    <div class="block">
+      <p>
+        The fourth step in the critical rendering path is running <strong>layout</strong> on the
+        render tree to compute the geometry of each node. Layout is the process by which the
+        <strong>dimensions and location</strong> of all the nodes in the render tree are determined,
+        plus the determination of the size and position of each object on the page.
+        <strong>Reflow</strong> is any subsequent size and position determination of any part of
+        the page or the entire document.
+      </p>
+      <p>
+        On the web page, almost everything is a box. Different devices and different desktop
+        preferences mean an unlimited number of differing viewport sizes. In this phase, taking the
+        viewport size into consideration, the browser determines what the sizes of all the different
+        boxes are going to be on the screen. Layout generally starts with the body, laying out the
+        sizes of all the body's descendants.
+      </p>
+      <p>
+        The first time the size and position of each node is determined is called <em>layout</em>.
+        Subsequent recalculations are called <em>reflows</em>. For example, if the dimensions of
+        an image are not declared, a reflow will occur once the image dimensions are known after
+        loading.
+      </p>
+    </div>
+    <div class="fa">
+      چهارمین قدم: <strong>Layout</strong> — محاسبه هندسه (ابعاد و مکان) هر node در
+      render tree. هر چیزی در وب تقریباً یک جعبه (box) است. مرورگر با در نظر گرفتن
+      اندازه viewport تعیین می‌کند هر box چه ابعاد و چه موقعیتی روی صفحه داشته باشد.
+      Layout معمولاً از <code>body</code> شروع می‌شود و به زیرعناصر ادامه می‌یابد.
+      اولین بار که مکان و اندازه node‌ها تعیین می‌شود <strong>Layout</strong> نام دارد
+      و محاسبات بعدی <strong>Reflow</strong>. مثلاً اگر ابعاد تصویر تعریف نشده باشد،
+      بعد از بارگذاری تصویر یک Reflow رخ می‌دهد.
+    </div>
+
+    <!-- Paint -->
+    <h3 class="subsection-title" id="paint">5.3 Paint</h3>
+
+    <div class="block">
+      <p>
+        The last step in the critical rendering path is painting the individual nodes to the screen,
+        the first occurrence of which is called the <strong>First Meaningful Paint</strong>. In the
+        painting or <em>rasterization</em> phase, the browser converts each box calculated in the
+        layout phase to actual pixels on the screen. Painting involves drawing every visual part of
+        an element to the screen, including <strong>text, colors, borders, shadows, and replaced
+        elements</strong> like buttons and images.
+      </p>
+      <p>
+        To ensure smooth scrolling and animation, everything occupying the main thread — including
+        calculating styles, reflow, and paint — must take the browser <strong>less than
+        16.67ms</strong> to accomplish (at 60 fps). At 2048 × 1536, the iPad has over 3,145,000
+        pixels to be painted to the screen — a lot of pixels that have to be painted very quickly.
+      </p>
+      <p>
+        Painting can break the elements in the layout tree into <strong>layers</strong>. Promoting
+        content into layers on the GPU (instead of the main thread on the CPU) improves paint and
+        repaint performance. Elements that instantiate their own layer include:
+      </p>
+      <ul>
+        <li><code>&lt;video&gt;</code></li>
+        <li><code>&lt;canvas&gt;</code></li>
+        <li>Any element with CSS property <code>opacity</code></li>
+        <li>Any element with 3D <code>transform</code></li>
+        <li>Any element with <code>will-change</code></li>
+      </ul>
+      <div class="note">
+        <span class="badge badge-note">Warning</span>
+        Layers improve performance but are expensive in memory management.
+        Do not overuse them as a web performance optimization strategy.
+      </div>
+    </div>
+    <div class="fa">
+      آخرین قدم: <strong>Paint (رنگ‌آمیزی)</strong> — تبدیل هر جعبه محاسبه‌شده به پیکسل‌های
+      واقعی روی صفحه. اولین بار این رخ دهد <strong>First Meaningful Paint</strong> نامیده
+      می‌شود. Paint شامل رسم متن، رنگ، border، shadow و عناصر جایگزین مثل دکمه و تصویر است.
+      برای اسکرول و انیمیشن روان، همه چیز در thread اصلی باید <strong>زیر ۱۶.۶۷ میلی‌ثانیه</strong>
+      انجام شود (۶۰ fps). برای مثال iPad 2048×1536 بیش از ۳,۱۴۵,۰۰۰ پیکسل دارد که باید
+      بسیار سریع رسم شوند. برای بهینه‌سازی، مرورگر می‌تواند عناصر را به <strong>لایه‌های
+      جداگانه</strong> تبدیل کند و آن‌ها را روی GPU رندر کند. عناصری مثل <code>&lt;video&gt;</code>،
+      <code>&lt;canvas&gt;</code>، و عناصر با <code>opacity</code>، 3D <code>transform</code>
+      یا <code>will-change</code> لایه خودشان را دارند. هشدار: لایه‌ها حافظه بیشتری مصرف
+      می‌کنند، بنابراین نباید بیش از حد استفاده شوند.
+    </div>
+
+    <!-- Compositing -->
+    <h3 class="subsection-title" id="compositing">5.4 Compositing</h3>
+
+    <div class="block">
+      <p>
+        When sections of the document are drawn in different layers, overlapping each other,
+        <strong>compositing</strong> is necessary to ensure they are drawn to the screen in the
+        right order and the content is rendered correctly.
+      </p>
+      <p>
+        As the page continues to load assets, reflows can happen. A reflow sparks a
+        <strong>repaint</strong> and a <strong>re-composite</strong>. Had we defined the dimensions
+        of our image, no reflow would have been necessary, and only the layer that needed to be
+        repainted would be repainted, and composited if necessary. But when image dimensions are
+        not declared and the image is obtained from the server, the rendering process goes back
+        to the layout steps and restarts from there.
+      </p>
+    </div>
+    <div class="fa">
+      وقتی بخش‌های مختلف صفحه در لایه‌های جداگانه رسم می‌شوند، <strong>Compositing</strong>
+      تضمین می‌کند که لایه‌ها به ترتیب صحیح روی هم قرار گیرند. اگر در حین بارگذاری assets
+      یک Reflow رخ دهد، یک repaint و re-composite هم لازم می‌شود. راه‌حل جلوگیری از این
+      مشکل: <strong>همیشه ابعاد تصاویر را در HTML تعریف کنید</strong> تا وقتی تصویر از
+      سرور می‌رسد، نیازی به Reflow نباشد و فقط لایه مربوطه repaint شود.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       6. INTERACTIVITY
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="interactivity">
+    <h2 class="section-title">6. Interactivity</h2>
+
+    <div class="block">
+      <p>
+        Once the main thread is done painting the page, you would think we would be "all set."
+        That isn't necessarily the case. If the load includes JavaScript that was correctly deferred
+        and only executed after the <code>onload</code> event fires, the main thread might be busy,
+        and not available for scrolling, touch, and other interactions.
+      </p>
+      <p>
+        <strong>Time to Interactive (TTI)</strong> is the measurement of how long it took from the
+        first request — which led to the DNS lookup and TCP connection — to when the page is
+        interactive. <em>Interactive</em> means the point in time after the
+        <strong>First Contentful Paint</strong> when the page responds to user interactions
+        <strong>within 50ms</strong>. If the main thread is occupied parsing, compiling, and
+        executing JavaScript, it is not available and therefore not able to respond to user
+        interactions in a timely fashion.
+      </p>
+      <p>
+        For example: maybe the image loaded quickly, but a <code>another-script.js</code> file
+        was <strong>2MB</strong> and the user's network connection was slow. In this case, the user
+        would see the page super quickly, but wouldn't be able to scroll without jank until the
+        script was downloaded, parsed, and executed. Avoid occupying the main thread with heavy
+        JavaScript.
+      </p>
+    </div>
+    <div class="fa">
+      حتی بعد از اینکه paint تمام شد، ممکن است صفحه هنوز تعامل‌پذیر نباشد. اگر JavaScript
+      deferred بعد از <code>onload</code> اجرا شود، thread اصلی مشغول است و نمی‌تواند به
+      scroll، لمس یا کلیک پاسخ دهد. <strong>TTI (Time to Interactive)</strong> زمانی است که
+      از اولین درخواست (DNS Lookup) تا لحظه‌ای که صفحه می‌تواند به تعاملات کاربر در
+      <strong>کمتر از ۵۰ میلی‌ثانیه</strong> پاسخ دهد اندازه می‌گیرد. این نقطه بعد از
+      <strong>First Contentful Paint</strong> است. مثال: اگر <code>another-script.js</code>
+      فایل <strong>۲ مگابایتی</strong> باشد و اتصال کاربر کند، صفحه خیلی زود نمایش داده
+      می‌شود اما کاربر نمی‌تواند اسکرول کند یا با آن تعامل داشته باشد تا وقتی که اسکریپت
+      دانلود، parse و اجرا نشود — تجربه کاربری بدی است. از بار سنگین گذاشتن روی thread
+      اصلی با JavaScript حجیم پرهیز کنید.
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

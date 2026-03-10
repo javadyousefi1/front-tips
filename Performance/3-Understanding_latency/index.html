@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Understanding Latency — MDN</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #0f1117;
+      --surface:        #1a1d27;
+      --surface2:       #22263a;
+      --border:         #2e3250;
+      --text:           #e2e8f0;
+      --muted:          #94a3b8;
+      --accent:         #6c8ef7;
+      --accent2:        #a78bfa;
+      --green:          #4ade80;
+      --yellow:         #facc15;
+      --red:            #f87171;
+      --code-bg:        #12151f;
+      --persian-bg:     #1e2535;
+      --persian-border: #3b4a7a;
+      --persian-text:   #c4b5fd;
+      --radius:         10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      padding: 0 1rem 4rem;
+    }
+
+    header { max-width: 860px; margin: 0 auto; padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); }
+    header .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.5rem; }
+    header h1 { font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.75rem; }
+    header .source { font-size: 0.8rem; color: var(--muted); }
+    header .source a { color: var(--accent); text-decoration: none; }
+
+    main { max-width: 860px; margin: 0 auto; }
+
+    .section { margin-top: 3rem; }
+    .section-title { font-size: 1.5rem; font-weight: 700; color: var(--accent2); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .subsection-title { font-size: 1.15rem; font-weight: 600; color: var(--accent); margin: 1.75rem 0 0.75rem; }
+
+    .block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+    .block p { color: var(--text); margin-bottom: 0.5rem; }
+    .block p:last-of-type { margin-bottom: 0; }
+
+    .fa {
+      background: var(--persian-bg);
+      border: 1px solid var(--persian-border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1.25rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1.25rem;
+      direction: rtl;
+      text-align: right;
+      font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', sans-serif;
+      font-size: 0.92rem;
+      line-height: 1.9;
+      color: var(--persian-text);
+      position: relative;
+    }
+    .fa::before {
+      content: '🇮🇷 خلاصه';
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent2);
+      margin-bottom: 0.4rem;
+      direction: rtl;
+    }
+
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; overflow-x: auto; font-size: 0.88rem; line-height: 1.6; margin: 0.75rem 0; }
+    code { font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace; color: #93c5fd; }
+
+    ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin-bottom: 0.3rem; color: var(--text); }
+
+    .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600; margin-right: 0.35rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-good { background: #14532d; color: var(--green); }
+    .badge-bad  { background: #450a0a; color: var(--red); }
+    .badge-note { background: #1c1917; color: var(--yellow); }
+
+    .note { border-left: 3px solid var(--yellow); background: #1c1917; border-radius: 0 var(--radius) var(--radius) 0; padding: 0.75rem 1rem; font-size: 0.9rem; color: #fde68a; margin: 0.75rem 0; }
+
+    strong { color: #f1f5f9; font-weight: 600; }
+    em { color: var(--muted); font-style: italic; }
+
+    /* ── Table ───────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 0.75rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    thead tr { background: var(--surface2); }
+    th {
+      color: var(--accent);
+      text-align: left;
+      padding: 0.65rem 1rem;
+      border-bottom: 2px solid var(--border);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+
+    /* latency value coloring */
+    .lat-low  { color: var(--green); font-weight: 600; }
+    .lat-mid  { color: var(--yellow); font-weight: 600; }
+    .lat-high { color: var(--red); font-weight: 600; }
+
+    /* timing row label */
+    .timing-label { color: var(--accent2); font-weight: 600; }
+
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-top: 2rem; }
+    .toc h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.75rem; }
+    .toc ol { padding-left: 1.2rem; }
+    .toc a { color: var(--accent); text-decoration: none; font-size: 0.9rem; }
+    .toc a:hover { text-decoration: underline; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      .section-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="label">MDN Web Docs — Web Performance</div>
+  <h1>Understanding Latency</h1>
+  <div class="source">
+    Source: <a href="https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Understanding_latency" target="_blank">developer.mozilla.org</a>
+    &nbsp;|&nbsp; Dark mode &nbsp;|&nbsp; English + Persian summary
+  </div>
+</header>
+
+<main>
+
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><a href="#what-is-latency">What is Latency?</a></li>
+      <li><a href="#network-throttling">Network Throttling</a></li>
+      <li><a href="#network-timings">Network Timings</a>
+        <ol>
+          <li><a href="#blocked">Blocked</a></li>
+          <li><a href="#dns-resolution">DNS Resolution</a></li>
+          <li><a href="#connecting">Connecting</a></li>
+          <li><a href="#tls-handshake">TLS Handshake</a></li>
+          <li><a href="#sending">Sending</a></li>
+          <li><a href="#waiting">Waiting (Disk Latency)</a></li>
+          <li><a href="#receiving">Receiving</a></li>
+        </ol>
+      </li>
+      <li><a href="#measuring-latency">Measuring Latency</a></li>
+    </ol>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       1. WHAT IS LATENCY?
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="what-is-latency">
+    <h2 class="section-title">1. What is Latency?</h2>
+
+    <div class="block">
+      <p>
+        <strong>Latency</strong> is the time it takes for a packet of data to travel from source
+        to a destination. In terms of performance optimization, it's important to optimize to
+        reduce causes of latency and to test site performance emulating high latency to optimize
+        for users with lousy connections.
+      </p>
+      <p>
+        Latency is generally considered to be the amount of time it takes from when a request is
+        made by the user to the time it takes for the response to get back to that user. On a
+        <strong>first request</strong>, for the first 14KB bytes, latency is longer because it
+        includes a <strong>DNS lookup</strong>, a <strong>TCP handshake</strong>, and the secure
+        <strong>TLS negotiation</strong>. Subsequent requests will have less latency because the
+        connection to the server is already established.
+      </p>
+      <p>
+        Latency describes the amount of delay on a network or Internet connection.
+        <strong>Low latency</strong> implies that there are no or almost no delays.
+        <strong>High latency</strong> implies that there are many delays. One of the main aims of
+        improving performance is to reduce latency.
+      </p>
+      <p>
+        The latency associated with a single asset, especially a basic HTML page, may seem trivial.
+        But websites generally involve multiple requests: the HTML includes requests for multiple
+        CSS files, scripts, and media files. <strong>The greater the number and size of these
+        requests, the greater the impact of high latency on user experience.</strong>
+      </p>
+      <p>
+        On a connection with <strong>low latency</strong>, requested resources will appear almost
+        immediately. On a connection with <strong>high latency</strong>, there will be a discernible
+        delay between the time that a request is sent and the resources are returned.
+      </p>
+      <p>
+        Latency can be measured one way — for example, the time it takes to send a request for
+        resources — or as the length of the entire <strong>round-trip</strong> from the browser's
+        request for a resource to the moment when the requested resource arrives at the browser.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>Latency (تأخیر)</strong> زمانی است که یک بسته داده از مبدأ به مقصد می‌رسد.
+      به‌طور کلی‌تر، زمانی است از لحظه درخواست کاربر تا دریافت پاسخ. در <strong>اولین
+      درخواست</strong> برای ۱۴ کیلوبایت اول، تأخیر بیشتر است چون شامل <strong>DNS Lookup</strong>،
+      <strong>TCP Handshake</strong> و <strong>TLS Negotiation</strong> می‌شود. درخواست‌های
+      بعدی تأخیر کمتری دارند چون اتصال از قبل برقرار شده. <strong>Low latency</strong> یعنی
+      تقریباً هیچ تأخیری وجود ندارد و <strong>High latency</strong> یعنی تأخیرهای زیاد.
+      یکی از اهداف اصلی بهبود عملکرد، کاهش latency است. تأخیر یک فایل ساده کم است، اما
+      هر صفحه شامل درخواست‌های متعدد برای CSS، اسکریپت و رسانه است — <strong>هر چه تعداد
+      و حجم این درخواست‌ها بیشتر باشد، تأثیر high latency روی تجربه کاربری بیشتر است.</strong>
+      latency را می‌توان یک‌طرفه یا به‌صورت <strong>round-trip</strong> (رفت و برگشت کامل)
+      اندازه گرفت.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       2. NETWORK THROTTLING
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="network-throttling">
+    <h2 class="section-title">2. Network Throttling</h2>
+
+    <div class="block">
+      <p>
+        To emulate the latency of a low bandwidth network, you can use developer tools and switch
+        to a lower-end network connection. In the DevTools network tab, you can switch the
+        throttling option to 2G, 3G, etc. Different browser developer tools have different preset
+        options. The characteristics emulated include:
+      </p>
+      <ul>
+        <li><strong>Download speed</strong></li>
+        <li><strong>Upload speed</strong></li>
+        <li><strong>Minimum latency</strong> — the minimum time it takes to send a packet of data</li>
+      </ul>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Selection</th>
+              <th>Download speed</th>
+              <th>Upload speed</th>
+              <th>Min latency (ms)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="timing-label">GPRS</td>
+              <td>50 kbps</td>
+              <td>20 kbps</td>
+              <td class="lat-high">500</td>
+            </tr>
+            <tr>
+              <td class="timing-label">Regular 2G</td>
+              <td>250 kbps</td>
+              <td>50 kbps</td>
+              <td class="lat-high">300</td>
+            </tr>
+            <tr>
+              <td class="timing-label">Good 2G</td>
+              <td>450 kbps</td>
+              <td>150 kbps</td>
+              <td class="lat-high">150</td>
+            </tr>
+            <tr>
+              <td class="timing-label">Regular 3G</td>
+              <td>750 kbps</td>
+              <td>250 kbps</td>
+              <td class="lat-mid">100</td>
+            </tr>
+            <tr>
+              <td class="timing-label">Good 3G</td>
+              <td>1.5 Mbps</td>
+              <td>750 kbps</td>
+              <td class="lat-mid">40</td>
+            </tr>
+            <tr>
+              <td class="timing-label">Regular 4G/LTE</td>
+              <td>4 Mbps</td>
+              <td>3 Mbps</td>
+              <td class="lat-low">20</td>
+            </tr>
+            <tr>
+              <td class="timing-label">DSL</td>
+              <td>2 Mbps</td>
+              <td>1 Mbps</td>
+              <td class="lat-low">5</td>
+            </tr>
+            <tr>
+              <td class="timing-label">Wi-Fi</td>
+              <td>30 Mbps</td>
+              <td>15 Mbps</td>
+              <td class="lat-low">2</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <span class="badge badge-note">Tip</span>
+        Always test your site under throttled network conditions — especially GPRS (500ms latency)
+        and Regular 3G (100ms) — to experience what users on slow connections face.
+      </div>
+    </div>
+    <div class="fa">
+      برای شبیه‌سازی تأخیر شبکه‌های کم‌پهنا، از DevTools استفاده کنید و Throttling را
+      روی 2G، 3G و غیره تنظیم کنید. هر preset سه ویژگی را شبیه‌سازی می‌کند:
+      <strong>سرعت دانلود</strong>، <strong>سرعت آپلود</strong> و <strong>حداقل تأخیر (ms)</strong>.
+      مقادیر کلیدی جدول: <strong>GPRS</strong>: دانلود ۵۰ kbps، آپلود ۲۰ kbps، تأخیر
+      <strong>۵۰۰ms</strong> (بسیار بد). <strong>Regular 2G</strong>: ۲۵۰/۵۰ kbps، تأخیر
+      <strong>۳۰۰ms</strong>. <strong>Good 2G</strong>: ۴۵۰/۱۵۰ kbps، تأخیر <strong>۱۵۰ms</strong>.
+      <strong>Regular 3G</strong>: ۷۵۰/۲۵۰ kbps، تأخیر <strong>۱۰۰ms</strong>.
+      <strong>Good 3G</strong>: ۱.۵/۰.۷۵ Mbps، تأخیر <strong>۴۰ms</strong>.
+      <strong>4G/LTE</strong>: ۴/۳ Mbps، تأخیر <strong>۲۰ms</strong>.
+      <strong>DSL</strong>: ۲/۱ Mbps، تأخیر <strong>۵ms</strong>.
+      <strong>Wi-Fi</strong>: ۳۰/۱۵ Mbps، تأخیر <strong>۲ms</strong>.
+      همیشه سایت را در شرایط شبکه throttled شده آزمایش کنید تا تجربه کاربران با اتصال
+      کند را درک کنید.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       3. NETWORK TIMINGS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="network-timings">
+    <h2 class="section-title">3. Network Timings</h2>
+
+    <div class="block">
+      <p>
+        In the DevTools network tab, you can see how long each request took to complete — broken
+        down into distinct phases. Each phase represents a specific source of latency that you can
+        inspect and optimize independently.
+      </p>
+    </div>
+    <div class="fa">
+      در تب Network در DevTools می‌توانید ببینید هر درخواست چقدر طول کشیده — به‌تفکیک
+      مراحل مختلف. هر مرحله یک منبع جداگانه از تأخیر است که می‌توانید مستقلاً آن را
+      بررسی و بهینه کنید.
+    </div>
+
+    <!-- Blocked -->
+    <h3 class="subsection-title" id="blocked">3.1 Blocked</h3>
+    <div class="block">
+      <p>
+        When a request is in a queue, waiting for a network connection, it is considered
+        <strong>blocked</strong>. Blocking happens when there are too many simultaneous connections
+        made to a single server over HTTP. If all connections are in use, the browser can't download
+        more resources until a connection is released — meaning those requests and resources are
+        stuck waiting.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>Blocked</strong> یعنی درخواست در صف انتظار است و به اتصال شبکه‌ای دسترسی ندارد.
+      این زمانی رخ می‌دهد که تعداد اتصالات همزمان به یک سرور از طریق HTTP به حداکثر رسیده
+      باشد. تا زمانی که یک اتصال آزاد نشود، مرورگر نمی‌تواند منابع بیشتری دانلود کند.
+    </div>
+
+    <!-- DNS Resolution -->
+    <h3 class="subsection-title" id="dns-resolution">3.2 DNS Resolution</h3>
+    <div class="block">
+      <p>
+        <strong>DNS resolution</strong> is the time it took to do the DNS lookup. The greater the
+        number of unique hostnames on a page, the more DNS lookups need to be done, and the more
+        time is spent in this phase.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>DNS Resolution</strong> مدت زمانی است که برای انجام DNS Lookup صرف شده.
+      هر چه تعداد hostname‌های منحصربه‌فرد در صفحه بیشتر باشد، DNS Lookup‌های بیشتری
+      لازم است و زمان بیشتری در این مرحله صرف می‌شود.
+    </div>
+
+    <!-- Connecting -->
+    <h3 class="subsection-title" id="connecting">3.3 Connecting</h3>
+    <div class="block">
+      <p>
+        <strong>Connecting</strong> is the time it takes for a TCP handshake to complete. Like DNS,
+        the greater the number of server connections needed, the more time is spent creating those
+        connections.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>Connecting</strong> زمان لازم برای تکمیل TCP Handshake است. مثل DNS، هر چه
+      تعداد اتصالات به سرورهای مختلف بیشتر باشد، زمان بیشتری برای برقراری این اتصال‌ها
+      صرف می‌شود.
+    </div>
+
+    <!-- TLS Handshake -->
+    <h3 class="subsection-title" id="tls-handshake">3.4 TLS Handshake</h3>
+    <div class="block">
+      <p>
+        <strong>TLS handshake</strong> is how long it took to set up a secure connection. While a
+        TLS handshake does take longer to connect than an insecure connection, the additional time
+        needed for a secure connection is worth it.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>TLS Handshake</strong> زمان راه‌اندازی اتصال امن HTTPS است. این مرحله از یک
+      اتصال ناامن کندتر است، اما ارزشش را دارد چون داده‌ها رمزنگاری شده و از شنود
+      جلوگیری می‌کند.
+    </div>
+
+    <!-- Sending -->
+    <h3 class="subsection-title" id="sending">3.5 Sending</h3>
+    <div class="block">
+      <p>
+        <strong>Sending</strong> is the time taken to send the HTTP request to the server. This
+        is typically very short — it measures only the time to transmit the request itself, not
+        the response.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>Sending</strong> زمانی است که برای ارسال HTTP request به سرور صرف می‌شود.
+      معمولاً بسیار کوتاه است — فقط زمان انتقال خود درخواست را اندازه می‌گیرد،
+      نه زمان پاسخ.
+    </div>
+
+    <!-- Waiting -->
+    <h3 class="subsection-title" id="waiting">3.6 Waiting (Disk Latency)</h3>
+    <div class="block">
+      <p>
+        <strong>Waiting</strong> is disk latency — the time it took for the server to complete
+        its response. This phase used to be the main area of performance concern. However, server
+        performance has improved significantly as computer memory and CPU have improved. Depending
+        on the complexity of what is needed from the server (e.g., database queries, server-side
+        rendering), this can still be a significant issue.
+      </p>
+    </div>
+    <div class="fa">
+      <strong>Waiting</strong> یا <strong>Disk Latency</strong> زمانی است که سرور برای
+      آماده کردن پاسخ صرف می‌کند. در گذشته این مرحله بزرگ‌ترین مشکل عملکردی بود، اما
+      با بهبود سخت‌افزار سرورها (CPU و RAM) بهتر شده. با این حال، بسته به پیچیدگی
+      عملیات سمت سرور (مثل query پایگاه داده یا رندر سمت سرور)، هنوز هم می‌تواند
+      مشکل‌ساز باشد.
+    </div>
+
+    <!-- Receiving -->
+    <h3 class="subsection-title" id="receiving">3.7 Receiving</h3>
+    <div class="block">
+      <p>
+        <strong>Receiving</strong> is the time it takes to download the asset. The receiving time
+        is determined by a combination of <strong>network capacity</strong> and
+        <strong>asset file size</strong>.
+      </p>
+      <ul>
+        <li>If the image had been <strong>cached</strong>, this phase would have been nearly instantaneous</li>
+        <li>On a throttled network connection, receiving a single image could take up to <strong>43 seconds</strong></li>
+      </ul>
+      <div class="note">
+        <span class="badge badge-note">Insight</span>
+        The receiving phase is directly within your control as a developer — optimizing asset size
+        (compression, modern formats like WebP/AVIF, lazy loading) directly reduces this time.
+      </div>
+    </div>
+    <div class="fa">
+      <strong>Receiving</strong> زمان دانلود فایل است که توسط دو عامل تعیین می‌شود:
+      <strong>ظرفیت شبکه</strong> و <strong>حجم فایل</strong>. اگر فایل cache شده باشد،
+      این مرحله تقریباً فوری است. در شبکه throttled شده، دانلود یک تصویر می‌تواند تا
+      <strong>۴۳ ثانیه</strong> طول بکشد! این مرحله مستقیماً در کنترل توسعه‌دهنده است —
+      بهینه‌سازی حجم فایل‌ها (فشرده‌سازی، فرمت‌های مدرن مثل WebP/AVIF، lazy loading)
+      مستقیماً این زمان را کاهش می‌دهد.
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ══════════════════════════════════════════════════════
+       4. MEASURING LATENCY
+  ═══════════════════════════════════════════════════════ -->
+  <section class="section" id="measuring-latency">
+    <h2 class="section-title">4. Measuring Latency</h2>
+
+    <div class="block">
+      <p>
+        There are two distinct types of latency worth measuring:
+      </p>
+      <ul>
+        <li>
+          <strong>Network latency</strong> — the time it takes for a data request to get from the
+          computer making the request to the computer responding, including the time for a byte of
+          data to make the return trip back. It is generally measured as a
+          <strong>round-trip delay</strong>.
+        </li>
+        <li>
+          <strong>Disk latency</strong> — the time it takes from the moment a computer (usually a
+          server) receives a request to the time it returns the response. This is purely the
+          server-side processing time, independent of network transmission.
+        </li>
+      </ul>
+    </div>
+    <div class="fa">
+      دو نوع latency وجود دارد که باید اندازه گرفته شوند:
+      <strong>Network latency</strong> — زمانی که یک درخواست داده از کامپیوتر درخواست‌کننده
+      به کامپیوتر پاسخ‌دهنده می‌رسد و بایت‌های داده برمی‌گردند. این معمولاً به‌صورت
+      <strong>Round-Trip Delay</strong> اندازه گرفته می‌شود.
+      <strong>Disk latency</strong> — زمانی که از لحظه دریافت درخواست توسط سرور تا ارسال
+      پاسخ طول می‌کشد. این کاملاً زمان پردازش سمت سرور است و مستقل از انتقال شبکه‌ای است.
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

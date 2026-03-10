@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Service Worker Complete Guide with Interactive Demos">
+    <meta name="theme-color" content="#4CAF50">
+    <title>Service Worker - Complete Interactive Guide</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>🔧 Service Worker - Interactive Guide</h1>
+            <p class="subtitle">Learn Service Workers from Basic to Advanced with Live Demos</p>
+        </div>
+    </header>
+
+    <!-- Service Worker Status Banner -->
+    <div class="status-banner" id="statusBanner">
+        <div class="container">
+            <div class="status-content">
+                <span class="status-indicator" id="statusIndicator">●</span>
+                <span id="statusText">Checking Service Worker status...</span>
+            </div>
+            <button class="btn-small" id="updateBtn" style="display: none;">Update Available - Click to Refresh</button>
+        </div>
+    </div>
+
+    <!-- Network Status -->
+    <div class="network-status" id="networkStatus">
+        <div class="container">
+            <span id="networkText">🌐 Online</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container">
+
+        <!-- Navigation -->
+        <nav class="demo-nav">
+            <button class="nav-btn active" data-demo="registration">Registration</button>
+            <button class="nav-btn" data-demo="caching">Caching Strategies</button>
+            <button class="nav-btn" data-demo="offline">Offline Mode</button>
+            <button class="nav-btn" data-demo="sync">Background Sync</button>
+            <button class="nav-btn" data-demo="notifications">Push Notifications</button>
+            <button class="nav-btn" data-demo="advanced">Advanced</button>
+        </nav>
+
+        <!-- Demo 1: Service Worker Registration -->
+        <section class="demo-section active" id="demo-registration">
+            <div class="demo-header">
+                <h2>📝 Demo 1: Service Worker Registration</h2>
+                <p>Learn how to register and manage Service Workers</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>What You'll Learn:</h3>
+                    <ul>
+                        <li>How to check if Service Workers are supported</li>
+                        <li>Register a Service Worker</li>
+                        <li>Monitor registration status</li>
+                        <li>Handle updates</li>
+                    </ul>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Service Worker Controls</h3>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="registerSW">Register Service Worker</button>
+                        <button class="btn btn-danger" id="unregisterSW">Unregister Service Worker</button>
+                        <button class="btn btn-secondary" id="checkSWStatus">Check Status</button>
+                    </div>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Registration Info:</h3>
+                    <div class="output-content" id="registrationOutput">
+                        <p class="muted">Click "Register Service Worker" to begin...</p>
+                    </div>
+                </div>
+
+                <div class="code-example">
+                    <h3>Code Example:</h3>
+                    <pre><code>if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(registration => {
+      console.log('SW registered:', registration);
+    })
+    .catch(error => {
+      console.log('Registration failed:', error);
+    });
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 2: Caching Strategies -->
+        <section class="demo-section" id="demo-caching">
+            <div class="demo-header">
+                <h2>💾 Demo 2: Caching Strategies</h2>
+                <p>Explore different caching strategies and their behaviors</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>Available Strategies:</h3>
+                    <ul>
+                        <li><strong>Cache First:</strong> Fast, serves from cache, fallback to network</li>
+                        <li><strong>Network First:</strong> Fresh content, fallback to cache when offline</li>
+                        <li><strong>Stale While Revalidate:</strong> Fast + always updating</li>
+                        <li><strong>Network Only:</strong> Always fetch from network</li>
+                        <li><strong>Cache Only:</strong> Only serve cached content</li>
+                    </ul>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Select Caching Strategy</h3>
+                    <div class="strategy-selector">
+                        <label class="radio-label">
+                            <input type="radio" name="strategy" value="cache-first" checked>
+                            <span>Cache First</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="strategy" value="network-first">
+                            <span>Network First</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="strategy" value="stale-while-revalidate">
+                            <span>Stale While Revalidate</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="strategy" value="network-only">
+                            <span>Network Only</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="strategy" value="cache-only">
+                            <span>Cache Only</span>
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" id="applyStrategy">Apply Strategy</button>
+                    <button class="btn btn-secondary" id="testStrategy">Test Current Strategy</button>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Strategy Test Results:</h3>
+                    <div class="output-content" id="strategyOutput">
+                        <p class="muted">Select a strategy and click "Apply Strategy"...</p>
+                    </div>
+                </div>
+
+                <div class="comparison-table">
+                    <h3>Strategy Comparison:</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Strategy</th>
+                                <th>Speed</th>
+                                <th>Freshness</th>
+                                <th>Offline</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cache First</td>
+                                <td>⚡⚡⚡</td>
+                                <td>⭐</td>
+                                <td>✅</td>
+                                <td>Static assets</td>
+                            </tr>
+                            <tr>
+                                <td>Network First</td>
+                                <td>⚡</td>
+                                <td>⭐⭐⭐</td>
+                                <td>✅</td>
+                                <td>Dynamic content</td>
+                            </tr>
+                            <tr>
+                                <td>Stale While Revalidate</td>
+                                <td>⚡⚡</td>
+                                <td>⭐⭐</td>
+                                <td>✅</td>
+                                <td>News feeds</td>
+                            </tr>
+                            <tr>
+                                <td>Network Only</td>
+                                <td>⚡</td>
+                                <td>⭐⭐⭐</td>
+                                <td>❌</td>
+                                <td>Real-time data</td>
+                            </tr>
+                            <tr>
+                                <td>Cache Only</td>
+                                <td>⚡⚡⚡</td>
+                                <td>⭐</td>
+                                <td>✅</td>
+                                <td>Pre-cached resources</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 3: Offline Mode -->
+        <section class="demo-section" id="demo-offline">
+            <div class="demo-header">
+                <h2>📡 Demo 3: Offline Functionality</h2>
+                <p>Test how the app works offline with cached resources</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>Offline Capabilities:</h3>
+                    <ul>
+                        <li>View cached pages when offline</li>
+                        <li>Serve custom offline page</li>
+                        <li>Queue actions for when connection returns</li>
+                        <li>Detect online/offline status</li>
+                    </ul>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Cache Management</h3>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="cacheCurrentPage">Cache This Page</button>
+                        <button class="btn btn-secondary" id="viewCacheInfo">View Cache Info</button>
+                        <button class="btn btn-danger" id="clearAllCaches">Clear All Caches</button>
+                    </div>
+                </div>
+
+                <div class="cache-info" id="cacheInfo">
+                    <h3>Cache Statistics:</h3>
+                    <div id="cacheStats">
+                        <p class="muted">Click "View Cache Info" to see cache details...</p>
+                    </div>
+                </div>
+
+                <div class="offline-test">
+                    <h3>Test Offline Mode:</h3>
+                    <div class="instruction-box">
+                        <p><strong>Steps to test:</strong></p>
+                        <ol>
+                            <li>Click "Cache This Page" to cache resources</li>
+                            <li>Open DevTools → Network tab</li>
+                            <li>Check "Offline" checkbox</li>
+                            <li>Refresh the page</li>
+                            <li>The page should load from cache! 🎉</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Offline Status:</h3>
+                    <div class="output-content" id="offlineOutput">
+                        <p>Current status: <span id="currentOnlineStatus" class="status-online">Online</span></p>
+                        <p id="offlineEventLog">No offline events yet...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 4: Background Sync -->
+        <section class="demo-section" id="demo-sync">
+            <div class="demo-header">
+                <h2>🔄 Demo 4: Background Sync</h2>
+                <p>Queue data to sync when connection is available</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>What is Background Sync?</h3>
+                    <p>Background Sync allows you to defer actions until the user has stable connectivity. Perfect for ensuring reliable data submission.</p>
+                    <ul>
+                        <li>Submit forms when offline</li>
+                        <li>Sync happens in background</li>
+                        <li>Automatic retry on failure</li>
+                        <li>Works even after closing the page</li>
+                    </ul>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Simulate Data Submission</h3>
+                    <div class="form-group">
+                        <label for="syncMessage">Message to sync:</label>
+                        <input type="text" id="syncMessage" placeholder="Enter a message..." class="input-field">
+                        <button class="btn btn-primary" id="queueSync">Queue for Sync</button>
+                    </div>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Sync Queue:</h3>
+                    <div class="output-content" id="syncOutput">
+                        <p class="muted">Queued items will appear here...</p>
+                    </div>
+                </div>
+
+                <div class="instruction-box">
+                    <h3>Browser Support Note:</h3>
+                    <p>Background Sync is currently supported in Chrome, Edge, and Opera. If your browser doesn't support it, the demo will show a fallback message.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 5: Push Notifications -->
+        <section class="demo-section" id="demo-notifications">
+            <div class="demo-header">
+                <h2>🔔 Demo 5: Push Notifications</h2>
+                <p>Send and receive push notifications</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>Push Notification Features:</h3>
+                    <ul>
+                        <li>Request notification permission</li>
+                        <li>Send notifications even when app is closed</li>
+                        <li>Customize notification content</li>
+                        <li>Handle notification clicks</li>
+                    </ul>
+                </div>
+
+                <div class="controls-panel">
+                    <h3>Notification Controls</h3>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="requestPermission">Request Permission</button>
+                        <button class="btn btn-success" id="sendNotification" disabled>Send Test Notification</button>
+                    </div>
+                    <div class="permission-status">
+                        <p>Permission Status: <span id="permissionStatus">Not requested</span></p>
+                    </div>
+                </div>
+
+                <div class="notification-form">
+                    <h3>Custom Notification:</h3>
+                    <div class="form-group">
+                        <label for="notifTitle">Title:</label>
+                        <input type="text" id="notifTitle" value="Hello!" class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label for="notifBody">Body:</label>
+                        <textarea id="notifBody" class="input-field" rows="3">This is a test notification from the Service Worker demo!</textarea>
+                    </div>
+                    <button class="btn btn-primary" id="sendCustomNotification" disabled>Send Custom Notification</button>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Notification Log:</h3>
+                    <div class="output-content" id="notificationOutput">
+                        <p class="muted">Notification events will appear here...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 6: Advanced Features -->
+        <section class="demo-section" id="demo-advanced">
+            <div class="demo-header">
+                <h2>🚀 Demo 6: Advanced Features</h2>
+                <p>Explore advanced Service Worker capabilities</p>
+            </div>
+
+            <div class="demo-content">
+                <div class="info-box">
+                    <h3>Advanced Capabilities:</h3>
+                    <ul>
+                        <li>Message communication between SW and page</li>
+                        <li>Client management</li>
+                        <li>Cache versioning and cleanup</li>
+                        <li>Selective caching</li>
+                        <li>Update handling</li>
+                    </ul>
+                </div>
+
+                <!-- Message Communication -->
+                <div class="controls-panel">
+                    <h3>Message Communication</h3>
+                    <p>Send messages between the page and Service Worker</p>
+                    <div class="form-group">
+                        <input type="text" id="messageToSW" placeholder="Message to Service Worker" class="input-field">
+                        <button class="btn btn-primary" id="sendMessageToSW">Send Message</button>
+                    </div>
+                </div>
+
+                <div class="output-panel">
+                    <h3>Message Log:</h3>
+                    <div class="output-content" id="messageOutput">
+                        <p class="muted">Messages will appear here...</p>
+                    </div>
+                </div>
+
+                <!-- Cache Management -->
+                <div class="controls-panel">
+                    <h3>Advanced Cache Operations</h3>
+                    <div class="form-group">
+                        <label for="cacheUrl">URL to cache:</label>
+                        <input type="text" id="cacheUrl" placeholder="https://example.com/resource" class="input-field">
+                        <button class="btn btn-primary" id="cacheSpecificUrl">Cache URL</button>
+                    </div>
+                </div>
+
+                <!-- Client Info -->
+                <div class="controls-panel">
+                    <h3>Client Information</h3>
+                    <button class="btn btn-secondary" id="getClientInfo">Get Client Info</button>
+                    <div class="output-content" id="clientInfo">
+                        <p class="muted">Click to get client information...</p>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="metrics-panel">
+                    <h3>Performance Metrics:</h3>
+                    <div id="performanceMetrics">
+                        <p class="muted">Loading metrics...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section class="resources-section">
+            <h2>📚 Additional Resources</h2>
+            <div class="resource-grid">
+                <div class="resource-card">
+                    <h3>📖 Documentation</h3>
+                    <p>Read the complete README.md guide for detailed explanations and code examples.</p>
+                    <a href="README.md" class="btn btn-link">Read Guide</a>
+                </div>
+                <div class="resource-card">
+                    <h3>💻 View Source</h3>
+                    <p>Examine the Service Worker source code to understand the implementation.</p>
+                    <a href="sw.js" class="btn btn-link">View sw.js</a>
+                </div>
+                <div class="resource-card">
+                    <h3>🔧 DevTools</h3>
+                    <p>Open Chrome DevTools → Application → Service Workers to inspect and debug.</p>
+                    <button class="btn btn-link" onclick="alert('Press F12 or Cmd+Option+I to open DevTools')">Learn How</button>
+                </div>
+                <div class="resource-card">
+                    <h3>🌐 Browser Support</h3>
+                    <p>Check Service Worker support across different browsers.</p>
+                    <a href="https://caniuse.com/serviceworkers" target="_blank" class="btn btn-link">Can I Use</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Service Worker Complete Guide | Learn by Doing 🚀</p>
+            <p class="muted">Open DevTools to see Service Worker in action!</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

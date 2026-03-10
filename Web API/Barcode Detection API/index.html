@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Detection API</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <h1>📷 Barcode Detection API</h1>
+            <p class="subtitle">Detect QR codes and barcodes from images or your camera — no library needed</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="support-banner" id="supportBanner">Checking support...</div>
+
+        <!-- Demo 1: Scan from Image -->
+        <section class="card">
+            <h2>Scan from Image</h2>
+            <p>Upload an image containing a QR code or barcode to detect it.</p>
+
+            <div class="upload-area" id="uploadArea">
+                <span>📂 Click to upload or drag & drop an image</span>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+
+            <canvas id="canvas" style="display:none"></canvas>
+            <img id="previewImg" style="display:none" alt="preview">
+
+            <div class="result-box" id="result1">
+                <p class="muted">Results will appear here after scanning...</p>
+            </div>
+
+            <div class="code-block"><pre>const detector = new BarcodeDetector({ formats: ['qr_code', 'ean_13'] });
+const barcodes = await detector.detect(imgElement);
+console.log(barcodes[0].rawValue);  // decoded value
+console.log(barcodes[0].format);    // 'qr_code'</pre></div>
+        </section>
+
+        <!-- Demo 2: Live Camera Scan -->
+        <section class="card">
+            <h2>Live Camera Scan</h2>
+            <p>Point your camera at a QR code or barcode. Detection runs every 400ms.</p>
+
+            <div class="camera-container">
+                <video id="cameraFeed" autoplay muted playsinline></video>
+                <div class="scan-overlay" id="scanOverlay" style="display:none">
+                    <div class="scan-line"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="startCameraBtn">Start Camera</button>
+                <button class="btn btn-danger" id="stopCameraBtn" disabled>Stop Camera</button>
+            </div>
+
+            <div class="result-box" id="result2">
+                <p class="muted">Start the camera and point at a QR code or barcode...</p>
+            </div>
+
+            <div class="code-block"><pre>const detector = new BarcodeDetector({ formats: ['qr_code'] });
+// Detect from a live &lt;video&gt; element
+const barcodes = await detector.detect(videoElement);
+if (barcodes.length) console.log(barcodes[0].rawValue);</pre></div>
+        </section>
+
+        <!-- Demo 3: Supported Formats -->
+        <section class="card">
+            <h2>Supported Formats</h2>
+            <p>Check which barcode formats your browser supports.</p>
+            <button class="btn btn-primary" id="getFormatsBtn">Get Supported Formats</button>
+            <div class="formats-grid" id="formatsGrid"></div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Barcode Detection API Demo — Works in Chrome & Edge</p>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+    <script src="script.js"></script>
+</body>
+</html>

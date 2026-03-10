@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Transitions API - Interactive Demos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>View Transitions API</h1>
+            <p class="subtitle">6 Interactive Demos - document.startViewTransition()</p>
+            <div class="browser-support">
+                <p>Browser Support: Chrome 111+ | Edge 111+ | Safari 18+ | Opera 97+</p>
+            </div>
+        </header>
+
+        <!-- Demo 1: Basic Fade Transition -->
+        <section class="demo-section">
+            <div class="demo-header">
+                <h2>Demo 1: Basic Fade Transition</h2>
+                <p>Simple content swap with automatic fade animation</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-content">
+                    <div id="demo1-content" class="content-box">
+                        <h3>Original Content</h3>
+                        <p>Click the button to see a smooth fade transition to new content.</p>
+                    </div>
+                    <div class="demo-controls">
+                        <button id="demo1-btn" class="btn btn-primary">Change Content</button>
+                        <button id="demo1-reset" class="btn btn-secondary">Reset</button>
+                    </div>
+                </div>
+                <div class="demo-code">
+                    <h4>Code Example:</h4>
+                    <pre><code>document.startViewTransition(() => {
+    element.textContent = newContent;
+});</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 2: Image Gallery Transition -->
+        <section class="demo-section">
+            <div class="demo-header">
+                <h2>Demo 2: Image Gallery Transition</h2>
+                <p>Smooth transitions between images with automatic morphing</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-content">
+                    <div class="gallery-container">
+                        <div id="demo2-gallery" class="gallery-image-wrapper">
+                            <div class="gallery-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <span class="image-label">Image 1</span>
+                            </div>
+                        </div>
+                        <div class="gallery-info">
+                            <span id="demo2-counter">1 / 4</span>
+                        </div>
+                    </div>
+                    <div class="demo-controls">
+                        <button id="demo2-prev" class="btn btn-secondary">← Previous</button>
+                        <button id="demo2-next" class="btn btn-primary">Next →</button>
+                    </div>
+                </div>
+                <div class="demo-code">
+                    <h4>Code Example:</h4>
+                    <pre><code>document.startViewTransition(() => {
+    img.src = images[currentIndex];
+});</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 3: List Item Transitions -->
+        <section class="demo-section">
+            <div class="demo-header">
+                <h2>Demo 3: List Item Transitions</h2>
+                <p>Add and remove items with smooth animations</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-content">
+                    <div class="todo-container">
+                        <div class="input-group">
+                            <input type="text" id="demo3-input" placeholder="Enter a task..." class="input-field">
+                            <button id="demo3-add" class="btn btn-primary">Add</button>
+                        </div>
+                        <ul id="demo3-list" class="todo-list">
+                            <li class="todo-item">
+                                <span>Sample task 1</span>
+                                <button class="btn-remove">×</button>
+                            </li>
+                            <li class="todo-item">
+                                <span>Sample task 2</span>
+                                <button class="btn-remove">×</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="demo-code">
+                    <h4>Code Example:</h4>
+                    <pre><code>document.startViewTransition(() => {
+    item.style.viewTransitionName = \`item-\${id}\`;
+    list.appendChild(item);
+});</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 4: Theme Switcher -->
+        <section class="demo-section">
+            <div class="demo-header">
+                <h2>Demo 4: Theme Switcher</h2>
+                <p>Smooth dark/light mode transitions</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-content">
+                    <div id="demo4-preview" class="theme-preview" data-theme="light">
+                        <div class="theme-content">
+                            <h3>Current Theme</h3>
+                            <p>This is a preview of the themed content. Toggle between light and dark modes.</p>
+                            <div class="theme-card">
+                                <h4>Card Example</h4>
+                                <p>Notice how smooth the transition is!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-controls">
+                        <button id="demo4-toggle" class="btn btn-primary">Toggle Theme</button>
+                        <span id="demo4-current" class="theme-label">Current: Light</span>
+                    </div>
+                </div>
+                <div class="demo-code">
+                    <h4>Code Example:</h4>
+                    <pre><code>document.startViewTransition(() => {
+    element.setAttribute('data-theme', newTheme);
+});</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 5: Card Expand/Collapse -->
+        <section class="demo-section">
+            <div class="demo-header">
+                <h2>Demo 5: Card Expand/Collapse</h2>
+                <p>Click cards to expand them with smooth transitions</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-content">
+                    <div id="demo5-grid" class="card-grid">
+                        <div class="card" data-card-id="1">
+                            <div class="card-header">
+                                <h4>Card 1</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>Click to expand and see more content.</p>
+                                <div class="card-expanded-content">
+                                    <p>This is additional content that appears when the card is expanded.</p>
+                                    <ul>
+                                        <li>Feature 1</li>
+                                        <li>Feature 2</li>
+                                        <li>Feature 3</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" data-card-id="2">
+                            <div class="card-header">
+                                <h4>Card 2</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>Click to expand and see more content.</p>
+                                <div class="card-expanded-content">
+                                    <p>This is additional content that appears when the card is expanded.</p>
+                                    <ul>
+                                        <li>Feature A</li>
+                                        <li>Feature B</li>
+                                        <li>Feature C</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" data-card-id="3">
+                            <div class="card-header">
+                                <h4>Card 3</h4>
+                            </div>
+                            <div class="card-body">
+                                <p>Click to expand and see more content.</p>
+                                <div class="card-expanded-content">
+                                    <p>This is additional content that appears when the card is expanded.</p>
+                                    <ul>
+                                        <li>Option X</li>
+                                        <li>Option Y</li>
+                                        <li>Option Z</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="demo-code">
+                    <h4>Code Example:</h4>
+                    <pre><code>document.startViewTransition(() => {
+    card.classList.toggle('expanded');
+});</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo 6: Page Navigation -->
+        <section class="demo-section">
+            <div class="demo-header">
+                <h2>Demo 6: Page Navigation</h2>
+                <p>SPA-like navigation with smooth page transitions</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-content">
+                    <div class="navigation-demo">
+                        <nav class="demo-nav">
+                            <button class="nav-btn active" data-page="home">Home</button>
+                            <button class="nav-btn" data-page="about">About</button>
+                            <button class="nav-btn" data-page="services">Services</button>
+                            <button class="nav-btn" data-page="contact">Contact</button>
+                        </nav>
+                        <div class="pages-container">
+                            <div class="page active" id="page-home">
+                                <h3>Home Page</h3>
+                                <p>Welcome to the home page. This demonstrates smooth page transitions.</p>
+                                <div class="page-content">
+                                    <p>Navigate between pages using the buttons above to see the smooth transitions in action.</p>
+                                </div>
+                            </div>
+                            <div class="page" id="page-about">
+                                <h3>About Page</h3>
+                                <p>Learn more about this demo.</p>
+                                <div class="page-content">
+                                    <p>The View Transitions API makes it easy to create smooth transitions between different states of your application.</p>
+                                </div>
+                            </div>
+                            <div class="page" id="page-services">
+                                <h3>Services Page</h3>
+                                <p>Our services overview.</p>
+                                <div class="page-content">
+                                    <ul>
+                                        <li>Web Development</li>
+                                        <li>Mobile Apps</li>
+                                        <li>UI/UX Design</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="page" id="page-contact">
+                                <h3>Contact Page</h3>
+                                <p>Get in touch with us.</p>
+                                <div class="page-content">
+                                    <p>Email: demo@example.com</p>
+                                    <p>Phone: (555) 123-4567</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="demo-code">
+                    <h4>Code Example:</h4>
+                    <pre><code>document.startViewTransition(() => {
+    currentPage.classList.remove('active');
+    newPage.classList.add('active');
+});</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Support Notice -->
+        <section class="support-notice">
+            <h3>Browser Support</h3>
+            <p id="support-status"></p>
+            <p class="support-info">
+                If transitions aren't working, try opening this page in Chrome 111+, Edge 111+, Safari 18+, or Opera 97+.
+            </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>View Transitions API Interactive Demos</p>
+            <p>Explore the code examples and CSS in the source files to learn more.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

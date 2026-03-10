@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How the Internet Works — Network Concepts</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #060b14;
+      --surface:        #0d1626;
+      --surface2:       #152035;
+      --border:         #1e3557;
+      --text:           #dde6f0;
+      --muted:          #8aa3c0;
+      --accent:         #38bdf8;
+      --accent2:        #7dd3fc;
+      --accent3:        #0ea5e9;
+      --green:          #34d399;
+      --yellow:         #fbbf24;
+      --red:            #f87171;
+      --code-bg:        #05080f;
+      --persian-bg:     #0a1929;
+      --persian-border: #1a4266;
+      --persian-text:   #93c5fd;
+      --radius:         10px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      padding: 0;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #060b14 0%, #0d1f3c 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 2.5rem 2rem 2rem;
+    }
+    .header-inner { max-width: 1100px; margin: 0 auto; }
+    header .topic-num {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.15em;
+      color: var(--accent3); margin-bottom: 0.4rem;
+    }
+    header h1 { font-size: 2rem; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 0.5rem; }
+    header .meta { font-size: 0.8rem; color: var(--muted); display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    /* Two-column layout */
+    .layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 2.5rem;
+      padding: 2rem 1.5rem 4rem;
+      align-items: start;
+    }
+
+    /* Sticky TOC */
+    .toc {
+      position: sticky;
+      top: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+    }
+    .toc h2 {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--muted); margin-bottom: 0.75rem;
+    }
+    .toc ol { padding-left: 1.1rem; }
+    .toc li { margin-bottom: 0.4rem; }
+    .toc a { color: var(--accent); text-decoration: none; font-size: 0.85rem; line-height: 1.4; }
+    .toc a:hover { color: var(--accent2); text-decoration: underline; }
+
+    /* Sections */
+    .section { margin-top: 2.5rem; }
+    .section:first-child { margin-top: 0; }
+    .section-title {
+      font-size: 1.4rem; font-weight: 700; color: var(--accent2);
+      margin-bottom: 1.25rem; padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .subsection-title {
+      font-size: 1.05rem; font-weight: 600; color: var(--accent);
+      margin: 1.5rem 0 0.65rem;
+    }
+
+    /* Block */
+    .block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 0.85rem;
+    }
+    .block p { color: var(--text); margin-bottom: 0.5rem; }
+    .block p:last-of-type { margin-bottom: 0; }
+
+    /* Persian summary */
+    .fa {
+      background: var(--persian-bg);
+      border: 1px solid var(--persian-border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1.25rem;
+      margin-top: 0.4rem;
+      margin-bottom: 1.25rem;
+      direction: rtl; text-align: right;
+      font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', sans-serif;
+      font-size: 0.92rem; line-height: 1.9;
+      color: var(--persian-text);
+    }
+    .fa::before {
+      content: '🇮🇷 خلاصه';
+      display: block; font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--accent2);
+      margin-bottom: 0.4rem; direction: rtl;
+    }
+
+    /* Diagram */
+    figure.diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin: 0.75rem 0 1.25rem;
+      overflow-x: auto;
+      text-align: center;
+    }
+    figure.diagram figcaption {
+      font-size: 0.8rem; color: var(--muted);
+      margin-top: 0.75rem; text-align: center;
+    }
+
+    /* Code */
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.25rem; overflow-x: auto; font-size: 0.88rem; line-height: 1.6; margin: 0.75rem 0; }
+    code { font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace; color: #93c5fd; font-size: 0.9em; }
+
+    ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+    li { margin-bottom: 0.35rem; color: var(--text); }
+
+    .badge { display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.5rem;
+      border-radius: 999px; font-weight: 600; margin-right: 0.35rem;
+      text-transform: uppercase; letter-spacing: 0.05em; }
+    .badge-info { background: #0c2744; color: var(--accent); }
+    .badge-note { background: #1c1405; color: var(--yellow); }
+    .badge-good { background: #064e3b; color: var(--green); }
+
+    .note { border-left: 3px solid var(--accent3); background: #081828;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.75rem 1rem; font-size: 0.9rem; color: #bae6fd; margin: 0.75rem 0; }
+
+    strong { color: #f0f6ff; font-weight: 600; }
+    em { color: var(--muted); font-style: italic; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+    @media (max-width: 720px) {
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: static; }
+      header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="topic-num">Topic 1 — Network Concepts for Frontend Developers</div>
+    <h1>How the Internet Works</h1>
+    <div class="meta">
+      <span>Data · Packets · Routing · The full journey</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ── Sticky TOC ─────────────────────────────────────── -->
+  <aside class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#what-is-data">What is Data?</a></li>
+      <li><a href="#physical-travel">How Data Travels Physically</a></li>
+      <li><a href="#what-is-packet">What is a Packet?</a></li>
+      <li><a href="#why-packets">Why Packets, Not One Stream?</a></li>
+      <li><a href="#routing">Routing — How Packets Find Their Way</a></li>
+      <li><a href="#full-journey">The Full Journey</a></li>
+      <li><a href="#reassembly">Reassembly at the Destination</a></li>
+    </ol>
+  </aside>
+
+  <main>
+
+    <!-- ══════════════════════════════════════════════════
+         1. WHAT IS DATA?
+    ═══════════════════════════════════════════════════ -->
+    <section class="section" id="what-is-data">
+      <h2 class="section-title">1. What is Data?</h2>
+
+      <div class="block">
+        <p>
+          At the most fundamental level, <strong>everything on the internet is data</strong> — and
+          all data is ultimately represented as a sequence of <strong>bits</strong>: zeros and ones
+          (0s and 1s). A bit is the smallest unit of information a computer can store or transmit.
+        </p>
+        <p>
+          Eight bits together form a <strong>byte</strong>. A single character like the letter
+          <code>H</code> is represented by 8 bits (<code>01001000</code> in ASCII encoding).
+          A 4K video is just billions of these bits arranged in a specific pattern that software
+          knows how to interpret as color, sound, and motion.
+        </p>
+        <p>
+          Different types of data use different <strong>encoding schemes</strong>:
+        </p>
+        <ul>
+          <li><strong>Text</strong> — ASCII (7-bit) or UTF-8 (variable width, 1–4 bytes per character)</li>
+          <li><strong>Images</strong> — pixels encoded as RGB values (3 bytes per pixel)</li>
+          <li><strong>Audio</strong> — waveforms sampled thousands of times per second</li>
+          <li><strong>Video</strong> — sequences of compressed image frames + audio</li>
+          <li><strong>Executable code</strong> — CPU instructions encoded as binary</li>
+        </ul>
+        <p>
+          Regardless of the type, when data travels across the internet, it is always just a
+          stream of bits — the receiver's software decides how to interpret those bits.
+        </p>
+      </div>
+      <div class="fa">
+        در پایه‌ای‌ترین سطح، <strong>همه چیز در اینترنت داده است</strong> و تمام داده‌ها
+        به‌صورت دنباله‌ای از <strong>بیت</strong>ها (صفر و یک) نمایش داده می‌شوند. کوچک‌ترین
+        واحد اطلاعات یک بیت است و ۸ بیت با هم یک <strong>بایت</strong> می‌سازند. مثلاً
+        حرف «H» به‌صورت <code>01001000</code> ذخیره می‌شود. انواع داده‌ها از <strong>encoding</strong>
+        متفاوت استفاده می‌کنند: متن از ASCII/UTF-8، تصاویر از مقادیر RGB پیکسل، صدا از
+        نمونه‌برداری موج، ویدیو از فریم‌های فشرده + صدا، و کد اجرایی از دستورالعمل‌های CPU.
+        مهم نیست داده چه نوعی باشد — وقتی از اینترنت عبور می‌کند، فقط یک جریان از بیت‌هاست
+        و نرم‌افزار گیرنده تصمیم می‌گیرد آن‌ها را چطور تفسیر کند.
+      </div>
+
+      <!-- SVG: Binary representation -->
+      <figure class="diagram">
+        <svg viewBox="0 0 560 160" width="560" height="160" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
+          <!-- "Hi" text -->
+          <text x="30" y="50" font-family="monospace" font-size="38" font-weight="bold" fill="#38bdf8">"Hi"</text>
+          <text x="28" y="70" font-family="sans-serif" font-size="11" fill="#8aa3c0">2 characters</text>
+
+          <!-- Arrow 1 -->
+          <line x1="110" y1="50" x2="148" y2="50" stroke="#1e3557" stroke-width="2"/>
+          <polygon points="148,44 160,50 148,56" fill="#1e3557"/>
+
+          <!-- H box -->
+          <rect x="162" y="22" width="44" height="44" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="184" y="50" font-family="monospace" font-size="22" font-weight="bold" fill="#7dd3fc" text-anchor="middle">H</text>
+          <text x="184" y="74" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">72 dec</text>
+
+          <!-- i box -->
+          <rect x="214" y="22" width="44" height="44" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="236" y="50" font-family="monospace" font-size="22" font-weight="bold" fill="#7dd3fc" text-anchor="middle">i</text>
+          <text x="236" y="74" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">105 dec</text>
+
+          <!-- Arrow 2 -->
+          <line x1="262" y1="50" x2="300" y2="50" stroke="#1e3557" stroke-width="2"/>
+          <polygon points="300,44 312,50 300,56" fill="#1e3557"/>
+
+          <!-- Binary H -->
+          <rect x="315" y="10" width="110" height="30" rx="5" fill="#0a1929" stroke="#1a4266" stroke-width="1.5"/>
+          <text x="370" y="30" font-family="monospace" font-size="13" fill="#93c5fd" text-anchor="middle">0100 1000</text>
+          <text x="370" y="52" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">'H' in binary</text>
+
+          <!-- Binary i -->
+          <rect x="315" y="60" width="110" height="30" rx="5" fill="#0a1929" stroke="#1a4266" stroke-width="1.5"/>
+          <text x="370" y="80" font-family="monospace" font-size="13" fill="#93c5fd" text-anchor="middle">0110 1001</text>
+          <text x="370" y="102" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">'i' in binary</text>
+
+          <!-- Arrow 3 -->
+          <line x1="428" y1="50" x2="466" y2="50" stroke="#1e3557" stroke-width="2"/>
+          <polygon points="466,44 478,50 466,56" fill="#1e3557"/>
+
+          <!-- All bits -->
+          <rect x="480" y="20" width="68" height="60" rx="6" fill="#0c2744" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="514" y="43" font-family="monospace" font-size="10" fill="#38bdf8" text-anchor="middle">01001000</text>
+          <text x="514" y="57" font-family="monospace" font-size="10" fill="#38bdf8" text-anchor="middle">01101001</text>
+          <text x="514" y="90" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">16 bits</text>
+
+          <!-- Labels -->
+          <text x="30" y="130" font-family="sans-serif" font-size="11" fill="#8aa3c0">Text</text>
+          <text x="184" y="130" font-family="sans-serif" font-size="11" fill="#8aa3c0" text-anchor="middle">Characters</text>
+          <text x="370" y="130" font-family="sans-serif" font-size="11" fill="#8aa3c0" text-anchor="middle">ASCII (decimal → binary)</text>
+          <text x="514" y="130" font-family="sans-serif" font-size="11" fill="#8aa3c0" text-anchor="middle">Bits on wire</text>
+        </svg>
+        <figcaption>The string "Hi" encoded as ASCII binary — what actually travels over the network</figcaption>
+      </figure>
+    </section>
+
+    <hr />
+
+    <!-- ══════════════════════════════════════════════════
+         2. HOW DATA TRAVELS PHYSICALLY
+    ═══════════════════════════════════════════════════ -->
+    <section class="section" id="physical-travel">
+      <h2 class="section-title">2. How Data Travels Physically</h2>
+
+      <div class="block">
+        <p>
+          Those bits (0s and 1s) need a physical medium to travel from one computer to another.
+          The internet uses three main types of physical transmission:
+        </p>
+        <ul>
+          <li>
+            <strong>Copper wire (electrical signals)</strong> — Bits are transmitted as changes in
+            electrical voltage. A high voltage might represent <code>1</code>, a low voltage
+            <code>0</code>. Used in Ethernet cables (Cat5e, Cat6) and old telephone lines (DSL).
+            Cheap but limited in speed and distance — signal degrades over long runs.
+          </li>
+          <li>
+            <strong>Fiber optic (pulses of light)</strong> — Bits are transmitted as pulses of
+            laser light through a glass or plastic fiber thinner than a human hair. Light travels
+            at ~200,000 km/s inside fiber (about 2/3 the speed of light in a vacuum). Fiber can
+            carry <strong>terabits per second</strong> over thousands of kilometers with minimal
+            signal loss. The backbone of the internet — underwater cables between continents —
+            is almost entirely fiber optic.
+          </li>
+          <li>
+            <strong>Radio waves (wireless)</strong> — Bits are encoded in radio wave frequencies.
+            Wi-Fi (2.4 GHz / 5 GHz), 4G, and 5G networks all use radio waves. Convenient but
+            more susceptible to interference and generally lower bandwidth than fiber.
+          </li>
+        </ul>
+        <div class="note">
+          <span class="badge badge-note">Key fact</span>
+          The speed of light is the ultimate physical limit. A signal from New York to London takes
+          at least <strong>~28ms</strong> just from the geography (6,000 km ÷ speed of light in
+          fiber). This irreducible delay is called <strong>propagation delay</strong> and is why
+          server location matters for performance.
+        </div>
+      </div>
+      <div class="fa">
+        بیت‌ها برای انتقال به یک محیط فیزیکی نیاز دارند. اینترنت از سه نوع اصلی استفاده می‌کند:
+        <strong>سیم مسی (سیگنال الکتریکی)</strong> — تغییر ولتاژ نشان‌دهنده ۰ یا ۱ است؛
+        در کابل‌های Ethernet و DSL استفاده می‌شود؛ ارزان اما محدود در سرعت و مسافت.
+        <strong>فیبر نوری (پالس‌های نور)</strong> — لیزر نور از داخل شیشه‌ای نازک‌تر از موی
+        انسان می‌گذرد با سرعت ~۲۰۰,۰۰۰ کیلومتر بر ثانیه؛ ظرفیت ترابیت در ثانیه، افت
+        سیگنال ناچیز؛ کابل‌های زیر دریایی بین قاره‌ای تقریباً همه فیبر هستند.
+        <strong>امواج رادیویی (بی‌سیم)</strong> — Wi-Fi (2.4/5 گیگاهرتز)، 4G، 5G؛ راحت
+        اما حساس‌تر به تداخل و پهنای باند کمتر از فیبر. نکته کلیدی: سرعت نور محدودیت
+        فیزیکی نهایی است. سیگنال از نیویورک به لندن حداقل <strong>~۲۸ms</strong> فقط به خاطر
+        فاصله جغرافیایی طول می‌کشد — به این <strong>Propagation Delay</strong> می‌گویند و
+        دلیل اهمیت موقعیت سرور برای عملکرد است.
+      </div>
+
+      <!-- SVG: Physical media -->
+      <figure class="diagram">
+        <svg viewBox="0 0 560 120" width="560" height="120" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
+          <!-- Copper -->
+          <rect x="20" y="20" width="150" height="60" rx="8" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="95" y="44" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7dd3fc" text-anchor="middle">🔌 Copper Wire</text>
+          <text x="95" y="60" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">Electrical signals</text>
+          <text x="95" y="74" font-family="sans-serif" font-size="10" fill="#fbbf24" text-anchor="middle">~1 Gbps, short range</text>
+
+          <!-- Fiber -->
+          <rect x="200" y="20" width="160" height="60" rx="8" fill="#152035" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="280" y="44" font-family="sans-serif" font-size="12" font-weight="bold" fill="#38bdf8" text-anchor="middle">💡 Fiber Optic</text>
+          <text x="280" y="60" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">Pulses of light</text>
+          <text x="280" y="74" font-family="sans-serif" font-size="10" fill="#34d399" text-anchor="middle">~Tbps, global backbone</text>
+
+          <!-- Wireless -->
+          <rect x="390" y="20" width="150" height="60" rx="8" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="465" y="44" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7dd3fc" text-anchor="middle">📡 Wireless</text>
+          <text x="465" y="60" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">Radio waves</text>
+          <text x="465" y="74" font-family="sans-serif" font-size="10" fill="#fbbf24" text-anchor="middle">Wi-Fi / 4G / 5G</text>
+
+          <!-- Labels below -->
+          <text x="95" y="108" font-family="sans-serif" font-size="10" fill="#4a6080" text-anchor="middle">Ethernet, DSL</text>
+          <text x="280" y="108" font-family="sans-serif" font-size="10" fill="#4a6080" text-anchor="middle">Undersea cables, ISP backbone</text>
+          <text x="465" y="108" font-family="sans-serif" font-size="10" fill="#4a6080" text-anchor="middle">Last-mile, mobile</text>
+        </svg>
+        <figcaption>The three physical mediums that carry internet data</figcaption>
+      </figure>
+    </section>
+
+    <hr />
+
+    <!-- ══════════════════════════════════════════════════
+         3. WHAT IS A PACKET?
+    ═══════════════════════════════════════════════════ -->
+    <section class="section" id="what-is-packet">
+      <h2 class="section-title">3. What is a Packet?</h2>
+
+      <div class="block">
+        <p>
+          Data on the internet is not sent as one continuous stream. Instead, it is broken into
+          small, fixed-size chunks called <strong>packets</strong>. Each packet is typically
+          around <strong>1,500 bytes</strong> (the standard MTU — Maximum Transmission Unit —
+          for Ethernet networks).
+        </p>
+        <p>
+          Every packet has two parts:
+        </p>
+        <ul>
+          <li>
+            <strong>Header</strong> (~20–60 bytes) — the "envelope" with all the routing and
+            control information:
+            <ul>
+              <li><strong>Source IP address</strong> — where the packet came from</li>
+              <li><strong>Destination IP address</strong> — where it needs to go</li>
+              <li><strong>Sequence number</strong> — packet's position in the original data (so it can be reassembled in the right order)</li>
+              <li><strong>TTL (Time to Live)</strong> — maximum number of router hops before the packet is discarded (prevents infinite loops)</li>
+              <li><strong>Protocol</strong> — TCP or UDP</li>
+              <li><strong>Checksum</strong> — a value used to detect transmission errors</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Payload</strong> (~1,460 bytes) — the actual data being transported (a chunk of your HTML, image, or video)
+          </li>
+        </ul>
+        <p>
+          Think of a packet like a physical letter: the header is the envelope (with sender and
+          recipient addresses), and the payload is the letter inside.
+        </p>
+      </div>
+      <div class="fa">
+        داده در اینترنت به صورت یک جریان پیوسته ارسال نمی‌شود. به جای آن، به تکه‌های کوچک
+        و استاندارد به نام <strong>Packet</strong> شکسته می‌شود. هر packet معمولاً حدود
+        <strong>۱۵۰۰ بایت</strong> است (MTU استاندارد Ethernet). هر packet دو بخش دارد:
+        <strong>Header</strong> (~۲۰ تا ۶۰ بایت) — "پاکت نامه" شامل: آدرس IP مبدأ، آدرس IP
+        مقصد، شماره ترتیب (Sequence Number) برای بازسازی به ترتیب صحیح، TTL (حداکثر تعداد
+        روتر که packet می‌تواند از آن‌ها عبور کند تا از حلقه بی‌نهایت جلوگیری شود)، پروتکل
+        (TCP یا UDP) و Checksum برای تشخیص خطای انتقال. <strong>Payload</strong> (~۱۴۶۰ بایت)
+        — داده واقعی (تکه‌ای از HTML، تصویر یا ویدیو). مثل یک نامه فیزیکی: header پاکت است
+        و payload نامه داخل آن.
+      </div>
+
+      <!-- SVG: Packet structure -->
+      <figure class="diagram">
+        <svg viewBox="0 0 560 130" width="560" height="130" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
+          <!-- Outer packet box -->
+          <rect x="20" y="20" width="520" height="70" rx="8" fill="#0d1626" stroke="#38bdf8" stroke-width="2"/>
+          <text x="280" y="10" font-family="sans-serif" font-size="11" fill="#38bdf8" text-anchor="middle" font-weight="bold">PACKET (~1,500 bytes)</text>
+
+          <!-- Header section -->
+          <rect x="20" y="20" width="160" height="70" rx="8" fill="#0c2744" stroke="#0ea5e9" stroke-width="1.5"/>
+          <text x="100" y="42" font-family="sans-serif" font-size="11" font-weight="bold" fill="#38bdf8" text-anchor="middle">HEADER</text>
+          <text x="100" y="56" font-family="sans-serif" font-size="9.5" fill="#8aa3c0" text-anchor="middle">~20–60 bytes</text>
+
+          <!-- Header fields (small) -->
+          <text x="35" y="70" font-family="monospace" font-size="8.5" fill="#93c5fd">Src IP · Dest IP</text>
+          <text x="35" y="82" font-family="monospace" font-size="8.5" fill="#93c5fd">Seq# · TTL · Proto</text>
+
+          <!-- Payload section -->
+          <rect x="180" y="20" width="360" height="70" rx="0 8 8 0" fill="#152035" stroke="#1e3557" stroke-width="1"/>
+          <text x="360" y="48" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7dd3fc" text-anchor="middle">PAYLOAD</text>
+          <text x="360" y="64" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">~1,460 bytes of actual data</text>
+          <text x="360" y="78" font-family="monospace" font-size="9" fill="#4a6080" text-anchor="middle">&lt;html&gt;&lt;head&gt;...  /  image bytes  /  video frame...</text>
+
+          <!-- Labels below -->
+          <text x="100" y="108" font-family="sans-serif" font-size="10" fill="#0ea5e9" text-anchor="middle">routing info</text>
+          <text x="360" y="108" font-family="sans-serif" font-size="10" fill="#4a6080" text-anchor="middle">the actual content being transferred</text>
+        </svg>
+        <figcaption>Anatomy of a network packet — header carries routing instructions, payload carries the data</figcaption>
+      </figure>
+    </section>
+
+    <hr />
+
+    <!-- ══════════════════════════════════════════════════
+         4. WHY PACKETS, NOT ONE STREAM?
+    ═══════════════════════════════════════════════════ -->
+    <section class="section" id="why-packets">
+      <h2 class="section-title">4. Why Packets, Not One Big Stream?</h2>
+
+      <div class="block">
+        <p>
+          Breaking data into packets — rather than sending one giant continuous stream — is one of
+          the most important design decisions of the internet. Here's why:
+        </p>
+        <ul>
+          <li>
+            <strong>Shared network</strong> — millions of users share the same cables and
+            routers. Packets from different users interleave on the same wire. If one user sent
+            a 1 GB file as a single stream, no one else could use that link until it finished.
+            Packets let everyone share the infrastructure fairly (this is called
+            <strong>packet switching</strong>).
+          </li>
+          <li>
+            <strong>Multiple routes</strong> — different packets from the same file can take
+            different paths through the internet and arrive out of order. The destination
+            reassembles them using the sequence numbers. This makes the network resilient — if
+            one route is congested or broken, packets take a different path automatically.
+          </li>
+          <li>
+            <strong>Efficient error recovery</strong> — if a packet is lost or corrupted, only
+            that one small packet (~1,500 bytes) needs to be retransmitted, not the entire file.
+          </li>
+          <li>
+            <strong>Faster perceived start</strong> — the receiver can start processing the
+            first packets while later packets are still in transit (streaming video, progressive
+            image loading).
+          </li>
+        </ul>
+      </div>
+      <div class="fa">
+        شکستن داده به Packet به جای ارسال یک جریان پیوسته بزرگ، یکی از مهم‌ترین تصمیمات
+        طراحی اینترنت است. دلایل: <strong>شبکه مشترک</strong> — میلیون‌ها کاربر یک زیرساخت
+        را به اشتراک می‌گذارند؛ packet‌های کاربران مختلف روی یک سیم به هم می‌آمیزند — این
+        <strong>Packet Switching</strong> است. <strong>مسیرهای متعدد</strong> — packet‌های
+        مختلف از یک فایل می‌توانند مسیرهای متفاوتی طی کنند و به ترتیب اشتباه برسند؛ مقصد
+        با Sequence Number آن‌ها را بازسازی می‌کند؛ اگر یک مسیر مشکل داشته باشد، packet‌ها
+        به‌طور خودکار مسیر دیگری می‌روند. <strong>بازیابی کارآمد خطا</strong> — اگر packet
+        گم شود فقط همان ~۱۵۰۰ بایت دوباره ارسال می‌شود، نه کل فایل.
+        <strong>شروع سریع‌تر</strong> — گیرنده می‌تواند packet‌های اول را در حالی که بقیه
+        هنوز در راهند پردازش کند (مثل پخش استریم ویدیو یا بارگذاری تدریجی تصویر).
+      </div>
+
+      <!-- SVG: File split into packets -->
+      <figure class="diagram">
+        <svg viewBox="0 0 560 150" width="560" height="150" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
+          <!-- Original file -->
+          <rect x="20" y="30" width="100" height="80" rx="8" fill="#0c2744" stroke="#38bdf8" stroke-width="2"/>
+          <text x="70" y="62" font-family="sans-serif" font-size="11" font-weight="bold" fill="#38bdf8" text-anchor="middle">FILE</text>
+          <text x="70" y="76" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">10 MB</text>
+          <text x="70" y="90" font-family="monospace" font-size="9" fill="#4a6080" text-anchor="middle">page.html</text>
+          <text x="70" y="128" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">1 big blob</text>
+
+          <!-- Arrow -->
+          <line x1="124" y1="70" x2="158" y2="70" stroke="#1e3557" stroke-width="2" stroke-dasharray="4,3"/>
+          <polygon points="158,64 170,70 158,76" fill="#1e3557"/>
+          <text x="146" y="62" font-family="sans-serif" font-size="9" fill="#4a6080" text-anchor="middle">split</text>
+
+          <!-- Packets -->
+          <rect x="172" y="20" width="62" height="40" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="203" y="38" font-family="monospace" font-size="10" fill="#7dd3fc" text-anchor="middle">PKT #1</text>
+          <text x="203" y="52" font-family="sans-serif" font-size="9" fill="#4a6080" text-anchor="middle">1,500 B</text>
+
+          <rect x="242" y="20" width="62" height="40" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="273" y="38" font-family="monospace" font-size="10" fill="#7dd3fc" text-anchor="middle">PKT #2</text>
+          <text x="273" y="52" font-family="sans-serif" font-size="9" fill="#4a6080" text-anchor="middle">1,500 B</text>
+
+          <rect x="312" y="20" width="62" height="40" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="343" y="38" font-family="monospace" font-size="10" fill="#7dd3fc" text-anchor="middle">PKT #3</text>
+          <text x="343" y="52" font-family="sans-serif" font-size="9" fill="#4a6080" text-anchor="middle">1,500 B</text>
+
+          <text x="395" y="44" font-family="sans-serif" font-size="16" fill="#4a6080">⋯</text>
+
+          <rect x="418" y="20" width="72" height="40" rx="6" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="454" y="38" font-family="monospace" font-size="10" fill="#7dd3fc" text-anchor="middle">PKT #6,991</text>
+          <text x="454" y="52" font-family="sans-serif" font-size="9" fill="#4a6080" text-anchor="middle">last chunk</text>
+
+          <!-- Different paths arrows -->
+          <path d="M 203 62 Q 203 95 310 110" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,3" fill="none" opacity="0.6"/>
+          <path d="M 273 62 Q 273 85 310 110" stroke="#7dd3fc" stroke-width="1.2" stroke-dasharray="3,3" fill="none" opacity="0.6"/>
+          <path d="M 343 62 Q 343 95 310 110" stroke="#0ea5e9" stroke-width="1.2" stroke-dasharray="3,3" fill="none" opacity="0.5"/>
+
+          <text x="310" y="125" font-family="sans-serif" font-size="10" fill="#8aa3c0" text-anchor="middle">↓ different routes, reassembled at destination</text>
+        </svg>
+        <figcaption>A 10 MB file split into ~6,991 packets of 1,500 bytes — each can travel a different path</figcaption>
+      </figure>
+    </section>
+
+    <hr />
+
+    <!-- ══════════════════════════════════════════════════
+         5. ROUTING
+    ═══════════════════════════════════════════════════ -->
+    <section class="section" id="routing">
+      <h2 class="section-title">5. Routing — How Packets Find Their Way</h2>
+
+      <div class="block">
+        <p>
+          Once a packet is created, it needs to find its way from your computer to the destination
+          server. This is done by <strong>routers</strong> — specialized devices whose only job
+          is to forward packets toward their destination.
+        </p>
+        <p>
+          <strong>How a router works:</strong>
+        </p>
+        <ol>
+          <li>The router receives a packet</li>
+          <li>It reads the <strong>destination IP address</strong> from the packet's header</li>
+          <li>It looks up this IP in its <strong>routing table</strong> — a map of IP ranges to the next router (called the "next hop")</li>
+          <li>It forwards the packet to that next hop and decrements the TTL by 1</li>
+          <li>If TTL reaches 0, the packet is discarded (prevents infinite loops)</li>
+        </ol>
+        <p>
+          This process repeats at every router along the path. A packet might pass through
+          <strong>10–30 routers</strong> (hops) between your computer and a server on the
+          other side of the world. You can see these hops with the <code>traceroute</code>
+          command.
+        </p>
+      </div>
+      <div class="fa">
+        پس از ساخته شدن packet، باید از کامپیوتر شما به سرور مقصد برسد. این کار توسط
+        <strong>Router</strong>ها انجام می‌شود — دستگاه‌های تخصصی که فقط وظیفه هدایت
+        packet‌ها را دارند. نحوه کار: روتر packet را دریافت می‌کند → <strong>آدرس IP مقصد</strong>
+        را از header می‌خواند → آن را در <strong>Routing Table</strong> خود جستجو می‌کند
+        (نقشه‌ای از بازه‌های IP به next hop) → packet را به next hop بعدی ارسال می‌کند و
+        TTL را یک واحد کم می‌کند → اگر TTL به صفر رسید، packet دور انداخته می‌شود. این
+        فرآیند در هر روتر تکرار می‌شود. یک packet ممکن است از <strong>۱۰ تا ۳۰ روتر</strong>
+        عبور کند. با دستور <code>traceroute</code> می‌توانید این مسیر را ببینید.
+      </div>
+
+      <h3 class="subsection-title">5.1 BGP — The Internet's Navigation System</h3>
+      <div class="block">
+        <p>
+          At a global scale, the internet is divided into thousands of independent networks called
+          <strong>Autonomous Systems (AS)</strong> — each one is an ISP, a cloud provider, or a
+          large company. How do routers across different ASes know how to reach each other?
+        </p>
+        <p>
+          The answer is <strong>BGP (Border Gateway Protocol)</strong> — the routing protocol
+          that ties the internet together. BGP routers at the edges of each AS exchange
+          information about which IP prefixes (ranges) they can reach. When you type a URL,
+          BGP routing tables guide your packets from your ISP's network, across other ISPs,
+          through internet exchange points (IXPs), to the destination's network.
+        </p>
+        <div class="note">
+          <span class="badge badge-info">Analogy</span>
+          BGP is like the postal system's sorting centers: your local post office (your ISP's router)
+          knows the next regional hub to send your letter (packet) to, and each hub knows the next
+          one, until the letter reaches the destination country's local delivery network.
+        </div>
+      </div>
+      <div class="fa">
+        در مقیاس جهانی، اینترنت به هزاران شبکه مستقل به نام <strong>Autonomous System (AS)</strong>
+        تقسیم شده — هر یک یک ISP، ارائه‌دهنده ابری یا شرکت بزرگ است. <strong>BGP (Border
+        Gateway Protocol)</strong> پروتکلی است که روتر‌های لبه هر AS را به هم متصل می‌کند.
+        روتر‌های BGP اطلاعات مربوط به بازه‌های IP قابل دسترسی را با هم تبادل می‌کنند. وقتی
+        یک URL تایپ می‌کنید، جداول routing BGP packet‌های شما را از شبکه ISP شما، از
+        طریق ISP‌های دیگر، از IXPها (نقاط تبادل اینترنتی) هدایت می‌کند تا به شبکه مقصد برسد.
+        آنالوگ: BGP مثل مراکز مرتب‌سازی پست است — اداره پست محلی (روتر ISP شما) می‌داند
+        نامه (packet) را به کدام هاب منطقه‌ای بفرستد و هر هاب بعدی را می‌داند.
+      </div>
+
+      <!-- SVG: Routing hops -->
+      <figure class="diagram">
+        <svg viewBox="0 0 560 130" width="560" height="130" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
+          <!-- Nodes -->
+          <!-- Your PC -->
+          <rect x="10" y="40" width="74" height="44" rx="7" fill="#0c2744" stroke="#38bdf8" stroke-width="1.8"/>
+          <text x="47" y="58" font-family="sans-serif" font-size="9.5" font-weight="bold" fill="#38bdf8" text-anchor="middle">💻 Your</text>
+          <text x="47" y="71" font-family="sans-serif" font-size="9.5" font-weight="bold" fill="#38bdf8" text-anchor="middle">Computer</text>
+          <text x="47" y="100" font-family="monospace" font-size="8.5" fill="#4a6080" text-anchor="middle">192.168.1.5</text>
+
+          <!-- Arrow 1 -->
+          <line x1="84" y1="62" x2="102" y2="62" stroke="#1e3557" stroke-width="1.5"/>
+          <polygon points="102,57 112,62 102,67" fill="#1e3557"/>
+          <text x="98" y="52" font-family="sans-serif" font-size="8" fill="#4a6080" text-anchor="middle">hop 1</text>
+
+          <!-- Home Router -->
+          <rect x="114" y="40" width="74" height="44" rx="7" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="151" y="58" font-family="sans-serif" font-size="9.5" fill="#7dd3fc" text-anchor="middle">🏠 Home</text>
+          <text x="151" y="71" font-family="sans-serif" font-size="9.5" fill="#7dd3fc" text-anchor="middle">Router</text>
+          <text x="151" y="100" font-family="monospace" font-size="8.5" fill="#4a6080" text-anchor="middle">NAT gateway</text>
+
+          <!-- Arrow 2 -->
+          <line x1="188" y1="62" x2="206" y2="62" stroke="#1e3557" stroke-width="1.5"/>
+          <polygon points="206,57 216,62 206,67" fill="#1e3557"/>
+          <text x="202" y="52" font-family="sans-serif" font-size="8" fill="#4a6080" text-anchor="middle">hop 2</text>
+
+          <!-- ISP -->
+          <rect x="218" y="40" width="74" height="44" rx="7" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="255" y="63" font-family="sans-serif" font-size="9.5" fill="#7dd3fc" text-anchor="middle">🏢 ISP</text>
+          <text x="255" y="75" font-family="sans-serif" font-size="9.5" fill="#7dd3fc" text-anchor="middle">Router</text>
+          <text x="255" y="100" font-family="monospace" font-size="8.5" fill="#4a6080" text-anchor="middle">public IP</text>
+
+          <!-- Arrow 3 -->
+          <line x1="292" y1="62" x2="310" y2="62" stroke="#1e3557" stroke-width="1.5"/>
+          <polygon points="310,57 320,62 310,67" fill="#1e3557"/>
+          <text x="306" y="52" font-family="sans-serif" font-size="8" fill="#4a6080" text-anchor="middle">hops…</text>
+
+          <!-- Backbone -->
+          <rect x="322" y="40" width="80" height="44" rx="7" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="362" y="58" font-family="sans-serif" font-size="9.5" fill="#7dd3fc" text-anchor="middle">🌐 Internet</text>
+          <text x="362" y="71" font-family="sans-serif" font-size="9.5" fill="#7dd3fc" text-anchor="middle">Backbone</text>
+          <text x="362" y="100" font-family="monospace" font-size="8.5" fill="#4a6080" text-anchor="middle">BGP routers</text>
+
+          <!-- Arrow 4 -->
+          <line x1="402" y1="62" x2="420" y2="62" stroke="#1e3557" stroke-width="1.5"/>
+          <polygon points="420,57 430,62 420,67" fill="#1e3557"/>
+          <text x="416" y="52" font-family="sans-serif" font-size="8" fill="#4a6080" text-anchor="middle">hop N</text>
+
+          <!-- Server -->
+          <rect x="432" y="40" width="116" height="44" rx="7" fill="#064e3b" stroke="#34d399" stroke-width="1.8"/>
+          <text x="490" y="58" font-family="sans-serif" font-size="9.5" font-weight="bold" fill="#34d399" text-anchor="middle">🖥️ Destination</text>
+          <text x="490" y="71" font-family="sans-serif" font-size="9.5" font-weight="bold" fill="#34d399" text-anchor="middle">Server</text>
+          <text x="490" y="100" font-family="monospace" font-size="8.5" fill="#4a6080" text-anchor="middle">93.184.216.34</text>
+
+          <!-- Caption row -->
+          <text x="280" y="120" font-family="sans-serif" font-size="10" fill="#4a6080" text-anchor="middle">Each router reads the destination IP and forwards to the next hop — TTL decrements at each step</text>
+        </svg>
+        <figcaption>A packet's journey through routers — each hop brings it closer to the destination</figcaption>
+      </figure>
+    </section>
+
+    <hr />
+
+    <!-- ══════════════════════════════════════════════════
+         6. THE FULL JOURNEY
+    ═══════════════════════════════════════════════════ -->
+    <section class="section" id="full-journey">
+      <h2 class="section-title">6. The Full Journey of a Request</h2>
+
+      <div class="block">
+        <p>
+          Let's trace exactly what happens when you type <code>https://example.com</code> and
+          press Enter — from your keyboard to the server and back:
+        </p>
+        <ol>
+          <li>
+            <strong>Your browser</strong> checks its cache. If it has a fresh copy of the page,
+            it uses it. Otherwise it needs to fetch it.
+          </li>
+          <li>
+            <strong>DNS lookup</strong> — your OS checks its DNS cache. If not found, it asks
+            the DNS resolver (usually your router or ISP). The resolver queries the DNS hierarchy
+            and returns the IP address (e.g., <code>93.184.216.34</code>).
+          </li>
+          <li>
+            <strong>TCP connection</strong> — your OS opens a TCP connection to
+            <code>93.184.216.34:443</code> via a three-way handshake (SYN → SYN-ACK → ACK).
+          </li>
+          <li>
+            <strong>TLS handshake</strong> — because it's HTTPS, a TLS session is negotiated
+            (cipher, server certificate, session keys). Takes 1–2 additional round trips.
+          </li>
+          <li>
+            <strong>HTTP request</strong> — your browser sends an HTTP <code>GET /</code>
+            request over the encrypted connection.
+          </li>
+          <li>
+            <strong>Server processes</strong> the request and sends back an HTTP response
+            (status 200, response headers, HTML body).
+          </li>
+          <li>
+            <strong>Data travels as packets</strong> — the response is broken into packets,
+            each routed independently from server → backbone → ISP → your router → your computer.
+          </li>
+          <li>
+            <strong>Reassembly</strong> — your TCP stack receives all packets, reorders them by
+            sequence number, and hands the complete response to the browser.
+          </li>
+          <li>
+            <strong>Browser renders</strong> — parses HTML, discovers linked CSS/JS/images,
+            and sends additional requests for each one (repeating steps 2–8).
+          </li>
+        </ol>
+        <div class="note">
+          <span class="badge badge-info">Performance insight</span>
+          Steps 2–4 (DNS + TCP + TLS) happen <em>before</em> any content is transferred and can
+          take <strong>200–500ms</strong> on a cold connection. This is why techniques like
+          <code>dns-prefetch</code>, <code>preconnect</code>, HTTP/2, and connection reuse
+          matter so much.
+        </div>
+      </div>
+      <div class="fa">
+        وقتی <code>https://example.com</code> تایپ می‌کنید این مراحل اتفاق می‌افتد:
+        ۱. <strong>مرورگر cache</strong> را چک می‌کند. ۲. <strong>DNS Lookup</strong> —
+        OS، cache DNS خود را بررسی می‌کند؛ اگر نبود از DNS resolver (معمولاً روتر یا ISP)
+        می‌پرسد که IP آدرس را برمی‌گرداند. ۳. <strong>TCP Connection</strong> — OS یک
+        اتصال TCP به IP:443 باز می‌کند (SYN → SYN-ACK → ACK). ۴. <strong>TLS Handshake</strong>
+        — چون HTTPS است، session TLS مذاکره می‌شود (cipher، certificate، کلیدهای session).
+        ۵. <strong>HTTP Request</strong> — مرورگر <code>GET /</code> را روی اتصال رمزنگاری‌شده
+        ارسال می‌کند. ۶. <strong>سرور پردازش</strong> می‌کند و HTTP response (200، headers،
+        HTML) ارسال می‌کند. ۷. <strong>داده به‌صورت Packet</strong> حرکت می‌کند — هر packet
+        مستقلاً روت می‌شود. ۸. <strong>Reassembly</strong> — TCP stack تمام packet‌ها را
+        دریافت، مرتب و به مرورگر تحویل می‌دهد. ۹. <strong>مرورگر render می‌کند</strong> —
+        HTML را parse می‌کند، CSS/JS/تصاویر لینک‌شده را کشف و درخواست می‌دهد (مراحل ۲ تا ۸
+        تکرار می‌شود). نکته عملکردی: مراحل ۲ تا ۴ (DNS + TCP + TLS) قبل از هر انتقال محتوا
+        اتفاق می‌افتد و می‌تواند <strong>۲۰۰ تا ۵۰۰ms</strong> طول بکشد — این دلیل اهمیت
+        <code>dns-prefetch</code>، <code>preconnect</code>، HTTP/2 و connection reuse است.
+      </div>
+    </section>
+
+    <hr />
+
+    <!-- ══════════════════════════════════════════════════
+         7. REASSEMBLY
+    ═══════════════════════════════════════════════════ -->
+    <section class="section" id="reassembly">
+      <h2 class="section-title">7. Reassembly at the Destination</h2>
+
+      <div class="block">
+        <p>
+          Packets can arrive <strong>out of order</strong> — packet #5 might arrive before
+          packet #3 because they took different routes through the internet. The destination
+          computer's <strong>TCP stack</strong> (part of the OS networking layer) handles this:
+        </p>
+        <ul>
+          <li>It receives each packet and stores it in a <strong>receive buffer</strong></li>
+          <li>It uses the <strong>sequence number</strong> in each packet's header to know the correct order</li>
+          <li>It sends an <strong>ACK (acknowledgment)</strong> back to the sender for each packet received</li>
+          <li>If a packet is missing (gap in sequence numbers), it waits and eventually signals the sender to <strong>retransmit</strong> that specific packet</li>
+          <li>Once all packets are received and reordered, the complete data is handed to the application (your browser)</li>
+        </ul>
+        <p>
+          This entire mechanism — guaranteed delivery, ordering, and retransmission — is what
+          <strong>TCP</strong> provides. It is the reliability layer of the internet. (UDP, by
+          contrast, skips all of this for speed — no ordering, no retransmission guarantee.)
+        </p>
+      </div>
+      <div class="fa">
+        Packet‌ها ممکن است <strong>خارج از ترتیب</strong> برسند — مثلاً packet شماره ۵ زودتر
+        از شماره ۳ برسد چون مسیر متفاوتی رفته. <strong>TCP Stack</strong> سیستم عامل این را
+        مدیریت می‌کند: هر packet را دریافت و در <strong>Receive Buffer</strong> ذخیره می‌کند.
+        از <strong>Sequence Number</strong> هر packet برای تشخیص ترتیب صحیح استفاده می‌کند.
+        به ازای هر packet دریافتی، یک <strong>ACK (تأییدیه)</strong> به فرستنده ارسال می‌کند.
+        اگر packet‌ای گم شود (شکاف در شماره‌های sequence)، منتظر می‌ماند و در نهایت از
+        فرستنده می‌خواهد فقط همان packet را <strong>دوباره ارسال کند (Retransmit)</strong>.
+        وقتی همه packet‌ها رسیدند و مرتب شدند، داده کامل به اپلیکیشن (مرورگر) تحویل داده
+        می‌شود. این کل مکانیسم — تحویل تضمینی، ترتیب‌دهی و retransmission — همان چیزی
+        است که <strong>TCP</strong> ارائه می‌دهد. در مقابل، <strong>UDP</strong> این همه را
+        حذف می‌کند تا سریع‌تر باشد — بدون ترتیب‌دهی و بدون تضمین retransmission.
+      </div>
+
+      <!-- SVG: Reassembly -->
+      <figure class="diagram">
+        <svg viewBox="0 0 560 140" width="560" height="140" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">
+          <!-- Arriving out of order -->
+          <text x="10" y="20" font-family="sans-serif" font-size="11" fill="#8aa3c0">Packets arriving (out of order):</text>
+
+          <rect x="10" y="28" width="52" height="32" rx="5" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="36" y="49" font-family="monospace" font-size="11" fill="#7dd3fc" text-anchor="middle">PKT#3</text>
+
+          <rect x="70" y="28" width="52" height="32" rx="5" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="96" y="49" font-family="monospace" font-size="11" fill="#7dd3fc" text-anchor="middle">PKT#1</text>
+
+          <rect x="130" y="28" width="52" height="32" rx="5" fill="#450a0a" stroke="#f87171" stroke-width="1.5"/>
+          <text x="156" y="49" font-family="monospace" font-size="11" fill="#f87171" text-anchor="middle">PKT#2</text>
+          <text x="156" y="67" font-family="sans-serif" font-size="9" fill="#f87171" text-anchor="middle">⚠ missing</text>
+
+          <rect x="190" y="28" width="52" height="32" rx="5" fill="#152035" stroke="#1e3557" stroke-width="1.5"/>
+          <text x="216" y="49" font-family="monospace" font-size="11" fill="#7dd3fc" text-anchor="middle">PKT#4</text>
+
+          <!-- Retransmit label -->
+          <path d="M 156 72 Q 156 90 156 90" stroke="#f87171" stroke-width="1.2" stroke-dasharray="3,2" fill="none"/>
+          <text x="250" y="88" font-family="sans-serif" font-size="10" fill="#f87171">← TCP requests retransmit of #2</text>
+
+          <!-- Arrow down -->
+          <line x1="280" y1="50" x2="320" y2="50" stroke="#1e3557" stroke-width="2"/>
+          <polygon points="320,44 332,50 320,56" fill="#1e3557"/>
+          <text x="326" y="40" font-family="sans-serif" font-size="9" fill="#4a6080">reorder by seq#</text>
+
+          <!-- Reordered -->
+          <text x="336" y="20" font-family="sans-serif" font-size="11" fill="#8aa3c0">Reassembled (correct order):</text>
+
+          <rect x="336" y="28" width="44" height="32" rx="5" fill="#064e3b" stroke="#34d399" stroke-width="1.5"/>
+          <text x="358" y="49" font-family="monospace" font-size="10" fill="#34d399" text-anchor="middle">PKT#1</text>
+
+          <rect x="384" y="28" width="44" height="32" rx="5" fill="#064e3b" stroke="#34d399" stroke-width="1.5"/>
+          <text x="406" y="49" font-family="monospace" font-size="10" fill="#34d399" text-anchor="middle">PKT#2</text>
+
+          <rect x="432" y="28" width="44" height="32" rx="5" fill="#064e3b" stroke="#34d399" stroke-width="1.5"/>
+          <text x="454" y="49" font-family="monospace" font-size="10" fill="#34d399" text-anchor="middle">PKT#3</text>
+
+          <rect x="480" y="28" width="44" height="32" rx="5" fill="#064e3b" stroke="#34d399" stroke-width="1.5"/>
+          <text x="502" y="49" font-family="monospace" font-size="10" fill="#34d399" text-anchor="middle">PKT#4</text>
+
+          <!-- Arrow to app -->
+          <line x1="420" y1="62" x2="420" y2="88" stroke="#34d399" stroke-width="1.5"/>
+          <polygon points="414,88 420,100 426,88" fill="#34d399"/>
+          <text x="420" y="118" font-family="sans-serif" font-size="10" fill="#34d399" text-anchor="middle">complete data → browser</text>
+        </svg>
+        <figcaption>TCP receives out-of-order packets, requests retransmission of missing ones, then delivers the complete stream in order</figcaption>
+      </figure>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>
